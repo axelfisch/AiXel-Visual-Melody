@@ -1,0 +1,5 @@
+/*
+ * AiXel Visual Melody - Design support script
+ * Approved Master Design Package V1.0 source pending.
+ * Replace this placeholder only with the approved Claude Design support.js asset.
+ */
