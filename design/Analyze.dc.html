@@ -1,5 +1,371 @@
-<!--
-  AiXel Visual Melody - Analyze
-  Approved Master Design Package V1.0 source pending.
-  Replace this placeholder only with the approved Claude Design .dc.html asset.
--->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #05060b; }
+    ::selection { background: rgba(107,225,255,0.3); color: #fff; }
+    @keyframes twinkle { 0%,100%{ opacity: 0.15; } 50%{ opacity: 0.95; } }
+    @keyframes fftBar { 0%,100%{ transform: scaleY(0.4); } 50%{ transform: scaleY(1); } }
+    @keyframes scanLine { 0%{ transform: translateX(-100%); } 100%{ transform: translateX(100%); } }
+    @keyframes ringPulse { 0%,100%{ opacity:0.5; transform:scale(1); } 50%{ opacity:0.9; transform:scale(1.04); } }
+    @keyframes goniSweep { 0%,100%{ opacity:0.3; } 50%{ opacity:0.85; } }
+    @keyframes dashFlow { to { stroke-dashoffset: -120; } }
+    @keyframes glowPulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(95,208,255,0.0); } 50%{ box-shadow: 0 0 24px 2px rgba(95,208,255,0.25); } }
+    a { color: #6bd8ff; text-decoration: none; }
+    a:hover { color: #a58bff; }
+  </style>
+</helmet>
+
+<div style="position:relative; width:100%; min-height:100vh; background:radial-gradient(ellipse 120% 60% at 50% -10%, #131a30 0%, #0a0d1a 45%, #05060b 100%); overflow:hidden; font-family:'Manrope',sans-serif; color:#eef1fb;" data-screen-label="Analyze">
+
+  <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="40">
+      <div style="position:absolute; left: {{ s.x }}%; top: {{ s.y }}%; width: {{ s.size }}px; height: {{ s.size }}px; border-radius:50%; background:#dfe8ff; opacity:0.35; animation: twinkle {{ s.dur }}s ease-in-out infinite; animation-delay: {{ s.delay }}s;"></div>
+    </sc-for>
+  </div>
+
+  <!-- top nav -->
+  <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:28px 56px; max-width:1520px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(160,180,255,0.35); display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(95,208,255,0.12), transparent 70%);">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; background:linear-gradient(135deg,#bfe9ff,#8a6bff); -webkit-background-clip:text; background-clip:text; color:transparent;">AX</span>
+      </div>
+      <div style="line-height:1.05;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:0.06em;">AiXel <span style="font-weight:300; opacity:0.7;">Visual Melody</span></div>
+        <div style="font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:#8a94c0;">AiXel Studio</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:34px; font-size:13px; letter-spacing:0.03em; color:#aab2d9;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+        <a href="{{ n.href }}" style="cursor:pointer; padding-bottom:4px; border-bottom: {{ n.active }}; color: {{ n.color }}; text-decoration:none;">{{ n.label }}</a>
+      </sc-for>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="Settings.dc.html" title="Settings" style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid rgba(160,180,255,0.18); display:flex; align-items:center; justify-content:center; font-size:14px; color:#cdd4f5; text-decoration:none;">⚙</a>
+      <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#5fd0ff,#8a6bff); box-shadow:0 0 14px rgba(138,107,255,0.5);"></div>
+    </div>
+  </div>
+
+  <!-- page heading -->
+  <div style="position:relative; z-index:2; max-width:1520px; margin:8px auto 0; padding:0 56px;">
+    <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; border-radius:999px; border:1px solid rgba(201,162,74,0.4); background:rgba(201,162,74,0.06); font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:#e7c977;">
+      <span style="width:5px; height:5px; border-radius:50%; background:#e7c977;"></span>
+      Golden Reference Track
+    </div>
+    <h1 style="margin:16px 0 4px; font-weight:300; font-size:34px; letter-spacing:-0.01em; color:#f4f6ff;">In the Spirit of Naomi</h1>
+    <p style="margin:0; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:17px; color:#9aa4cf;">The software is listening — understanding structure, emotion and color.</p>
+  </div>
+
+  <!-- transport / waveform strip -->
+  <div style="position:relative; z-index:2; max-width:1520px; margin:26px auto 0; padding:0 56px;">
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:20px 24px;">
+      <div style="display:flex; align-items:center; gap:18px;">
+        <div style="width:38px; height:38px; border-radius:50%; border:1px solid rgba(95,208,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; background:rgba(95,208,255,0.08); transition: transform 0.3s ease;" style-hover="transform: scale(1.06);">
+          <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:9px solid #bfe9ff; margin-left:2px;"></div>
+        </div>
+        <div style="font-size:11.5px; color:#8a94c0; flex:none; width:44px;">1:42</div>
+        <div style="flex:1; height:34px; display:flex; align-items:center; gap:2px; position:relative;">
+          <sc-for list="{{ waveform }}" as="w" hint-placeholder-count="120">
+            <div style="width:2px; border-radius:2px; height: {{ w.h }}px; background: {{ w.color }}; opacity: {{ w.opacity }};"></div>
+          </sc-for>
+          <div style="position:absolute; left:38%; top:-6px; bottom:-6px; width:2px; background:#e7c977; box-shadow:0 0 8px 1px rgba(231,201,119,0.7);"></div>
+        </div>
+        <div style="font-size:11.5px; color:#8a94c0; flex:none; width:44px; text-align:right;">3:57</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main analysis grid -->
+  <div style="position:relative; z-index:2; max-width:1520px; margin:20px auto 0; padding:0 56px 40px; display:grid; grid-template-columns:1.5fr 1fr; gap:20px;">
+
+    <!-- left column -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+
+      <!-- FFT spectrum -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Frequency Spectrum</span>
+          <span style="font-size:11px; color:#7c85ab;">20Hz – 20kHz</span>
+        </div>
+        <div style="height:150px; display:flex; align-items:flex-end; gap:3px;">
+          <sc-for list="{{ fftBars }}" as="f" hint-placeholder-count="64">
+            <div style="flex:1; border-radius:3px 3px 0 0; height: {{ f.h }}%; background: {{ f.grad }}; animation: fftBar {{ f.dur }}s ease-in-out infinite; animation-delay: {{ f.delay }}s; transform-origin:bottom;"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- energy curve + sections timeline -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Energy Curve &amp; Musical Sections</span>
+          <span style="font-size:11px; color:#7c85ab;">120 BPM · 4/4</span>
+        </div>
+        <svg viewBox="0 0 600 90" style="width:100%; height:90px; display:block;" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="energyFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8a6bff" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#8a6bff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="{{ energyAreaPath }}" fill="url(#energyFill)"></path>
+          <path d="{{ energyLinePath }}" fill="none" stroke="#7fe0ff" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+        <div style="display:flex; margin-top:12px; border-radius:8px; overflow:hidden; border:1px solid rgba(160,180,255,0.14);">
+          <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="5">
+            <div style="flex: {{ sec.width }}; padding:8px 10px; background: {{ sec.bg }}; border-right:1px solid rgba(5,6,11,0.4);">
+              <div style="font-size:10px; font-weight:600; color:#eef1fb;">{{ sec.name }}</div>
+              <div style="font-size:9px; color:rgba(238,241,251,0.6); margin-top:2px;">{{ sec.time }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- beat grid + tempo -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Beat Grid &amp; Tempo Detection</span>
+          <span style="font-size:11px; color:#e7c977; font-weight:600;">120.0 BPM</span>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:4px; height:42px;">
+          <sc-for list="{{ beats }}" as="b" hint-placeholder-count="48">
+            <div style="flex:1; border-radius:2px; height: {{ b.h }}%; background: {{ b.color }};"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- stereo image + dynamics -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Stereo Image</span>
+          <div style="position:relative; width:100%; aspect-ratio:1; margin-top:14px; border-radius:50%; border:1px solid rgba(160,180,255,0.22); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <div style="position:absolute; width:1px; height:100%; background:rgba(160,180,255,0.18);"></div>
+            <div style="position:absolute; width:100%; height:1px; background:rgba(160,180,255,0.18);"></div>
+            <sc-for list="{{ goniPoints }}" as="gp" hint-placeholder-count="30">
+              <div style="position:absolute; left:{{ gp.x }}%; top:{{ gp.y }}%; width:3px; height:3px; border-radius:50%; background:#5fd0ff; box-shadow:0 0 5px 1px rgba(95,208,255,0.6); animation: goniSweep {{ gp.dur }}s ease-in-out infinite; animation-delay:{{ gp.delay }}s;"></div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Dynamics</span>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:18px;">
+            <sc-for list="{{ dynamics }}" as="dy" hint-placeholder-count="3">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:10.5px; color:#aab2d9; margin-bottom:5px;"><span>{{ dy.label }}</span><span>{{ dy.value }}</span></div>
+                <div style="height:6px; border-radius:4px; background:rgba(255,255,255,0.06); overflow:hidden;">
+                  <div style="height:100%; width: {{ dy.pct }}%; border-radius:4px; background: {{ dy.color }};"></div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- right column -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+
+      <!-- key & chord -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Key &amp; Chord Detection</span>
+        <div style="display:flex; align-items:baseline; gap:10px; margin-top:14px;">
+          <span style="font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600; background:linear-gradient(120deg,#7fe0ff,#a58bff); -webkit-background-clip:text; background-clip:text; color:transparent;">D min</span>
+          <span style="font-size:11px; color:#7c85ab;">detected key</span>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
+          <sc-for list="{{ chords }}" as="c" hint-placeholder-count="6">
+            <div style="padding:7px 14px; border-radius:10px; font-size:12px; font-weight:600; color: {{ c.active }}; background: {{ c.bg }}; border:1px solid {{ c.border }};">{{ c.name }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- emotion profile -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Emotion Profile</span>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;">
+          <sc-for list="{{ emotions }}" as="em" hint-placeholder-count="6">
+            <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:999px; background: {{ em.bg }}; border:1px solid {{ em.border }}; font-size: {{ em.fontSize }}px; opacity: {{ em.opacity }};">
+              <span style="font-size:{{ em.emojiSize }}px;">{{ em.emoji }}</span>
+              <span style="color:#eef1fb; font-weight:500;">{{ em.label }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <p style="margin:16px 0 0; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:13.5px; color:#9aa4cf; line-height:1.5;">A reflective, intimate mood — the kind that turns into light slowly.</p>
+      </div>
+
+      <!-- suggested palette -->
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:22px 24px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Suggested Color Palette</span>
+        <div style="display:flex; gap:10px; margin-top:16px;">
+          <sc-for list="{{ palette }}" as="col" hint-placeholder-count="5">
+            <div style="flex:1; aspect-ratio:1; border-radius:10px; background: {{ col }}; border:1px solid rgba(255,255,255,0.08);"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- suggested engine -->
+      <div style="border-radius:18px; border:1px solid rgba(95,208,255,0.3); background:linear-gradient(135deg, rgba(95,208,255,0.06), rgba(138,107,255,0.05)); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6); padding:22px 24px; animation: glowPulse 5s ease-in-out infinite;">
+        <div style="display:flex; align-items:center; gap:7px; margin-bottom:14px;">
+          <span style="width:5px; height:5px; border-radius:50%; background:#5fd0ff; box-shadow:0 0 6px 1px rgba(95,208,255,0.7);"></span>
+          <span style="font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#7fe0ff;">AiXel Intelligence</span>
+        </div>
+        <p style="margin:0 0 16px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px; color:#dfe6ff; line-height:1.45;">"Ballad detected. Moderate dynamics. Rich harmonic movement."</p>
+
+        <div style="display:flex; flex-direction:column; gap:9px; margin-bottom:18px;">
+          <sc-for list="{{ intelligenceStats }}" as="st" hint-placeholder-count="4">
+            <div style="display:flex; justify-content:space-between; font-size:12px;">
+              <span style="color:#8a94c0;">{{ st.label }}</span>
+              <span style="color:#eef1fb; font-weight:600;">{{ st.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:14px; padding-top:14px; border-top:1px solid rgba(95,208,255,0.16);">
+          <div style="width:44px; height:44px; border-radius:12px; flex:none; background:radial-gradient(circle at 30% 30%, #3a6bd8 0%, #1a2a66 45%, #0a0d1a 100%); position:relative; overflow:hidden;">
+            <sc-for list="{{ suggestDots }}" as="d" hint-placeholder-count="6">
+              <div style="position:absolute; left:{{ d.x }}%; top:{{ d.y }}%; width:{{ d.size }}px; height:{{ d.size }}px; border-radius:50%; background:#bfe0ff; opacity:0.8;"></div>
+            </sc-for>
+          </div>
+          <div>
+            <div style="font-size:14px; font-weight:600; color:#eef1fb;">Cosmic Waves</div>
+            <div style="font-size:10.5px; color:#8a94c0; margin-top:1px;">Blue Aurora · Organic motion</div>
+          </div>
+        </div>
+        <a href="Create.dc.html" style="margin-top:16px; display:block; text-align:center; text-decoration:none; width:100%; box-sizing:border-box; border:none; cursor:pointer; padding:13px; border-radius:12px; font-size:13.5px; font-weight:600; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff); transition: transform 0.3s ease;" style-hover="transform: translateY(-2px);">Generate →</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const rand = (seed) => { let x = Math.sin(seed) * 10000; return x - Math.floor(x); };
+
+    const stars = Array.from({ length: 40 }, (_, i) => ({
+      x: rand(i * 3.1) * 100, y: rand(i * 7.7) * 100,
+      size: 1 + rand(i * 5.3) * 2, dur: 2 + rand(i * 2.1) * 4, delay: rand(i * 9.9) * 5
+    }));
+
+    const navItems = [
+      { label: 'Home', href: 'Home.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Analyze', href: 'Analyze.dc.html', active: '2px solid #5fd0ff', color: '#eef1fb' },
+      { label: 'Create', href: 'Create.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Preview', href: 'Preview.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Export', href: 'Export.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Settings', href: 'Settings.dc.html', active: 'none', color: '#aab2d9' }
+    ];
+
+    const waveform = Array.from({ length: 120 }, (_, i) => {
+      const env = Math.sin((i / 120) * Math.PI);
+      const h = 4 + Math.abs(Math.sin(i * 0.4)) * 26 * env + rand(i) * 5;
+      const before38 = i < 46;
+      return { h: h.toFixed(1), color: before38 ? '#7fe0ff' : 'rgba(160,180,255,0.28)', opacity: before38 ? 0.9 : 0.6 };
+    });
+
+    const fftBars = Array.from({ length: 64 }, (_, i) => {
+      const base = 20 + Math.abs(Math.sin(i * 0.25)) * 70 * (1 - i / 90);
+      const grad = i < 20 ? 'linear-gradient(180deg,#8a6bff,#3a2f6b)' : i < 42 ? 'linear-gradient(180deg,#5fd0ff,#2a5f8a)' : 'linear-gradient(180deg,#e7c977,#8a6b2f)';
+      return { h: Math.max(8, base).toFixed(1), grad, dur: 1.2 + rand(i * 2.3) * 1.4, delay: rand(i * 5.5) * 2 };
+    });
+
+    // energy curve svg paths
+    const pts = Array.from({ length: 30 }, (_, i) => {
+      const y = 70 - (Math.sin(i * 0.5) * 20 + Math.sin(i * 0.13) * 15 + 25);
+      return { x: (i / 29) * 600, y: Math.max(6, Math.min(84, y)) };
+    });
+    const linePath = 'M ' + pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L ');
+    const areaPath = linePath + ` L 600,90 L 0,90 Z`;
+
+    const sections = [
+      { name: 'Intro', time: '0:00', width: 1, bg: 'rgba(95,208,255,0.10)' },
+      { name: 'Verse', time: '0:22', width: 2, bg: 'rgba(138,107,255,0.10)' },
+      { name: 'Chorus', time: '1:10', width: 2, bg: 'rgba(231,201,119,0.12)' },
+      { name: 'Bridge', time: '2:20', width: 1.2, bg: 'rgba(95,208,255,0.10)' },
+      { name: 'Outro', time: '3:30', width: 1, bg: 'rgba(138,107,255,0.10)' }
+    ];
+
+    const beats = Array.from({ length: 48 }, (_, i) => {
+      const strong = i % 4 === 0;
+      return { h: strong ? 100 : 45 + rand(i) * 20, color: strong ? '#e7c977' : 'rgba(160,180,255,0.35)' };
+    });
+
+    const goniPoints = Array.from({ length: 30 }, (_, i) => ({
+      x: 50 + (rand(i * 3.3) - 0.5) * 70,
+      y: 50 + (rand(i * 6.6) - 0.5) * 40,
+      dur: 3 + rand(i * 2.2) * 4,
+      delay: rand(i * 8.8) * 3
+    }));
+
+    const dynamics = [
+      { label: 'Loudness (LUFS)', value: '-14.2', pct: 68, color: 'linear-gradient(90deg,#5fd0ff,#8a6bff)' },
+      { label: 'Dynamic Range', value: 'Wide', pct: 82, color: 'linear-gradient(90deg,#7fe0ff,#5fd0ff)' },
+      { label: 'Peak Crest', value: '9.4 dB', pct: 55, color: 'linear-gradient(90deg,#e7c977,#a58bff)' }
+    ];
+
+    const chords = [
+      { name: 'Dm', active: '#0a0d1a', bg: '#e7c977', border: '#e7c977' },
+      { name: 'B♭', active: '#eef1fb', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' },
+      { name: 'F', active: '#eef1fb', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' },
+      { name: 'C', active: '#eef1fb', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' },
+      { name: 'Gm', active: '#eef1fb', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' },
+      { name: 'A7', active: '#eef1fb', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' }
+    ];
+
+    const emotionSource = [
+      { emoji: '✨', label: 'Dreamy', pct: 78 },
+      { emoji: '🌅', label: 'Hopeful', pct: 70 },
+      { emoji: '🌊', label: 'Floating', pct: 64 },
+      { emoji: '🌌', label: 'Infinite', pct: 60 },
+      { emoji: '🌧', label: 'Nostalgic', pct: 55 },
+      { emoji: '🔥', label: 'Powerful', pct: 32 }
+    ];
+    const emotions = emotionSource.map(e => ({
+      emoji: e.emoji,
+      label: e.label,
+      fontSize: (12 + e.pct * 0.02).toFixed(1),
+      emojiSize: (13 + e.pct * 0.03).toFixed(1),
+      opacity: (0.55 + e.pct / 220).toFixed(2),
+      bg: e.pct > 65 ? 'rgba(95,208,255,0.10)' : 'rgba(255,255,255,0.04)',
+      border: e.pct > 65 ? 'rgba(95,208,255,0.3)' : 'rgba(160,180,255,0.16)'
+    }));
+
+    const palette = [
+      'linear-gradient(160deg,#3a6bd8,#1a2a66)',
+      'linear-gradient(160deg,#8a6bff,#4a2f8a)',
+      'linear-gradient(160deg,#5fd0ff,#2a5f8a)',
+      'linear-gradient(160deg,#e7c977,#8a6b2f)',
+      'linear-gradient(160deg,#0a0d1a,#1a1030)'
+    ];
+
+    const intelligenceStats = [
+      { label: 'Recommended Palette', value: 'Blue Aurora' },
+      { label: 'Recommended Intensity', value: '72%' },
+      { label: 'Recommended Motion', value: 'Organic' },
+      { label: 'Confidence', value: 'High' }
+    ];
+
+    const suggestDots = Array.from({ length: 6 }, (_, i) => ({
+      x: 15 + rand(i * 2.1) * 70, y: 15 + rand(i * 5.5) * 70, size: 2 + rand(i * 1.1) * 2
+    }));
+
+    return { stars, navItems, waveform, fftBars, energyLinePath: linePath, energyAreaPath: areaPath, sections, beats, goniPoints, dynamics, chords, emotions, palette, suggestDots, intelligenceStats };
+  }
+}
+
+</script>
+</body>
+</html>

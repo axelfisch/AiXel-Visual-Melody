@@ -1,5 +1,174 @@
-<!--
-  AiXel Visual Melody - Settings
-  Approved Master Design Package V1.0 source pending.
-  Replace this placeholder only with the approved Claude Design .dc.html asset.
--->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #05060b; }
+    ::selection { background: rgba(107,225,255,0.3); color: #fff; }
+    @keyframes twinkle { 0%,100%{ opacity: 0.15; } 50%{ opacity: 0.95; } }
+    a { color: #6bd8ff; text-decoration: none; }
+    a:hover { color: #a58bff; }
+    input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:4px; background:rgba(255,255,255,0.08); outline:none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:linear-gradient(135deg,#7fe0ff,#8a6bff); cursor:pointer; box-shadow:0 0 8px rgba(95,208,255,0.6); border:2px solid #0a0d1a; }
+  </style>
+</helmet>
+
+<div style="position:relative; width:100%; min-height:100vh; background:radial-gradient(ellipse 120% 60% at 50% -10%, #131a30 0%, #0a0d1a 45%, #05060b 100%); overflow:hidden; font-family:'Manrope',sans-serif; color:#eef1fb;" data-screen-label="Settings">
+
+  <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="30">
+      <div style="position:absolute; left: {{ s.x }}%; top: {{ s.y }}%; width: {{ s.size }}px; height: {{ s.size }}px; border-radius:50%; background:#dfe8ff; opacity:0.3; animation: twinkle {{ s.dur }}s ease-in-out infinite; animation-delay: {{ s.delay }}s;"></div>
+    </sc-for>
+  </div>
+
+  <!-- top nav -->
+  <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:28px 56px; max-width:1520px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(160,180,255,0.35); display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(95,208,255,0.12), transparent 70%);">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; background:linear-gradient(135deg,#bfe9ff,#8a6bff); -webkit-background-clip:text; background-clip:text; color:transparent;">AX</span>
+      </div>
+      <div style="line-height:1.05;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:0.06em;">AiXel <span style="font-weight:300; opacity:0.7;">Visual Melody</span></div>
+        <div style="font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:#8a94c0;">AiXel Studio</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:34px; font-size:13px; letter-spacing:0.03em; color:#aab2d9;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+        <a href="{{ n.href }}" style="cursor:pointer; padding-bottom:4px; border-bottom: {{ n.active }}; color: {{ n.color }}; text-decoration:none;">{{ n.label }}</a>
+      </sc-for>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="Settings.dc.html" title="Settings" style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid rgba(160,180,255,0.18); display:flex; align-items:center; justify-content:center; font-size:14px; color:#cdd4f5; text-decoration:none;">⚙</a>
+      <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#5fd0ff,#8a6bff); box-shadow:0 0 14px rgba(138,107,255,0.5);"></div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <div style="position:relative; z-index:2; max-width:900px; margin:24px auto 0; padding:0 24px; text-align:center;">
+    <h1 style="margin:0; font-weight:300; font-size:30px; letter-spacing:-0.01em; color:#f4f6ff;">Settings</h1>
+    <p style="margin:10px 0 0; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:#9aa4cf;">Kept simple, so you can stay in flow.</p>
+  </div>
+
+  <!-- three sections -->
+  <div style="position:relative; z-index:2; max-width:900px; margin:44px auto 0; padding:0 24px 60px; display:flex; flex-direction:column; gap:20px;">
+
+    <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+      <div style="border-radius:20px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:28px 30px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:22px;">
+          <div style="width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:15px; background: {{ sec.iconBg }};">{{ sec.icon }}</div>
+          <div>
+            <div style="font-size:15px; font-weight:600; color:#eef1fb;">{{ sec.title }}</div>
+            <div style="font-size:11.5px; color:#8a94c0;">{{ sec.subtitle }}</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <sc-for list="{{ sec.rows }}" as="row" hint-placeholder-count="3">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:24px;">
+              <div>
+                <div style="font-size:13px; font-weight:500; color:#dfe6ff;">{{ row.label }}</div>
+                <sc-if value="{{ row.desc }}">
+                  <div style="font-size:11px; color:#7c85ab; margin-top:2px;">{{ row.desc }}</div>
+                </sc-if>
+              </div>
+
+              <sc-if value="{{ row.isToggle }}">
+                <div style="width:44px; height:26px; border-radius:999px; background: {{ row.toggleBg }}; position:relative; cursor:pointer; flex:none; transition: background 0.3s ease;">
+                  <div style="position:absolute; top:3px; left: {{ row.thumbPos }}px; width:20px; height:20px; border-radius:50%; background:#fff; transition: left 0.3s ease; box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ row.isSlider }}">
+                <div style="width:180px; flex:none;">
+                  <input type="range" min="0" max="100" value="{{ row.value }}">
+                </div>
+              </sc-if>
+              <sc-if value="{{ row.isSelect }}">
+                <div style="display:flex; gap:6px; flex:none;">
+                  <sc-for list="{{ row.options }}" as="opt" hint-placeholder-count="3">
+                    <div style="padding:7px 13px; border-radius:9px; font-size:11.5px; font-weight:600; cursor:pointer; color: {{ opt.color }}; background: {{ opt.bg }}; border:1px solid {{ opt.border }};">{{ opt.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+
+    <div style="text-align:center; margin-top:6px;">
+      <a href="#" style="font-size:12px; letter-spacing:0.05em;">Show Advanced Options →</a>
+    </div>
+    <div style="text-align:center; margin-top:2px;">
+      <a href="Design-System.dc.html" style="font-size:11px; color:#5c6690;">View Design System →</a>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const rand = (seed) => { let x = Math.sin(seed) * 10000; return x - Math.floor(x); };
+
+    const stars = Array.from({ length: 30 }, (_, i) => ({
+      x: rand(i * 3.1) * 100, y: rand(i * 7.7) * 100,
+      size: 1 + rand(i * 5.3) * 2, dur: 2 + rand(i * 2.1) * 4, delay: rand(i * 9.9) * 5
+    }));
+
+    const activeOpt = { color: '#04070f', bg: 'linear-gradient(120deg,#7fe0ff,#8a6bff)', border: 'transparent' };
+    const idleOpt = { color: '#aab2d9', bg: 'rgba(255,255,255,0.04)', border: 'rgba(160,180,255,0.2)' };
+
+    const sections = [
+      {
+        title: 'Audio', subtitle: 'Input, sensitivity and detection', icon: '♪', iconBg: 'rgba(95,208,255,0.12)',
+        rows: [
+          { label: 'Input Device', desc: 'System audio · line in · file', isSelect: true, options: [ { label: 'File', ...activeOpt }, { label: 'Line In', ...idleOpt }, { label: 'Mic', ...idleOpt } ] },
+          { label: 'Beat Sensitivity', desc: 'How strongly visuals react to rhythm', isSlider: true, value: 68 },
+          { label: 'Auto Key Detection', desc: '', isToggle: true, toggleBg: 'linear-gradient(120deg,#5fd0ff,#8a6bff)', thumbPos: 21 }
+        ]
+      },
+      {
+        title: 'Visual', subtitle: 'Look, color and rendering style', icon: '✦', iconBg: 'rgba(138,107,255,0.14)',
+        rows: [
+          { label: 'Default Engine', desc: '', isSelect: true, options: [ { label: 'Cosmic', ...activeOpt }, { label: 'Liquid', ...idleOpt }, { label: 'Neon', ...idleOpt } ] },
+          { label: 'Color Intensity', desc: '', isSlider: true, value: 74 },
+          { label: 'Motion Smoothing', desc: '', isToggle: true, toggleBg: 'linear-gradient(120deg,#5fd0ff,#8a6bff)', thumbPos: 21 }
+        ]
+      },
+      {
+        title: 'Performance', subtitle: 'Rendering quality and system load', icon: '⚙', iconBg: 'rgba(201,162,74,0.14)',
+        rows: [
+          { label: 'Preview Quality', desc: '', isSelect: true, options: [ { label: 'Draft', ...idleOpt }, { label: 'Balanced', ...activeOpt }, { label: 'Max', ...idleOpt } ] },
+          { label: 'GPU Acceleration', desc: '', isToggle: true, toggleBg: 'linear-gradient(120deg,#5fd0ff,#8a6bff)', thumbPos: 21 },
+          { label: 'Background Rendering', desc: 'Continue rendering while you work', isToggle: true, toggleBg: 'rgba(255,255,255,0.12)', thumbPos: 3 }
+        ]
+      }
+    ];
+
+    const navItems = [
+      { label: 'Home', href: 'Home.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Analyze', href: 'Analyze.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Create', href: 'Create.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Preview', href: 'Preview.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Export', href: 'Export.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Settings', href: 'Settings.dc.html', active: '2px solid #5fd0ff', color: '#eef1fb' }
+    ];
+
+    return { stars, sections, navItems };
+  }
+}
+
+</script>
+</body>
+</html>

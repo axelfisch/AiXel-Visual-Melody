@@ -1,5 +1,390 @@
-<!--
-  AiXel Visual Melody - Home
-  Approved Master Design Package V1.0 source pending.
-  Replace this placeholder only with the approved Claude Design .dc.html asset.
--->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #05060b; }
+    ::selection { background: rgba(107,225,255,0.3); color: #fff; }
+    @keyframes drift1 { 0%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(40px,-30px) scale(1.08); } 100%{ transform: translate(0,0) scale(1); } }
+    @keyframes drift2 { 0%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(-50px,40px) scale(1.05); } 100%{ transform: translate(0,0) scale(1); } }
+    @keyframes drift3 { 0%{ transform: translate(0,0) scale(1); } 50%{ transform: translate(20px,50px) scale(1.1); } 100%{ transform: translate(0,0) scale(1); } }
+    @keyframes twinkle { 0%,100%{ opacity: 0.15; } 50%{ opacity: 0.95; } }
+    @keyframes floatUp { 0%{ transform: translateY(0); } 100%{ transform: translateY(-1200px); } }
+    @keyframes spinSlow { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes pulseGlow { 0%,100%{ box-shadow: 0 0 24px 0 rgba(95,208,255,0.35); } 50%{ box-shadow: 0 0 40px 6px rgba(138,107,255,0.45); } }
+    @keyframes waveMove { 0%{ background-position: 0 0; } 100%{ background-position: 200px 0; } }
+    @keyframes breathe1 { 0%,100%{ opacity:0.55; transform:scale(1); } 50%{ opacity:0.9; transform:scale(1.12); } }
+    @keyframes breathe2 { 0%,100%{ opacity:0.4; transform:scale(1); } 50%{ opacity:0.75; transform:scale(1.16); } }
+    @keyframes breathe3 { 0%,100%{ opacity:0.3; transform:scale(1); } 50%{ opacity:0.6; transform:scale(1.1); } }
+    @keyframes hazeSpin { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes cosmicDrift { 0%,100%{ transform: translate(0,0); } 33%{ transform: translate(6px,-8px); } 66%{ transform: translate(-5px,6px); } }
+    @keyframes ringSpinA { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes ringSpinB { from{ transform: rotate(360deg); } to{ transform: rotate(0deg); } }
+    @keyframes liquidShift { 0%{ background-position: 0% 50%; } 50%{ background-position: 100% 50%; } 100%{ background-position: 0% 50%; } }
+    @keyframes barPulse1 { 0%,100%{ transform: scaleY(0.6); } 50%{ transform: scaleY(1); } }
+    @keyframes barPulse2 { 0%,100%{ transform: scaleY(1); } 50%{ transform: scaleY(0.55); } }
+    @keyframes barPulse3 { 0%,100%{ transform: scaleY(0.75); } 50%{ transform: scaleY(1); } }
+    @keyframes vinylSpin { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @keyframes neonTrail { 0%{ stroke-dashoffset: 240; } 100%{ stroke-dashoffset: 0; } }
+    @keyframes btnBreathe { 0%,100%{ box-shadow: 0 0 18px 0 rgba(95,208,255,0.3); } 50%{ box-shadow: 0 0 34px 4px rgba(138,107,255,0.5); } }
+    @keyframes poeticCycle {
+      0%, 5%   { opacity: 0; }
+      8%, 25%  { opacity: 1; }
+      30%, 100%{ opacity: 0; }
+    }
+    @keyframes heroBreath { 0%,100%{ opacity:0.85; } 50%{ opacity:1; } }
+    a { color: #6bd8ff; text-decoration: none; }
+    a:hover { color: #a58bff; }
+  </style>
+</helmet>
+
+<div style="position:relative; width:100%; min-height:100vh; background:radial-gradient(ellipse 120% 80% at 50% -10%, #141a33 0%, #0a0d1a 45%, #05060b 100%); overflow:hidden; font-family:'Manrope',sans-serif; color:#eef1fb;" data-screen-label="Home">
+
+  <!-- cosmic background layers -->
+  <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+    <div style="position:absolute; inset:-10%; opacity:0.5; background:conic-gradient(from 0deg at 50% 30%, transparent 0deg, rgba(95,208,255,0.05) 60deg, transparent 140deg, rgba(138,107,255,0.05) 220deg, transparent 300deg); animation: hazeSpin 90s linear infinite;"></div>
+    <div style="position:absolute; width:640px; height:640px; left:-160px; top:-120px; border-radius:50%; background:radial-gradient(circle, rgba(95,208,255,0.20) 0%, rgba(95,208,255,0) 70%); filter:blur(10px); animation: drift1 22s ease-in-out infinite, breathe1 9s ease-in-out infinite; transform: translate({{ parallaxA }}); transition: transform 0.6s ease-out;"></div>
+    <div style="position:absolute; width:720px; height:720px; right:-220px; top:10%; border-radius:50%; background:radial-gradient(circle, rgba(138,107,255,0.22) 0%, rgba(138,107,255,0) 70%); filter:blur(10px); animation: drift2 26s ease-in-out infinite, breathe2 11s ease-in-out infinite; transform: translate({{ parallaxB }}); transition: transform 0.6s ease-out;"></div>
+    <div style="position:absolute; width:520px; height:520px; left:30%; bottom:-220px; border-radius:50%; background:radial-gradient(circle, rgba(201,162,74,0.14) 0%, rgba(201,162,74,0) 70%); filter:blur(10px); animation: drift3 30s ease-in-out infinite, breathe3 13s ease-in-out infinite;"></div>
+
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="60">
+      <div style="position:absolute; left: {{ s.x }}%; top: {{ s.y }}%; width: {{ s.size }}px; height: {{ s.size }}px; border-radius:50%; background:#dfe8ff; opacity:0.4; animation: twinkle {{ s.dur }}s ease-in-out infinite; animation-delay: {{ s.delay }}s;"></div>
+    </sc-for>
+
+    <sc-for list="{{ particles }}" as="p" hint-placeholder-count="24">
+      <div style="position:absolute; left: {{ p.x }}%; bottom:-20px; width: {{ p.size }}px; height: {{ p.size }}px; border-radius:50%; background: {{ p.color }}; box-shadow: 0 0 8px 1px {{ p.color }}; opacity:0.55; animation: floatUp {{ p.dur }}s linear infinite; animation-delay: {{ p.delay }}s;"></div>
+    </sc-for>
+  </div>
+
+  <!-- top nav -->
+  <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:28px 56px; max-width:1520px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(160,180,255,0.35); display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(95,208,255,0.12), transparent 70%);">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; background:linear-gradient(135deg,#bfe9ff,#8a6bff); -webkit-background-clip:text; background-clip:text; color:transparent;">AX</span>
+      </div>
+      <div style="line-height:1.05;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:0.06em;">AiXel <span style="font-weight:300; opacity:0.7;">Visual Melody</span></div>
+        <div style="font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:#8a94c0;">AiXel Studio</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:34px; font-size:13px; letter-spacing:0.03em; color:#aab2d9;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+        <a href="{{ n.href }}" style="cursor:pointer; padding-bottom:4px; border-bottom: {{ n.active }}; color: {{ n.color }}; text-decoration:none;">{{ n.label }}</a>
+      </sc-for>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="Settings.dc.html" title="Settings" style="width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.04); border:1px solid rgba(160,180,255,0.18); display:flex; align-items:center; justify-content:center; font-size:14px; color:#cdd4f5; text-decoration:none;">⚙</a>
+      <div style="width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#5fd0ff,#8a6bff); box-shadow:0 0 14px rgba(138,107,255,0.5);"></div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="position:relative; z-index:2; max-width:980px; margin:64px auto 0; text-align:center; padding:0 24px;">
+    <div style="display:inline-flex; align-items:center; gap:8px; padding:7px 18px; border-radius:999px; border:1px solid rgba(160,180,255,0.28); background:rgba(255,255,255,0.03); font-size:11.5px; letter-spacing:0.18em; text-transform:uppercase; color:#9fb0e8;">
+      <span style="width:6px; height:6px; border-radius:50%; background:#5fd0ff; box-shadow:0 0 8px 2px rgba(95,208,255,0.7);"></span>
+      Visual Intelligence for Music
+    </div>
+
+    <h1 style="margin:26px 0 0; font-family:'Manrope',sans-serif; font-weight:300; font-size:60px; line-height:1.08; letter-spacing:-0.01em; color:#f4f6ff;">
+      Transform Your Music<br>
+      Into <span style="font-weight:600; background:linear-gradient(120deg,#7fe0ff,#a58bff 55%,#e7c977); -webkit-background-clip:text; background-clip:text; color:transparent;">Living Visuals</span>
+    </h1>
+
+    <p style="margin:22px auto 0; max-width:560px; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:22px; color:#c3cbef; letter-spacing:0.01em; animation: heroBreath 6s ease-in-out infinite;">Every Note Becomes Light.</p>
+
+    <div style="position:relative; height:20px; margin-top:14px;">
+      <sc-for list="{{ poeticLines }}" as="pl" hint-placeholder-count="3">
+        <div style="position:absolute; left:0; right:0; font-size:12.5px; color:#7c85ab; opacity:0; animation: poeticCycle 15s ease-in-out infinite; animation-delay: {{ pl.delay }}s;">{{ pl.text }}</div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:38px;">
+      <a href="Analyze.dc.html" style="display:inline-block; border:none; cursor:pointer; padding:15px 34px; border-radius:14px; font-size:14.5px; font-weight:600; letter-spacing:0.02em; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff); animation:btnBreathe 4.5s ease-in-out infinite; transition: transform 0.35s cubic-bezier(0.2,0.8,0.2,1); text-decoration:none;" style-hover="transform: translateY(-2px) scale(1.03);" style-active="transform: scale(0.97);">Create New Project</a>
+      <a href="Analyze.dc.html" style="display:inline-block; cursor:pointer; padding:15px 30px; border-radius:14px; font-size:14.5px; font-weight:500; letter-spacing:0.02em; color:#eef1fb; background:rgba(255,255,255,0.04); border:1px solid rgba(160,180,255,0.3); transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1), background 0.35s ease; text-decoration:none;" style-hover="border-color: rgba(160,180,255,0.6); background: rgba(255,255,255,0.07); transform: translateY(-2px);" style-active="transform: scale(0.97);">Import Music</a>
+    </div>
+
+    <div style="display:flex; align-items:center; justify-content:center; gap:30px; margin-top:38px; flex-wrap:wrap;">
+      <sc-for list="{{ quickActions }}" as="q" hint-placeholder-count="5">
+        <a href="{{ q.href }}" style="display:flex; align-items:center; gap:7px; font-size:12.5px; color:#9aa4cf; cursor:pointer; padding:6px 4px; text-decoration:none; transition: color 0.3s ease, transform 0.3s ease;" style-hover="color:#dfe6ff; transform: translateY(-1px);">
+          <span style="opacity:0.85;">{{ q.icon }}</span>{{ q.label }}
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- reference track strip -->
+  <div style="position:relative; z-index:2; max-width:900px; margin:56px auto 0; padding:18px 26px; border-radius:16px; border:1px solid rgba(201,162,74,0.35); background:linear-gradient(90deg, rgba(201,162,74,0.08), rgba(255,255,255,0.02)); display:flex; align-items:center; gap:18px;">
+    <div style="width:40px; height:40px; border-radius:50%; border:1px solid rgba(201,162,74,0.6); display:flex; align-items:center; justify-content:center; flex:none; background:rgba(201,162,74,0.08);">
+      <div style="width:0; height:0; border-top:6px solid transparent; border-bottom:6px solid transparent; border-left:9px solid #e7c977; margin-left:2px;"></div>
+    </div>
+    <div style="flex:1; min-width:0;">
+      <div style="font-size:9.5px; letter-spacing:0.2em; text-transform:uppercase; color:#c9a24a; margin-bottom:3px;">Golden Reference Track</div>
+      <div style="font-size:15px; font-weight:500; color:#f4f0e6;">In the Spirit of Naomi</div>
+    </div>
+    <div style="flex:2; height:28px; display:flex; align-items:center; gap:2px; overflow:hidden;">
+      <sc-for list="{{ waveform }}" as="w" hint-placeholder-count="60">
+        <div style="width:2.5px; border-radius:2px; height: {{ w.h }}px; background:linear-gradient(180deg,#e7c977,#8a6bff); opacity:0.75;"></div>
+      </sc-for>
+    </div>
+    <div style="font-size:11px; color:#a8935a; flex:none;">Benchmark for AI analysis</div>
+  </div>
+
+  <!-- six visual engines -->
+  <div style="position:relative; z-index:2; max-width:1400px; margin:96px auto 0; padding:0 40px;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px;">
+      <h2 style="font-size:13px; letter-spacing:0.24em; text-transform:uppercase; color:#9fb0e8; font-weight:600; margin:0;">Six Visual Engines</h2>
+      <span style="font-size:12.5px; color:#7c85ab;">Every world has its own language of light</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:16px;">
+      <sc-for list="{{ engines }}" as="e" hint-placeholder-count="6">
+        <a href="Create.dc.html" style="display:block; text-decoration:none; color:inherit; border-radius:18px; overflow:hidden; border:1px solid rgba(160,180,255,0.14); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); cursor:pointer; transition: border-color 0.4s ease, transform 0.4s ease;" style-hover="border-color: rgba(160,180,255,0.45); transform: translateY(-4px);">
+          <div style="height:140px; position:relative; background: {{ e.bg }}; overflow:hidden;">
+            <sc-if value="{{ e.isNew }}">
+              <span style="position:absolute; top:10px; right:10px; font-size:8.5px; letter-spacing:0.1em; padding:3px 8px; border-radius:999px; background:rgba(0,0,0,0.45); color:#e7c977; border:1px solid rgba(231,201,119,0.5); z-index:2;">NEW</span>
+            </sc-if>
+            <span style="position:absolute; left:12px; top:10px; font-size:10px; color:rgba(255,255,255,0.7); font-weight:600; z-index:2;">{{ e.num }}</span>
+
+            <sc-if value="{{ e.isCosmic }}">
+              <sc-for list="{{ e.cosmicDots }}" as="d" hint-placeholder-count="10">
+                <div style="position:absolute; left:{{ d.x }}%; top:{{ d.y }}%; width:{{ d.size }}px; height:{{ d.size }}px; border-radius:50%; background:#bfe0ff; box-shadow:0 0 6px 1px rgba(191,224,255,0.8); animation: cosmicDrift {{ d.dur }}s ease-in-out infinite, twinkle {{ d.dur }}s ease-in-out infinite;"></div>
+              </sc-for>
+            </sc-if>
+
+            <sc-if value="{{ e.isGeometry }}">
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                <div style="width:96px; height:96px; border-radius:50%; border:1px solid rgba(231,201,119,0.55); animation: ringSpinA 14s linear infinite;"></div>
+                <div style="position:absolute; width:64px; height:64px; border-radius:50%; border:1px solid rgba(231,201,119,0.4); animation: ringSpinB 10s linear infinite;"></div>
+                <div style="position:absolute; width:34px; height:34px; border-radius:50%; border:1px solid rgba(231,201,119,0.7);"></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ e.isLiquid }}">
+              <div style="position:absolute; inset:-20%; background:inherit; background-size:220% 220%; animation: liquidShift 8s ease-in-out infinite; filter:blur(6px); opacity:0.9;"></div>
+            </sc-if>
+
+            <sc-if value="{{ e.isCity }}">
+              <div style="position:absolute; bottom:0; left:0; right:0; height:70%; display:flex; align-items:flex-end; gap:4px; padding:0 10px;">
+                <div style="width:8%; height:60%; background:linear-gradient(180deg,#e750b4,#5fd0ff); opacity:0.85; animation: barPulse1 3s ease-in-out infinite;"></div>
+                <div style="width:8%; height:90%; background:linear-gradient(180deg,#5fd0ff,#8a6bff); opacity:0.85; animation: barPulse2 3.6s ease-in-out infinite;"></div>
+                <div style="width:8%; height:50%; background:linear-gradient(180deg,#8a6bff,#e750b4); opacity:0.85; animation: barPulse3 2.6s ease-in-out infinite;"></div>
+                <div style="width:8%; height:75%; background:linear-gradient(180deg,#e750b4,#5fd0ff); opacity:0.85; animation: barPulse1 4.2s ease-in-out infinite;"></div>
+                <div style="width:8%; height:35%; background:linear-gradient(180deg,#5fd0ff,#8a6bff); opacity:0.85; animation: barPulse2 3.1s ease-in-out infinite;"></div>
+                <div style="width:8%; height:65%; background:linear-gradient(180deg,#8a6bff,#e750b4); opacity:0.85; animation: barPulse3 3.8s ease-in-out infinite;"></div>
+                <div style="width:8%; height:45%; background:linear-gradient(180deg,#e750b4,#5fd0ff); opacity:0.85; animation: barPulse1 2.9s ease-in-out infinite;"></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ e.isVinyl }}">
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+                <div style="width:80px; height:80px; border-radius:50%; background:repeating-radial-gradient(circle, #1a1a1a 0 3px, #060606 3px 6px); animation: vinylSpin 6s linear infinite;">
+                  <div style="position:absolute; left:50%; top:50%; width:22px; height:22px; margin:-11px; border-radius:50%; background:#e7c977;"></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ e.isNeon }}">
+              <svg viewBox="0 0 140 140" style="position:absolute; inset:0; width:100%; height:100%;">
+                <path d="M10,110 C40,20 100,120 130,30" fill="none" stroke="#5fd0ff" stroke-width="2" stroke-linecap="round" stroke-dasharray="240" style="animation: neonTrail 5s linear infinite; filter:drop-shadow(0 0 4px #5fd0ff);"></path>
+                <path d="M10,110 C40,20 100,120 130,30" fill="none" stroke="#8a6bff" stroke-width="1" stroke-linecap="round" stroke-dasharray="240" stroke-dashoffset="60" style="animation: neonTrail 5s linear infinite; opacity:0.6;"></path>
+              </svg>
+            </sc-if>
+          </div>
+          <div style="padding:14px 14px 16px;">
+            <div style="font-size:13.5px; font-weight:600; color:#eef1fb;">{{ e.name }}</div>
+            <div style="font-size:11px; color:#8a94c0; margin-top:4px; line-height:1.4;">{{ e.desc }}</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- workflow -->
+  <div style="position:relative; z-index:2; max-width:1200px; margin:96px auto 0; padding:0 40px;">
+    <h2 style="font-size:13px; letter-spacing:0.24em; text-transform:uppercase; color:#9fb0e8; font-weight:600; margin:0 0 30px;">The Creative Pipeline</h2>
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <sc-for list="{{ pipeline }}" as="step" hint-placeholder-count="5">
+        <div style="display:flex; align-items:center; flex:1;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; flex:none; width:120px;">
+            <div style="width:52px; height:52px; border-radius:50%; border:1px solid rgba(160,180,255,0.3); display:flex; align-items:center; justify-content:center; font-size:18px; background:rgba(255,255,255,0.02);">{{ step.icon }}</div>
+            <div style="font-size:12px; font-weight:600; color:#dfe6ff;">{{ step.label }}</div>
+          </div>
+          <sc-if value="{{ step.hasNext }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1; height:1px; background:linear-gradient(90deg, rgba(160,180,255,0.35), rgba(160,180,255,0.05)); margin:0 10px 26px;"></div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- recent + dashboard cards -->
+  <div style="position:relative; z-index:2; max-width:1400px; margin:96px auto 0; padding:0 40px; display:grid; grid-template-columns:1.4fr 1fr; gap:20px;">
+    <div style="border-radius:20px; border:1px solid rgba(160,180,255,0.14); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:26px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+        <span style="font-size:13px; font-weight:600; color:#eef1fb; letter-spacing:0.03em;">Recent Projects</span>
+        <a href="#" style="font-size:11.5px;">View All →</a>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+        <sc-for list="{{ recentProjects }}" as="rp" hint-placeholder-count="3">
+          <a href="Create.dc.html" style="display:block; text-decoration:none; color:inherit; border-radius:14px; overflow:hidden; border:1px solid rgba(160,180,255,0.14); background:rgba(255,255,255,0.02); cursor:pointer; transition: border-color 0.35s ease, transform 0.35s ease;" style-hover="border-color: rgba(160,180,255,0.4); transform: translateY(-3px);">
+            <div style="height:84px; background: {{ rp.bg }};"></div>
+            <div style="padding:10px 12px;">
+              <div style="font-size:12px; font-weight:600; color:#eef1fb;">{{ rp.name }}</div>
+              <div style="font-size:10.5px; color:#8a94c0; margin-top:2px;">{{ rp.meta }}</div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border-radius:20px; border:1px solid rgba(160,180,255,0.14); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:26px; display:flex; flex-direction:column; gap:16px;">
+      <span style="font-size:13px; font-weight:600; color:#eef1fb; letter-spacing:0.03em;">Latest Exports &amp; Inspiration</span>
+      <sc-for list="{{ sideItems }}" as="si" hint-placeholder-count="4">
+        <a href="{{ si.href }}" style="display:flex; align-items:center; gap:12px; cursor:pointer; padding:6px; margin:-6px; border-radius:10px; text-decoration:none; color:inherit; transition: background 0.3s ease;" style-hover="background: rgba(255,255,255,0.03);">
+          <div style="width:36px; height:36px; border-radius:10px; flex:none; background: {{ si.bg }};"></div>
+          <div style="min-width:0;">
+            <div style="font-size:12px; font-weight:600; color:#dfe6ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ si.title }}</div>
+            <div style="font-size:10.5px; color:#8a94c0;">{{ si.sub }}</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div style="position:relative; z-index:2; max-width:1400px; margin:100px auto 0; padding:36px 40px 48px; border-top:1px solid rgba(160,180,255,0.14); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+    <div>
+      <div style="font-size:13px; font-weight:600; letter-spacing:0.03em; color:#eef1fb;">AiXel Studio</div>
+      <div style="font-size:11px; color:#8a94c0; margin-top:3px;">The Sky Is Not the Limit Anymore. Imagination Is the Blueprint.</div>
+    </div>
+    <div style="display:flex; gap:26px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#7c85ab;">
+      <span>Music</span><span>Sound</span><span>Video</span><span>Apps</span><span>Nature</span><span>Future</span>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { mx: 0, my: 0 };
+
+  componentDidMount() {
+    this._onMove = (e) => {
+      const nx = (e.clientX / window.innerWidth - 0.5);
+      const ny = (e.clientY / window.innerHeight - 0.5);
+      this.setState({ mx: nx, my: ny });
+    };
+    window.addEventListener('mousemove', this._onMove);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this._onMove);
+  }
+
+  renderVals() {
+    const parallaxA = `${(this.state.mx * -18).toFixed(1)}px, ${(this.state.my * -14).toFixed(1)}px`;
+    const parallaxB = `${(this.state.mx * 22).toFixed(1)}px, ${(this.state.my * 16).toFixed(1)}px`;
+
+    const rand = (seed) => {
+      let x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const stars = Array.from({ length: 60 }, (_, i) => ({
+      x: rand(i * 3.1) * 100,
+      y: rand(i * 7.7) * 100,
+      size: 1 + rand(i * 5.3) * 2,
+      dur: 2 + rand(i * 2.1) * 4,
+      delay: rand(i * 9.9) * 5
+    }));
+
+    const particleColors = ['#5fd0ff', '#8a6bff', '#e7c977'];
+    const particles = Array.from({ length: 24 }, (_, i) => ({
+      x: rand(i * 4.4) * 100,
+      size: 2 + rand(i * 6.6) * 3,
+      dur: 14 + rand(i * 3.3) * 16,
+      delay: rand(i * 8.8) * 20,
+      color: particleColors[i % particleColors.length]
+    }));
+
+    const waveform = Array.from({ length: 60 }, (_, i) => ({
+      h: 4 + Math.abs(Math.sin(i * 0.5)) * 20 + rand(i) * 6
+    }));
+
+    const navItems = [
+      { label: 'Home', href: 'Home.dc.html', active: '2px solid #5fd0ff', color: '#eef1fb' },
+      { label: 'Analyze', href: 'Analyze.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Create', href: 'Create.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Preview', href: 'Preview.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Export', href: 'Export.dc.html', active: 'none', color: '#aab2d9' },
+      { label: 'Settings', href: 'Settings.dc.html', active: 'none', color: '#aab2d9' }
+    ];
+
+    const quickActions = [
+      { icon: '↺', label: 'Continue Last Project', href: 'Create.dc.html' },
+      { icon: '📁', label: 'Open Project', href: 'Analyze.dc.html' },
+      { icon: '🕐', label: 'Recent Projects', href: 'Create.dc.html' },
+      { icon: '🎬', label: 'Latest Exports', href: 'Export.dc.html' },
+      { icon: '✦', label: 'Inspiration Gallery', href: 'Create.dc.html' }
+    ];
+
+      const cosmicDots = Array.from({ length: 10 }, (_, i) => ({
+        x: 10 + rand(i * 2.2) * 80,
+        y: 10 + rand(i * 6.1) * 80,
+        size: 2 + rand(i * 1.7) * 2.5,
+        dur: 4 + rand(i * 3.4) * 4
+      }));
+
+    const engines = [
+      { num: '01', name: 'Cosmic Waves', desc: 'Nebulas, particles, organic motion.', bg: 'radial-gradient(circle at 30% 30%, #3a6bd8 0%, #1a2a66 45%, #0a0d1a 100%)', isNew: false, isCosmic: true, isGeometry: false, isLiquid: false, isCity: false, isVinyl: false, isNeon: false, cosmicDots },
+      { num: '02', name: 'Jazz Geometry', desc: 'Circles, harmonic structures.', bg: 'radial-gradient(circle at 60% 40%, #2a2f4a 0%, #10121e 60%)', isNew: false, isCosmic: false, isGeometry: true, isLiquid: false, isCity: false, isVinyl: false, isNeon: false },
+      { num: '03', name: 'Liquid Colors', desc: 'Organic ink, fluid gradients.', bg: 'linear-gradient(120deg, #c9682f, #7a2f8a, #1a2a66, #c9682f)', isNew: false, isCosmic: false, isGeometry: false, isLiquid: true, isCity: false, isVinyl: false, isNeon: false },
+      { num: '04', name: 'Frequency City', desc: 'Skyline, spectrum, light architecture.', bg: 'linear-gradient(0deg, #0a0d1a 0%, #1a1030 40%, #2a1040 70%)', isNew: false, isCosmic: false, isGeometry: false, isLiquid: false, isCity: true, isVinyl: false, isNeon: false },
+      { num: '05', name: 'Minimal Album Art', desc: 'Waveform, premium typography.', bg: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #060606 60%)', isNew: false, isCosmic: false, isGeometry: false, isLiquid: false, isCity: false, isVinyl: true, isNeon: false },
+      { num: '06', name: 'Neon Velvet', desc: 'Synthwave trails, arcade elegance.', bg: 'linear-gradient(135deg, #150a2e 0%, #2a0a4a 50%, #0a0d1a 100%)', isNew: true, isCosmic: false, isGeometry: false, isLiquid: false, isCity: false, isVinyl: false, isNeon: true }
+    ];
+
+    const pipeline = [
+      { icon: '♪', label: 'Import', hasNext: true },
+      { icon: '∿', label: 'Analyze', hasNext: true },
+      { icon: '✦', label: 'Create', hasNext: true },
+      { icon: '▶', label: 'Preview', hasNext: true },
+      { icon: '⇩', label: 'Export', hasNext: false }
+    ];
+
+    const recentProjects = [
+      { name: 'In the Spirit of Naomi', meta: 'Cosmic Waves · 3:57', bg: 'radial-gradient(circle at 30% 30%, #3a6bd8, #0a0d1a)' },
+      { name: 'Who Is She?', meta: 'Liquid Colors · 4:18', bg: 'radial-gradient(ellipse at 40% 60%, #c9682f, #1a2a66)' },
+      { name: 'Loin des Pas du Passé', meta: 'Neon Velvet · 4:58', bg: 'linear-gradient(135deg, #150a2e, #2a0a4a)' }
+    ];
+
+    const sideItems = [
+      { title: 'Naomi_Final_4K.mp4', sub: 'Exported 2h ago', bg: 'linear-gradient(135deg,#5fd0ff,#8a6bff)', href: 'Export.dc.html' },
+      { title: 'Frequency City Preset', sub: 'Community favorite', bg: 'linear-gradient(135deg,#e7508a,#8a2f8a)', href: 'Create.dc.html' },
+      { title: 'Jazz Geometry Pack', sub: 'New style pack', bg: 'linear-gradient(135deg,#e7c977,#c9682f)', href: 'Create.dc.html' },
+      { title: 'Learning: Chord Detection', sub: '6 min tutorial', bg: 'linear-gradient(135deg,#5fd0ff,#3a6bd8)', href: 'Analyze.dc.html' }
+    ];
+
+    const poeticLines = [
+      { text: 'Listening to the invisible structure…', delay: 0 },
+      { text: 'Every note leaves a trace of light.', delay: 5 },
+      { text: 'Transforming sound into living motion…', delay: 10 }
+    ];
+
+    return { stars, particles, waveform, navItems, quickActions, engines, pipeline, recentProjects, sideItems, parallaxA, parallaxB, poeticLines };
+  }
+}
+
+</script>
+</body>
+</html>

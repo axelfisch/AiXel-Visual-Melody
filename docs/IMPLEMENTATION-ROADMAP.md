@@ -11,7 +11,7 @@
 
 Exact next task:
 
-Scaffold a React + Vite application and faithfully migrate the approved Master Design Package V1.0 `.dc.html` screens into React components, preserving the approved visual direction and workflow while using placeholder data only.
+Scaffold a React + Vite application and faithfully migrate the approved Master Design Package V1.0 `.dc.html` screens into React components, preserving the approved visual direction and workflow while using non-production sample data only.
 
 Do not begin real audio analysis or video rendering in this phase.
 

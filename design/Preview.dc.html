@@ -1,5 +1,171 @@
-<!--
-  AiXel Visual Melody - Preview
-  Approved Master Design Package V1.0 source pending.
-  Replace this placeholder only with the approved Claude Design .dc.html asset.
--->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #05060b; }
+    ::selection { background: rgba(107,225,255,0.3); color: #fff; }
+    @keyframes twinkle { 0%,100%{ opacity: 0.15; } 50%{ opacity: 0.95; } }
+    @keyframes nebulaDrift1 { 0%,100%{ transform: translate(0,0) scale(1); opacity:0.7; } 50%{ transform: translate(50px,-36px) scale(1.18); opacity:1; } }
+    @keyframes nebulaDrift2 { 0%,100%{ transform: translate(0,0) scale(1); opacity:0.5; } 50%{ transform: translate(-60px,40px) scale(1.14); opacity:0.9; } }
+    @keyframes floatUpSlow { 0%{ transform: translateY(0); opacity:0; } 10%{ opacity:1; } 90%{ opacity:1; } 100%{ transform: translateY(-480px); opacity:0; } }
+    @keyframes recPulse { 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+    @keyframes fadeControls { from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes poeticCycle {
+      0%, 5%   { opacity: 0; }
+      8%, 25%  { opacity: 1; }
+      30%, 100%{ opacity: 0; }
+    }
+    a { color: #6bd8ff; text-decoration: none; }
+    a:hover { color: #a58bff; }
+  </style>
+</helmet>
+
+<div style="position:relative; width:100%; height:100vh; background:#05060b; overflow:hidden; font-family:'Manrope',sans-serif; color:#eef1fb;" data-screen-label="Preview">
+
+  <!-- full bleed cinematic canvas -->
+  <div style="position:absolute; inset:0; background:radial-gradient(circle at 35% 40%, #234a99 0%, #16204a 40%, #05060b 75%);">
+    <div style="position:absolute; width:46vw; height:46vw; left:8%; top:10%; border-radius:50%; background:radial-gradient(circle, rgba(95,208,255,0.4), transparent 70%); filter:blur(20px); animation: nebulaDrift1 16s ease-in-out infinite;"></div>
+    <div style="position:absolute; width:52vw; height:52vw; right:0%; bottom:-10%; border-radius:50%; background:radial-gradient(circle, rgba(138,107,255,0.4), transparent 70%); filter:blur(20px); animation: nebulaDrift2 20s ease-in-out infinite;"></div>
+
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="70">
+      <div style="position:absolute; left: {{ s.x }}%; top: {{ s.y }}%; width: {{ s.size }}px; height: {{ s.size }}px; border-radius:50%; background:#dfe8ff; opacity:0.5; animation: twinkle {{ s.dur }}s ease-in-out infinite; animation-delay: {{ s.delay }}s;"></div>
+    </sc-for>
+
+    <sc-for list="{{ particles }}" as="p" hint-placeholder-count="30">
+      <div style="position:absolute; left:{{ p.x }}%; bottom:-10px; width:{{ p.size }}px; height:{{ p.size }}px; border-radius:50%; background:{{ p.color }}; box-shadow:0 0 10px 2px {{ p.color }}; animation: floatUpSlow {{ p.dur }}s ease-in infinite; animation-delay:{{ p.delay }}s;"></div>
+    </sc-for>
+  </div>
+
+  <!-- top bar -->
+  <div style="position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:22px 32px;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="Create.dc.html" title="Back to Create" style="width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.35); display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.25); cursor:pointer; backdrop-filter:blur(8px); color:#fff; text-decoration:none;">←</a>
+      <div>
+        <div style="font-size:13.5px; font-weight:600; color:#fff;">In the Spirit of Naomi</div>
+        <div style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.6);">Cosmic Waves · Preview</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:#e7c977; background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:999px; backdrop-filter:blur(8px);">
+        <span style="width:6px; height:6px; border-radius:50%; background:#e7c977; animation: recPulse 1.6s ease-in-out infinite;"></span>
+        Live Rendering
+      </div>
+      <div style="font-size:11px; color:rgba(255,255,255,0.7); background:rgba(0,0,0,0.3); padding:6px 12px; border-radius:999px; backdrop-filter:blur(8px);">4K · 60fps</div>
+      <a href="Settings.dc.html" title="Settings" style="width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.25); backdrop-filter:blur(8px); color:#fff; text-decoration:none; font-size:13px;">⚙</a>
+      <a href="Export.dc.html" style="font-size:11.5px; font-weight:600; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff); padding:8px 16px; border-radius:999px; text-decoration:none;">Export →</a>
+    </div>
+  </div>
+
+  <!-- current section indicator -->
+  <div style="position:absolute; z-index:3; top:90px; left:50%; transform:translateX(-50%); text-align:center;">
+    <div style="font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:rgba(255,255,255,0.55); margin-bottom:6px;">Now Playing · Section</div>
+    <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:26px; color:#fff; text-shadow:0 4px 24px rgba(0,0,0,0.6);">Chorus</div>
+    <div style="position:relative; height:18px; margin-top:8px; width:340px;">
+      <sc-for list="{{ poeticLines }}" as="pl" hint-placeholder-count="3">
+        <div style="position:absolute; left:0; right:0; font-size:11.5px; color:rgba(255,255,255,0.55); opacity:0; animation: poeticCycle 15s ease-in-out infinite; animation-delay: {{ pl.delay }}s;">{{ pl.text }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- bottom transport -->
+  <div style="position:absolute; z-index:3; left:0; right:0; bottom:0; padding:22px 32px 26px; background:linear-gradient(0deg, rgba(3,4,8,0.75) 10%, transparent 100%); animation: fadeControls 0.6s ease;">
+
+    <!-- timeline with markers -->
+    <div style="position:relative; height:38px; margin-bottom:14px;">
+      <div style="position:absolute; left:0; right:0; top:16px; height:4px; border-radius:4px; background:rgba(255,255,255,0.15); overflow:hidden;">
+        <div style="height:100%; width:44%; border-radius:4px; background:linear-gradient(90deg,#5fd0ff,#8a6bff);"></div>
+      </div>
+      <div style="position:absolute; left:44%; top:9px; width:16px; height:16px; margin-left:-8px; border-radius:50%; background:#fff; box-shadow:0 0 10px 2px rgba(95,208,255,0.7); border:2px solid #5fd0ff;"></div>
+
+      <sc-for list="{{ markers }}" as="m" hint-placeholder-count="5">
+        <div style="position:absolute; left:{{ m.pos }}%; top:0; display:flex; flex-direction:column; align-items:center; transform:translateX(-50%);">
+          <div style="width:2px; height:14px; background:rgba(255,255,255,0.4);"></div>
+          <div style="font-size:9px; color:rgba(255,255,255,0.55); margin-top:4px; white-space:nowrap;">{{ m.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- controls row -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span style="font-size:11.5px; color:rgba(255,255,255,0.7); font-variant-numeric:tabular-nums; width:44px;">1:42</span>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="cursor:pointer; color:rgba(255,255,255,0.75); font-size:16px;">⟲</div>
+          <div style="cursor:pointer; color:rgba(255,255,255,0.85); font-size:18px;">⏮</div>
+          <div style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#7fe0ff,#8a6bff); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 30px -6px rgba(95,208,255,0.6); transition: transform 0.3s ease;" style-hover="transform: scale(1.06);">
+            <div style="width:0; height:0; border-top:9px solid transparent; border-bottom:9px solid transparent; border-left:13px solid #04070f; margin-left:3px;"></div>
+          </div>
+          <div style="cursor:pointer; color:rgba(255,255,255,0.85); font-size:18px;">⏭</div>
+          <div style="cursor:pointer; color:rgba(255,255,255,0.75); font-size:16px; opacity:0.9;" title="Loop">🔁</div>
+        </div>
+        <span style="font-size:11.5px; color:rgba(255,255,255,0.7); font-variant-numeric:tabular-nums; width:44px;">3:57</span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px;">
+        <sc-for list="{{ qualityOptions }}" as="q" hint-placeholder-count="3">
+          <div style="padding:7px 14px; border-radius:10px; font-size:11.5px; font-weight:600; cursor:pointer; color: {{ q.color }}; background: {{ q.bg }}; border:1px solid {{ q.border }};">{{ q.label }}</div>
+        </sc-for>
+        <div style="width:1px; height:22px; background:rgba(255,255,255,0.2); margin:0 4px;"></div>
+        <div style="cursor:pointer; color:rgba(255,255,255,0.8); font-size:16px;" title="Fullscreen">⛶</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const rand = (seed) => { let x = Math.sin(seed) * 10000; return x - Math.floor(x); };
+
+    const stars = Array.from({ length: 70 }, (_, i) => ({
+      x: rand(i * 3.1) * 100, y: rand(i * 7.7) * 100,
+      size: 1 + rand(i * 5.3) * 2, dur: 2 + rand(i * 2.1) * 4, delay: rand(i * 9.9) * 5
+    }));
+
+    const particleColors = ['#5fd0ff', '#8a6bff', '#e7c977'];
+    const particles = Array.from({ length: 30 }, (_, i) => ({
+      x: rand(i * 4.4) * 100, size: 2 + rand(i * 6.6) * 4,
+      dur: 10 + rand(i * 3.3) * 10, delay: rand(i * 8.8) * 14,
+      color: particleColors[i % particleColors.length]
+    }));
+
+    const markers = [
+      { pos: 4, label: 'Intro' },
+      { pos: 22, label: 'Verse' },
+      { pos: 44, label: 'Chorus' },
+      { pos: 68, label: 'Bridge' },
+      { pos: 88, label: 'Outro' }
+    ];
+
+    const qualityOptions = [
+      { label: 'Draft', color: '#aab2d9', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)' },
+      { label: 'HD', color: '#aab2d9', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.15)' },
+      { label: '4K', color: '#04070f', bg: 'linear-gradient(120deg,#7fe0ff,#8a6bff)', border: 'transparent' }
+    ];
+
+    const poeticLines = [
+      { text: 'Every note leaves a trace of light.', delay: 0 },
+      { text: 'Music becomes motion, motion becomes emotion.', delay: 5 },
+      { text: 'Watching the invisible become visible.', delay: 10 }
+    ];
+
+    return { stars, particles, markers, qualityOptions, poeticLines };
+  }
+}
+
+</script>
+</body>
+</html>

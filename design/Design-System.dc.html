@@ -1,5 +1,248 @@
-<!--
-  AiXel Visual Melody - Design System
-  Approved Master Design Package V1.0 source pending.
-  Replace this placeholder only with the approved Claude Design .dc.html asset.
--->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #05060b; }
+    ::selection { background: rgba(107,225,255,0.3); color: #fff; }
+    @keyframes twinkle { 0%,100%{ opacity: 0.15; } 50%{ opacity: 0.95; } }
+    @keyframes progressShine { 0%{ background-position: -200px 0; } 100%{ background-position: 200px 0; } }
+    @keyframes spinLoad { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    }
+    a { color: #6bd8ff; text-decoration: none; }
+    a:hover { color: #a58bff; }
+    input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:4px; border-radius:4px; background:rgba(255,255,255,0.08); outline:none; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:linear-gradient(135deg,#7fe0ff,#8a6bff); cursor:pointer; box-shadow:0 0 8px rgba(95,208,255,0.6); border:2px solid #0a0d1a; }
+  </style>
+</helmet>
+
+<div style="position:relative; width:100%; min-height:100vh; background:radial-gradient(ellipse 120% 60% at 50% -10%, #131a30 0%, #0a0d1a 45%, #05060b 100%); overflow:hidden; font-family:'Manrope',sans-serif; color:#eef1fb;" data-screen-label="Design System">
+
+  <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+    <sc-for list="{{ stars }}" as="s" hint-placeholder-count="30">
+      <div style="position:absolute; left: {{ s.x }}%; top: {{ s.y }}%; width: {{ s.size }}px; height: {{ s.size }}px; border-radius:50%; background:#dfe8ff; opacity:0.3; animation: twinkle {{ s.dur }}s ease-in-out infinite; animation-delay: {{ s.delay }}s;"></div>
+    </sc-for>
+  </div>
+
+  <!-- top nav -->
+  <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:28px 56px; max-width:1520px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:36px; height:36px; border-radius:50%; border:1px solid rgba(160,180,255,0.35); display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(95,208,255,0.12), transparent 70%);">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; background:linear-gradient(135deg,#bfe9ff,#8a6bff); -webkit-background-clip:text; background-clip:text; color:transparent;">AX</span>
+      </div>
+      <div style="line-height:1.05;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:0.06em;">AiXel <span style="font-weight:300; opacity:0.7;">Visual Melody</span></div>
+        <div style="font-size:9.5px; letter-spacing:0.22em; text-transform:uppercase; color:#8a94c0;">Design System · V1.0</div>
+      </div>
+    </div>
+    <a href="Home.dc.html" style="font-size:12.5px; color:#aab2d9;">← Back to Home</a>
+  </div>
+
+  <div style="position:relative; z-index:2; max-width:1520px; margin:8px auto 0; padding:0 56px;">
+    <h1 style="margin:0; font-weight:300; font-size:30px; letter-spacing:-0.01em; color:#f4f6ff;">Design System</h1>
+    <p style="margin:10px 0 0; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:#9aa4cf; max-width:640px;">The visual language shared by every screen — cosmic glass surfaces, cyan/violet/gold light, slow elegant motion.</p>
+  </div>
+
+  <div style="position:relative; z-index:2; max-width:1520px; margin:36px auto 0; padding:0 56px 60px; display:flex; flex-direction:column; gap:20px;">
+
+    <!-- color tokens -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Color Tokens</span>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; margin-top:16px;">
+        <sc-for list="{{ colorTokens }}" as="c" hint-placeholder-count="7">
+          <div>
+            <div style="height:64px; border-radius:12px; background: {{ c.hex }}; border:1px solid rgba(255,255,255,0.08);"></div>
+            <div style="font-size:11.5px; font-weight:600; color:#eef1fb; margin-top:8px;">{{ c.name }}</div>
+            <div style="font-size:10px; color:#7c85ab; font-variant-numeric:tabular-nums;">{{ c.hex }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- typography -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Typography Scale</span>
+      <div style="display:flex; flex-direction:column; gap:14px; margin-top:16px;">
+        <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex; align-items:baseline; gap:20px; border-bottom:1px solid rgba(160,180,255,0.08); padding-bottom:14px;">
+            <div style="width:170px; flex:none; font-size:11px; color:#7c85ab;">{{ t.label }} · {{ t.size }}px</div>
+            <div style="font-family: {{ t.font }}; font-weight: {{ t.weight }}; font-style: {{ t.style }}; font-size: {{ t.size }}px; color:#eef1fb;">{{ t.sample }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- spacing + radii -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Spacing System</span>
+        <div style="display:flex; align-items:flex-end; gap:10px; margin-top:18px;">
+          <sc-for list="{{ spacing }}" as="sp" hint-placeholder-count="6">
+            <div style="text-align:center;">
+              <div style="width:20px; height: {{ sp.px }}px; background:linear-gradient(180deg,#5fd0ff,#8a6bff); border-radius:3px; margin:0 auto;"></div>
+              <div style="font-size:9.5px; color:#7c85ab; margin-top:6px;">{{ sp.px }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Border Radii</span>
+        <div style="display:flex; align-items:center; gap:14px; margin-top:18px;">
+          <sc-for list="{{ radii }}" as="r" hint-placeholder-count="4">
+            <div style="text-align:center;">
+              <div style="width:52px; height:52px; background:rgba(95,208,255,0.12); border:1px solid rgba(95,208,255,0.35); border-radius: {{ r.px }}px;"></div>
+              <div style="font-size:9.5px; color:#7c85ab; margin-top:6px;">{{ r.label }} · {{ r.px }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- glass panel -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Glass Panel Treatment</span>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:16px;">
+        <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:18px; height:80px; display:flex; align-items:center; justify-content:center; color:#7c85ab; font-size:11px;">Default panel</div>
+        <div style="border-radius:18px; border:1px solid rgba(95,208,255,0.3); background:linear-gradient(135deg, rgba(95,208,255,0.06), rgba(138,107,255,0.05)); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6); padding:18px; height:80px; display:flex; align-items:center; justify-content:center; color:#7fe0ff; font-size:11px;">AI highlight panel</div>
+        <div style="border-radius:18px; border:1px solid rgba(201,162,74,0.35); background:linear-gradient(90deg, rgba(201,162,74,0.08), rgba(255,255,255,0.02)); padding:18px; height:80px; display:flex; align-items:center; justify-content:center; color:#e7c977; font-size:11px;">Golden reference panel</div>
+      </div>
+    </div>
+
+    <!-- buttons + chips -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Buttons, Chips &amp; Badges</span>
+      <div style="display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap;">
+        <button style="border:none; cursor:pointer; padding:13px 28px; border-radius:14px; font-size:13.5px; font-weight:600; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff);">Primary</button>
+        <button style="cursor:pointer; padding:13px 24px; border-radius:14px; font-size:13.5px; font-weight:500; color:#eef1fb; background:rgba(255,255,255,0.04); border:1px solid rgba(160,180,255,0.3);">Secondary</button>
+        <div style="padding:8px 15px; border-radius:999px; font-size:12px; font-weight:500; color:#c3cbef; background:rgba(255,255,255,0.03); border:1px solid rgba(160,180,255,0.16);">Chip · Idle</div>
+        <div style="padding:8px 15px; border-radius:999px; font-size:12px; font-weight:600; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff);">Chip · Selected</div>
+        <div style="padding:5px 12px; border-radius:999px; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#e7c977; border:1px solid rgba(231,201,119,0.5); background:rgba(201,162,74,0.06);">NEW</div>
+        <div style="padding:5px 12px; border-radius:999px; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#7fd88a; border:1px solid rgba(127,216,138,0.4); background:rgba(127,216,138,0.08);">Success</div>
+        <div style="padding:5px 12px; border-radius:999px; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:#e79a5a; border:1px solid rgba(231,154,90,0.4); background:rgba(231,154,90,0.08);">Warning</div>
+      </div>
+    </div>
+
+    <!-- sliders + toggles -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Slider (Artistic Control)</span>
+        <div style="margin-top:20px;">
+          <div style="display:flex; justify-content:space-between; font-size:12.5px; color:#dfe6ff; margin-bottom:9px;"><span>Emotion</span><span style="color:#7c85ab;">72</span></div>
+          <input type="range" min="0" max="100" value="72">
+        </div>
+      </div>
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Toggle</span>
+        <div style="display:flex; align-items:center; gap:24px; margin-top:20px;">
+          <div style="width:44px; height:26px; border-radius:999px; background:linear-gradient(120deg,#5fd0ff,#8a6bff); position:relative;">
+            <div style="position:absolute; top:3px; left:21px; width:20px; height:20px; border-radius:50%; background:#fff;"></div>
+          </div>
+          <div style="width:44px; height:26px; border-radius:999px; background:rgba(255,255,255,0.12); position:relative;">
+            <div style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- transport + timeline -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Transport Controls &amp; Timeline</span>
+      <div style="display:flex; align-items:center; gap:16px; margin-top:18px;">
+        <div style="width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#7fe0ff,#8a6bff); display:flex; align-items:center; justify-content:center;">
+          <div style="width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:11px solid #04070f; margin-left:2px;"></div>
+        </div>
+        <div style="flex:1; height:4px; border-radius:4px; background:rgba(255,255,255,0.12); position:relative;">
+          <div style="height:100%; width:44%; border-radius:4px; background:linear-gradient(90deg,#5fd0ff,#8a6bff);"></div>
+          <div style="position:absolute; left:44%; top:50%; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:#fff; border:2px solid #5fd0ff;"></div>
+        </div>
+        <span style="font-size:11px; color:#8a94c0; font-variant-numeric:tabular-nums;">1:42 / 3:57</span>
+      </div>
+    </div>
+
+    <!-- progress + loading -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Render Progress</span>
+        <div style="height:8px; border-radius:6px; background:rgba(255,255,255,0.08); overflow:hidden; margin-top:18px;">
+          <div style="height:100%; width:64%; border-radius:6px; background:linear-gradient(90deg,#5fd0ff,#8a6bff,#e7c977); background-size:200px 100%; animation: progressShine 2.4s linear infinite;"></div>
+        </div>
+        <p style="margin:12px 0 0; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:12.5px; color:#9aa4cf;">Every note leaves a trace of light.</p>
+      </div>
+      <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+        <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Loading State</span>
+        <div style="display:flex; align-items:center; gap:14px; margin-top:18px;">
+          <div style="width:26px; height:26px; border-radius:50%; border:2px solid rgba(95,208,255,0.2); border-top-color:#5fd0ff; animation: spinLoad 0.9s linear infinite;"></div>
+          <span style="font-size:12px; color:#9aa4cf;">Listening to the invisible structure…</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- focus + reduced motion -->
+    <div style="border-radius:18px; border:1px solid rgba(160,180,255,0.16); background:rgba(255,255,255,0.025); backdrop-filter:blur(24px); box-shadow:0 24px 64px -28px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04); padding:24px 26px;">
+      <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#9fb0e8;">Focus &amp; Motion Rules</span>
+      <div style="display:flex; gap:40px; margin-top:16px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button style="border:none; cursor:pointer; padding:10px 20px; border-radius:12px; font-size:12.5px; font-weight:600; color:#04070f; background:linear-gradient(120deg,#7fe0ff,#8a6bff); outline:2px solid #7fe0ff; outline-offset:2px;">Focused button</button>
+          <span style="font-size:11px; color:#7c85ab;">2px accent outline, 2px offset</span>
+        </div>
+        <div style="max-width:340px; font-size:11.5px; color:#7c85ab; line-height:1.5;">All decorative motion respects <code style="color:#9fb0e8;">prefers-reduced-motion</code> — animations collapse to instant states when requested by the OS.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const rand = (seed) => { let x = Math.sin(seed) * 10000; return x - Math.floor(x); };
+
+    const stars = Array.from({ length: 30 }, (_, i) => ({
+      x: rand(i * 3.1) * 100, y: rand(i * 7.7) * 100,
+      size: 1 + rand(i * 5.3) * 2, dur: 2 + rand(i * 2.1) * 4, delay: rand(i * 9.9) * 5
+    }));
+
+    const colorTokens = [
+      { name: 'Deep Space', hex: '#05060b' },
+      { name: 'Cosmic Blue', hex: '#1a2a66' },
+      { name: 'Electric Cyan', hex: '#5fd0ff' },
+      { name: 'Aurora Violet', hex: '#8a6bff' },
+      { name: 'Warm Gold', hex: '#e7c977' },
+      { name: 'Silver White', hex: '#eef1fb' },
+      { name: 'Neon Magenta', hex: '#e750b4' }
+    ];
+
+    const typeScale = [
+      { label: 'Display', font: "'Manrope',sans-serif", weight: 300, style: 'normal', size: 60, sample: 'Living Visuals' },
+      { label: 'Heading', font: "'Manrope',sans-serif", weight: 300, style: 'normal', size: 30, sample: 'Section Heading' },
+      { label: 'Poetic / Editorial', font: "'Cormorant Garamond',serif", weight: 500, style: 'italic', size: 22, sample: 'Every Note Becomes Light.' },
+      { label: 'Label / Overline', font: "'Manrope',sans-serif", weight: 600, style: 'normal', size: 12, sample: 'SECTION LABEL' },
+      { label: 'Body', font: "'Manrope',sans-serif", weight: 400, style: 'normal', size: 14, sample: 'Body copy for descriptions and UI text.' },
+      { label: 'Caption', font: "'Manrope',sans-serif", weight: 400, style: 'normal', size: 11, sample: 'Small metadata and captions' }
+    ];
+
+    const spacing = [4, 8, 12, 16, 24, 32].map(px => ({ px }));
+    const radii = [
+      { label: 'sm', px: 8 }, { label: 'md', px: 14 }, { label: 'lg', px: 20 }, { label: 'full', px: 26 }
+    ];
+
+    return { stars, colorTokens, typeScale, spacing, radii };
+  }
+}
+
+</script>
+</body>
+</html>
