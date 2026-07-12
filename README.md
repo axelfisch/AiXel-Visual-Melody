@@ -41,6 +41,23 @@ It preserves the structure and source locations for the approved **AiXel Visual 
 
 The approved Claude Design package remains the visual source of truth.
 
+## V0.1 Functional Visual Shell
+
+The React + Vite + TypeScript shell translates the approved visual direction into a navigable application surface:
+
+- Home, Analyze, Create, Preview, Export, Settings, and Design System screens.
+- Settings remains accessible from every screen.
+- The six approved visual engines are present.
+- Create includes engine-reactive theming for accent color, preview surface, and radius.
+- All analysis, preview, and export values are representative sample data only.
+
+Run locally with:
+
+```bash
+npm install
+npm run dev
+```
+
 ## Repository Structure
 
 ```text
