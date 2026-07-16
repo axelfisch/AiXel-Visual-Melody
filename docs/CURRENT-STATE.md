@@ -1,8 +1,8 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Preview Player V1
+**Checkpoint:** Export V1 — live render progress
 
-**Date:** 2026-07-14
+**Date:** 2026-07-16
 
 **Local application:** `http://localhost:5173/#home`
 
@@ -22,33 +22,37 @@
 - Preview volume preference stored in local storage rather than the project model.
 - Empty Preview state routes the user back to Analyze.
 - 4K and 8K Preview options explicitly disabled until implemented.
+- MP4 support detection extracted into `src/export/mediaRecorderSupport.ts`.
+- MP4 recording and engine rendering extracted into `src/export/renderMp4.ts`.
+- Export uses the project resolution, frame rate, bitrate, decoded audio buffer, and the same Minimal Album Art renderer as Preview.
+- `ExportScreen.tsx` extracted from `App.tsx` without changing the approved Claude Design structure.
+- `Render Progress` displays the actual 1280 × 720 canvas currently sent to `MediaRecorder`.
+- Rendered time, percentage, completed, cancelled, unsupported, and failed states implemented.
+- Active export cancellation connected through `AbortSignal`, with browser media resources released after completion or cancellation.
 
 ## Verification at checkpoint
 
-- `npm run test:run`: 10 test files, 19 tests passing.
+- `npm run test:run`: 13 test files, 28 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
 - Golden Reference asset served as `audio/mp4`.
+- Browser smoke test with “In the Spirit of Naomi”: real canvas visible at 1280 × 720, rendered time and progress advancing, cancellation confirmed and restart action restored.
 
 ## Exact next recommended step
 
-Start **Export V1 unification**, without beginning automatic transcoding yet:
+Complete the **Export V1 acceptance pass** before starting another visual engine:
 
-1. extract `src/export/mediaRecorderSupport.ts`;
-2. extract `src/export/renderMp4.ts` from `App.tsx`;
-3. pass project, runtime audio buffer, engine, progress callback, and `AbortSignal`;
-4. display the real rendering canvas in `Render Progress`;
-5. add elapsed/rendered time and clear completed, cancelled, unsupported, and failed states;
-6. verify that Preview and Export call the same engine renderer with equivalent frames;
-7. add unit tests with `MediaRecorder` mocked;
-8. extract `ExportScreen.tsx` after the service boundary is stable.
-
-Stop after Export V1 is verified. Do not begin the second visual engine in the same step.
+1. render the full Golden Reference to MP4 in Safari;
+2. play the downloaded file from beginning to end;
+3. verify audio presence, duration, final frame, and perceptible synchronization;
+4. record any Safari-specific MediaRecorder limitation honestly;
+5. use Claude Design only to review the existing live thumbnail, progress copy, and cancellation hierarchy;
+6. after acceptance, begin the second deterministic visual engine in a separate checkpoint.
 
 ## Claude Design timing
 
-Do not reopen Claude Design for the service extraction itself. Use it at the Export V1 visual checkpoint, once the real live-render thumbnail, progress states, cancellation control, and transport hierarchy exist. That is the useful moment to compare and polish Preview and Export together without redesigning unstable internals.
+The useful Export V1 review point has now been reached. Claude Design may review the existing live-render thumbnail, progress states, cancellation control, and transport hierarchy. Treat that review as validation of the approved system, not authorization to redesign it.
 
 ## Known limitations to preserve honestly
 
@@ -64,11 +68,10 @@ Do not reopen Claude Design for the service extraction itself. Use it at the Exp
 
 See `PRODUCT-BACKLOG.md` for:
 
-- the live Export thumbnail;
 - MP4 audio extraction;
 - automatic normalization and conversion;
 - consolidation of useful services from other AiXel applications.
 
-## Working-tree note
+## Branch note
 
-This checkpoint includes uncommitted work built on the earlier local React migration. Preserve the current working tree when resuming. Do not reset or discard unrelated changes. Commit and publish only when explicitly requested by the product owner.
+Export V1 work is developed on `agent/export-v1`, based on the merged Preview Player V1 checkpoint in `main`.

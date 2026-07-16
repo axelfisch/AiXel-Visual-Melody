@@ -1,5 +1,13 @@
 # Changelog
 
+## Export V1 — Live Render Progress
+
+- Extracted native MP4 support detection and the MediaRecorder render service from `App.tsx`.
+- Connected the actual encoded canvas to the existing Render Progress panel.
+- Added rendered time, percentage, cancellation, and completed/cancelled/unsupported/failed states.
+- Extracted `ExportScreen.tsx` without redesigning the Claude Design interface.
+- Added MediaRecorder and Export screen tests, including active `AbortSignal` cancellation.
+
 ## v0.1.0 - React + Vite + TypeScript Functional Visual Shell
 
 - Added the Vite, React, and TypeScript application scaffold.
