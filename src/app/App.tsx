@@ -23,6 +23,7 @@ import logoReference from '../../references/logo-references/Logo-AiXel-Visual-Me
 import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
+import { getEngineOrDefault } from '../engines/engine.registry';
 import { useProject } from '../project/project.context';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
@@ -139,6 +140,7 @@ export function App() {
     () => engines.find((item) => item.id === project.engine.engineId) ?? engines[4],
     [project.engine.engineId],
   );
+  const renderEngine = useMemo(() => getEngineOrDefault(project.engine.engineId), [project.engine.engineId]);
   const activeEngine = engine.key;
   const activePreset = project.engine.presetId ?? 'Naomi';
   const selectedMood = typeof project.engine.parameters.directorMood === 'string'
@@ -234,7 +236,15 @@ export function App() {
             onAutoPlayHandled={() => setAutoPlayPreview(false)}
           />
         )}
-        {screen === 'export' && <ExportScreen analysis={analysis} previewBackground={engine.preview} settings={project.export} />}
+        {screen === 'export' && (
+          <ExportScreen
+            analysis={analysis}
+            engine={renderEngine}
+            engineConfig={project.engine.parameters}
+            previewBackground={engine.preview}
+            settings={project.export}
+          />
+        )}
         {screen === 'settings' && <SettingsScreen onNavigate={navigate} />}
         {screen === 'design-system' && <DesignSystemScreen />}
       </main>

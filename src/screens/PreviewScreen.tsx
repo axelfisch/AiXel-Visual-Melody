@@ -2,7 +2,8 @@ import { Download, FileAudio, Pause, Play, Volume2, VolumeX } from 'lucide-react
 import { formatTime } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import { MinimalAlbumArtCanvas } from '../engines/minimal-album-art/MinimalAlbumArtCanvas';
+import { EngineCanvas } from '../engines/EngineCanvas';
+import { getEngineOrDefault } from '../engines/engine.registry';
 import { useSynchronizedPlayback } from '../preview/useSynchronizedPlayback';
 import { useProject } from '../project/project.context';
 import { canPreview } from '../project/project.selectors';
@@ -18,6 +19,7 @@ export function PreviewScreen({
   onAutoPlayHandled: () => void;
 }) {
   const { project } = useProject();
+  const engine = getEngineOrDefault(project.engine.engineId);
   const audioUrl = project.audio?.objectUrl ?? null;
   const duration = project.audio?.duration ?? 0;
   const playback = useSynchronizedPlayback({
@@ -44,17 +46,23 @@ export function PreviewScreen({
   return (
     <section className="screen preview-screen">
       <div className="cinema">
-        <MinimalAlbumArtCanvas
+        <EngineCanvas
           analysis={project.analysis}
+          config={project.engine.parameters}
           duration={duration}
+          engine={engine}
           time={playback.currentTime}
           title={project.name}
         />
         <div className="cinema-overlay">
           <div>
-            <p className="tiny-label">Minimal Album Art · Live Preview</p>
+            <p className="tiny-label">{engine.name} · Live Preview</p>
             <h1>{project.name}</h1>
-            <p className="poetic">Le disque réagit à l’énergie réelle du signal.</p>
+            <p className="poetic">
+              {engine.id === 'cosmic-waves'
+                ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
+                : 'Le disque réagit à l’énergie réelle du signal.'}
+            </p>
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>
             Export

@@ -25,7 +25,7 @@ Implemented with `useSynchronizedPlayback`: volume and mute affect Preview only,
 
 ## B2 — Live thumbnail during MP4 rendering
 
-**Status:** Implemented in Export V1 on 2026-07-16; full downloaded-file acceptance remains.
+**Status:** Implemented in Export V1 and accepted by the product owner on 2026-07-16.
 
 The `Render Progress` panel should display the actual canvas frame currently being encoded. It must reuse the canvas and engine frame used by `renderMp4`; it must not run a second decorative preview or a separate renderer.
 
@@ -101,3 +101,19 @@ Before importing code from an older project:
 5. port tests first, then adapt the implementation.
 
 The long-term goal is to consolidate the strongest capabilities of the existing AiXel projects into a smaller set of coherent products, without turning Visual Melody into an unfocused collection of unrelated tools.
+
+## B5 — AiXel Music Lab animated brand reference
+
+**Status:** Reference preserved; not integrated into the current Claude Design interface.
+
+Supplied on 2026-07-16:
+
+- still source name: `IMG_1590.JPG`;
+- animation source name: `_users_59c16057-deaf-4e78-a3ca-d3eeae117e68_generated_d376a6f3-a22d-43c8-b809-3b293cec2aa4_generated_video.MP4`;
+- square still reference, originally 1024 × 1024;
+- animated MP4 reference, 960 × 960, 6.04 seconds;
+- H.264 video with AAC audio;
+- metallic circular AiXel monogram, piano keys, musical staff, waveform, and cyan/violet/gold cosmic light;
+- visible product name: “AiXel Music Lab”.
+
+The asset is visually strong but belongs to a broader Music Lab identity and is more metallic/cosmic than the restrained Visual Melody navigation brand. Do not replace the current Visual Melody logo or insert this animation into the workflow without an explicit branding decision aligned with the Claude Design source of truth. Candidate future uses include an AiXel Studio family ident, splash animation, or end-card after a dedicated brand review.
