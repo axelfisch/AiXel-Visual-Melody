@@ -64,7 +64,22 @@ describe('ExportScreen', () => {
     await screen.findByText('MP4 terminé et téléchargé.');
     expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({ canvas }));
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
-    expect(screen.getByRole('button', { name: 'Exporter de nouveau' })).toBeEnabled();
+    const exportAgain = screen.getByRole('link', { name: 'Exporter de nouveau' });
+    expect(exportAgain).toHaveAttribute('href', 'blob:export');
+    expect(exportAgain).toHaveAttribute('download', 'In-the-Spirit-of-Naomi.mp4');
+    expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+  });
+
+  it('keeps the completed MP4 available until the screen unmounts', async () => {
+    mocks.renderMp4.mockResolvedValue(new Blob(['mp4'], { type: 'video/mp4' }));
+    const user = userEvent.setup();
+    const view = render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+
+    await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
+    await screen.findByText('MP4 terminé et téléchargé.');
+    view.unmount();
+
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:export');
   });
 
   it('cancels an active render through its AbortSignal', async () => {

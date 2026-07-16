@@ -1,5 +1,5 @@
 import { Download, Film, Gauge, X } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatTime, type AudioAnalysis } from '../audio';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
@@ -8,6 +8,18 @@ import { renderMp4 } from '../export/renderMp4';
 import type { ExportSettings } from '../project/project.types';
 
 type ExportState = 'idle' | 'rendering' | 'completed' | 'cancelled' | 'unsupported' | 'failed';
+
+type CompletedExport = {
+  filename: string;
+  url: string;
+};
+
+function downloadExport({ filename, url }: CompletedExport) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+}
 
 export function ExportScreen({
   analysis,
@@ -20,11 +32,16 @@ export function ExportScreen({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [completedExport, setCompletedExport] = useState<CompletedExport | null>(null);
   const [progress, setProgress] = useState(0);
   const [renderedTime, setRenderedTime] = useState(0);
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
+
+  useEffect(() => () => {
+    if (completedExport) URL.revokeObjectURL(completedExport.url);
+  }, [completedExport]);
 
   const status = (() => {
     if (!analysis) return 'Importez d’abord un morceau dans Analyze.';
@@ -80,11 +97,12 @@ export function ExportScreen({
         },
       });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const completedExport = {
+        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`,
+        url,
+      };
+      setCompletedExport(completedExport);
+      downloadExport(completedExport);
       setProgress(1);
       setRenderedTime(analysis.duration);
       setState('completed');
@@ -137,13 +155,19 @@ export function ExportScreen({
             <span style={{ width: `${progress * 100}%` }} />
           </div>
           <p aria-live="polite" className="muted">{status}</p>
-          <button
-            className={`${rendering ? 'secondary-action' : 'primary-action'} full`}
-            disabled={!analysis}
-            onClick={rendering ? cancelExport : () => void exportMp4()}
-          >
-            {rendering ? <><X size={17} /> Annuler le rendu</> : <><Download size={17} /> {state === 'completed' ? 'Exporter de nouveau' : 'Exporter le MP4'}</>}
-          </button>
+          {state === 'completed' && completedExport ? (
+            <a className="primary-action full" download={completedExport.filename} href={completedExport.url}>
+              <Download size={17} /> Exporter de nouveau
+            </a>
+          ) : (
+            <button
+              className={`${rendering ? 'secondary-action' : 'primary-action'} full`}
+              disabled={!analysis}
+              onClick={rendering ? cancelExport : () => void exportMp4()}
+            >
+              {rendering ? <><X size={17} /> Annuler le rendu</> : <><Download size={17} /> Exporter le MP4</>}
+            </button>
+          )}
         </GlassPanel>
       </div>
     </section>

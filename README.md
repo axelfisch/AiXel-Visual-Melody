@@ -70,4 +70,4 @@ AiXel-Visual-Melody/
 
 ## Current Functional Checkpoint
 
-Export V1 displays the actual canvas being encoded, reports rendered time and progress, supports cancellation, and handles completed, cancelled, unsupported, and failed states. The next gate is full downloaded-file acceptance in Safari before beginning another deterministic visual engine.
+Export V1 displays the actual canvas being encoded, reports rendered time and progress, supports cancellation, handles completed, cancelled, unsupported, and failed states, and keeps a completed MP4 available for download retry until the Export screen closes. The next gate is full downloaded-file acceptance in Safari before beginning another deterministic visual engine.

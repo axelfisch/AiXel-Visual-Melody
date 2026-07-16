@@ -7,6 +7,7 @@
 - Added rendered time, percentage, cancellation, and completed/cancelled/unsupported/failed states.
 - Extracted `ExportScreen.tsx` without redesigning the Claude Design interface.
 - Added MediaRecorder and Export screen tests, including active `AbortSignal` cancellation.
+- Kept the completed MP4 Blob available for an immediate retry from the existing export control instead of revoking it after one second.
 
 ## v0.1.0 - React + Vite + TypeScript Functional Visual Shell
 
