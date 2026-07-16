@@ -19,3 +19,4 @@ Do not begin real audio analysis or video rendering in this phase.
 
 - Add real audio analysis after the visual implementation is approved.
 - Add real video rendering after the analysis layer and preview behavior are approved.
+- Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.
