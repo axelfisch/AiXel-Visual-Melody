@@ -7,8 +7,6 @@ import {
   Download,
   Eye,
   FileAudio,
-  Film,
-  Gauge,
   Home,
   Layers3,
   Moon,
@@ -22,11 +20,11 @@ import {
 import planReference from '../../references/Plan-Visual-Melody.png';
 import studioReference from '../../references/AiXel-Studio-Visual-Melody.png';
 import logoReference from '../../references/logo-references/Logo-AiXel-Visual-Melody.png';
-import { analyzeAudioFile, energyAt, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
+import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { useProject } from '../project/project.context';
+import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { screens, useHashNavigation, type Screen } from './navigation';
 
@@ -236,7 +234,7 @@ export function App() {
             onAutoPlayHandled={() => setAutoPlayPreview(false)}
           />
         )}
-        {screen === 'export' && <ExportScreen analysis={analysis} engine={engine} />}
+        {screen === 'export' && <ExportScreen analysis={analysis} previewBackground={engine.preview} settings={project.export} />}
         {screen === 'settings' && <SettingsScreen onNavigate={navigate} />}
         {screen === 'design-system' && <DesignSystemScreen />}
       </main>
@@ -568,112 +566,6 @@ function CreateScreen({
       </div>
     </section>
   );
-}
-
-function ExportScreen({ analysis, engine }: { analysis: AudioAnalysis | null; engine: Engine }) {
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState('');
-  const [rendering, setRendering] = useState(false);
-
-  const exportMp4 = async () => {
-    if (!analysis || rendering) return;
-    const mimeType = ['video/mp4;codecs=h264,aac', 'video/mp4'].find((type) => MediaRecorder.isTypeSupported(type));
-    if (!mimeType) {
-      setStatus("Ce navigateur ne propose pas d’encodeur MP4 natif. Essayez Safari récent pour cet export MVP.");
-      return;
-    }
-    setRendering(true);
-    setProgress(0);
-    setStatus('Rendu en cours…');
-    try {
-      const blob = await renderMp4(analysis, mimeType, setProgress);
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setStatus('MP4 terminé.');
-    } catch (reason) {
-      setStatus(reason instanceof Error ? reason.message : "L’export a échoué.");
-    } finally {
-      setRendering(false);
-    }
-  };
-
-  return (
-    <section className="screen export-layout">
-      <ScreenTitle eyebrow="Export" title="Render a synchronized MP4" note="Le rendu 720p est produit localement et conserve la piste audio originale décodée." />
-      <div className="export-grid">
-        <GlassPanel className="span-2">
-          <PanelHeading icon={<Film size={18} />} label="Format Grid" />
-          <div className="format-grid">
-            <button className="selected">MP4 · 1280 × 720</button>
-          </div>
-        </GlassPanel>
-        <GlassPanel>
-          <PanelHeading icon={<Gauge size={18} />} label="Render Progress" />
-          <div className="render-preview" style={{ background: engine.preview }} />
-          <div className="progress-track">
-            <span style={{ width: `${progress * 100}%` }} />
-          </div>
-          <p className="muted">{status || (analysis ? `${formatTime(analysis.duration)} à rendre` : 'Importez d’abord un morceau dans Analyze.')}</p>
-          <button className="primary-action full" disabled={!analysis || rendering} onClick={() => void exportMp4()}>
-            <Download size={17} /> {rendering ? `${Math.round(progress * 100)}%` : 'Exporter le MP4'}
-          </button>
-        </GlassPanel>
-      </div>
-    </section>
-  );
-}
-
-async function renderMp4(analysis: AudioAnalysis, mimeType: string, onProgress: (value: number) => void) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1280;
-  canvas.height = 720;
-  const context = canvas.getContext('2d')!;
-  const audioContext = new AudioContext();
-  const destination = audioContext.createMediaStreamDestination();
-  const source = audioContext.createBufferSource();
-  source.buffer = analysis.buffer;
-  source.connect(destination);
-  const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...destination.stream.getAudioTracks()]);
-  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
-  const chunks: Blob[] = [];
-  recorder.ondataavailable = (event) => event.data.size && chunks.push(event.data);
-  const complete = new Promise<Blob>((resolve, reject) => {
-    recorder.onerror = () => reject(new Error("L’encodeur MP4 a rencontré une erreur."));
-    recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType }));
-  });
-  recorder.start(1000);
-  source.start();
-  const startedAt = audioContext.currentTime;
-  await new Promise<void>((resolve) => {
-    const frame = () => {
-      const time = Math.min(analysis.duration, audioContext.currentTime - startedAt);
-      MinimalAlbumArtEngine.render(
-        { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-        {
-          time,
-          duration: analysis.duration,
-          progress: analysis.duration ? time / analysis.duration : 0,
-          energy: energyAt(analysis, time),
-          bpm: analysis.bpm,
-          title: analysis.name,
-        },
-        MinimalAlbumArtEngine.defaultConfig,
-      );
-      onProgress(time / analysis.duration);
-      if (time < analysis.duration) requestAnimationFrame(frame);
-      else resolve();
-    };
-    frame();
-  });
-  recorder.stop();
-  const result = await complete;
-  stream.getTracks().forEach((track) => track.stop());
-  await audioContext.close();
-  return result;
 }
 
 function SettingsScreen({ onNavigate }: { onNavigate: (screen: Screen) => void }) {

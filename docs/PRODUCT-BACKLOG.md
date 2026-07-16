@@ -25,7 +25,7 @@ Implemented with `useSynchronizedPlayback`: volume and mute affect Preview only,
 
 ## B2 — Live thumbnail during MP4 rendering
 
-**Status:** Approved for the unified export phase.
+**Status:** Implemented in Export V1 on 2026-07-16; full downloaded-file acceptance remains.
 
 The `Render Progress` panel should display the actual canvas frame currently being encoded. It must reuse the canvas and engine frame used by `renderMp4`; it must not run a second decorative preview or a separate renderer.
 
@@ -35,6 +35,8 @@ The panel should also show:
 - current frame or timecode;
 - rendering, completed, cancelled, and failed states;
 - cancellation when `AbortSignal` support is connected.
+
+Implemented with the same canvas passed to `MediaRecorder`, structured progress events, rendered time, accessible progress state, and completed, cancelled, unsupported, and failed outcomes.
 
 **Best integration point:** extraction of `src/export/renderMp4.ts` and `RenderProgress`.
 
