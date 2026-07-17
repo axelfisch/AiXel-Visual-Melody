@@ -26,5 +26,7 @@ Do not begin real audio analysis or video rendering in this phase.
 - Jazz Geometry V1 implemented as the third deterministic engine on `agent/jazz-geometry-v1` using the shared Preview and Export renderer path.
 - Jazz Geometry output accepted and used for the first public YouTube visualizer created with AiXel Visual Melody.
 - Liquid Colors V1 implemented as the fourth deterministic engine on `agent/liquid-colors-v1` with deterministic liquid bands and organic ink fields.
+- Frequency City V1 implemented as the fifth deterministic engine on `agent/frequency-city-v1` with independent architectural spectrum pulses, luminous windows, and a perspective horizon.
+- Neon Velvet V1 is the next engine checkpoint and will complete the six-engine functional set before AiXel Director controls are activated.
 - Next engine work should continue with the shared deterministic engine architecture without activating the read-only AiXel Director controls prematurely.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

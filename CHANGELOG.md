@@ -1,5 +1,12 @@
 # Changelog
 
+## Frequency City V1 — Fifth Deterministic Engine
+
+- Added Frequency City as the fifth implemented `VisualEngine` with a real architectural skyline, luminous windows, antennas, and a perspective horizon.
+- Made the twenty-four independent buildings pulse deterministically from analyzed energy and tempo in magenta, cyan, and violet.
+- Connected Frequency City to the existing Create, Preview, Render Progress, cancellation, and synchronized MP4 export chain.
+- Preserved the approved Claude Design composition and kept Neon Velvet as the only remaining prototype fallback.
+
 ## Liquid Colors V1 — Fourth Deterministic Engine
 
 - Added Liquid Colors as the fourth implemented `VisualEngine` with layered organic ink fields and continuous orange–magenta–indigo bands.

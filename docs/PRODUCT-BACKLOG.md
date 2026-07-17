@@ -139,3 +139,9 @@ The first public YouTube visualizer produced with this engine, “The God Code (
 **Status:** Implemented on 2026-07-17.
 
 Liquid Colors is the fourth deterministic renderer. Layered organic ink fields, continuous orange–magenta–indigo bands, glowing ribbons, and restrained droplets respond to analyzed energy and tempo. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.
+
+## B9 — Frequency City V1
+
+**Status:** Implemented on 2026-07-17.
+
+Frequency City is the fifth deterministic renderer. Twenty-four independently pulsing buildings form a true architectural skyline with illuminated windows, antennas, magenta–cyan–violet facades, and a cyan perspective horizon. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.

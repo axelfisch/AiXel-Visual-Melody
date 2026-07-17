@@ -1,5 +1,6 @@
 import type { VisualEngine } from './engine.types';
 import { CosmicWavesEngine } from './cosmic-waves/CosmicWavesEngine';
+import { FrequencyCityEngine } from './frequency-city/FrequencyCityEngine';
 import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { LiquidColorsEngine } from './liquid-colors/LiquidColorsEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
@@ -7,6 +8,7 @@ import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
   [CosmicWavesEngine.id, CosmicWavesEngine as VisualEngine],
+  [FrequencyCityEngine.id, FrequencyCityEngine as VisualEngine],
   [JazzGeometryEngine.id, JazzGeometryEngine as VisualEngine],
   [LiquidColorsEngine.id, LiquidColorsEngine as VisualEngine],
 ]);
