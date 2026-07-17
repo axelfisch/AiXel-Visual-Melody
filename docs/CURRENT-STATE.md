@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Frequency City V1 — fifth deterministic visual engine
+**Checkpoint:** Neon Velvet V1 — sixth deterministic visual engine
 
 **Date:** 2026-07-17
 
@@ -51,11 +51,16 @@
 - Frequency City implemented as the fifth registered deterministic engine.
 - Twenty-four independently pulsing buildings, luminous windows, antennas, a dark skyline, and cyan perspective horizon react to analyzed energy and tempo without random frame state.
 - Preview, Render Progress, cancellation, and MP4 export all use the same Frequency City renderer and validated configuration.
-- Neon Velvet is the only remaining prototype selection and safely falls back to Minimal Album Art in functional Preview/Export.
+- Frequency City MP4 accepted by the product owner with a real 5:46 track and successful QuickTime playback.
+- Frequency City PR #7 merged into `main` at `619d7f1`.
+- Neon Velvet implemented as the sixth registered deterministic engine.
+- Deep-purple velvet folds and cyan–violet–magenta synthwave paths use deterministic curvature, glow, traveling dash offsets, and musical energy response.
+- Preview, Render Progress, cancellation, and MP4 export all use the same Neon Velvet renderer and validated configuration.
+- All six approved visual selections now resolve to their own functional renderer; no prototype fallback remains in the approved engine catalog.
 
 ## Verification at checkpoint
 
-- `npm test -- --run`: 17 test files, 33 tests passing.
+- `npm test -- --run`: 18 test files, 34 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -65,18 +70,19 @@
 - Browser acceptance test: Jazz Geometry selected in Create, animated in synchronized Preview, appeared in the live Render Progress canvas, and returned to the ready state after cancellation.
 - Browser acceptance test: Liquid Colors selected in Create, animated in synchronized Preview, filled the live Render Progress canvas with evolving liquid bands, and returned to the ready state after cancellation.
 - Browser smoke test: Frequency City selected in Create, identified correctly in synchronized Preview, and exposed the existing Render Progress and cancellation path without changing the Claude Design screen structure.
+- Browser acceptance smoke test: Neon Velvet selected in Create, displayed its own identity and poetic line in Preview, and animated its synthwave trails during synchronized Golden Reference playback in the narrow responsive layout.
 
 ## Exact next recommended step
 
-Implement **Neon Velvet V1** as the sixth and final deterministic visual engine on a separate branch after Frequency City is accepted by the product owner. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after the six real engine parameter sets can be mapped consistently.
+Have the product owner validate **Neon Velvet V1** with a real imported track and MP4 export. After acceptance and merge, define the AiXel Director V1 parameter-mapping contract across the six real engine configurations before enabling its controls. Settings remains a later step once those shared behaviors are genuine.
 
 ## Claude Design timing
 
-Frequency City reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
+Neon Velvet reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the completed six-engine family. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
 
 ## Known limitations to preserve honestly
 
-- Minimal Album Art, Cosmic Waves, Jazz Geometry, Liquid Colors, and Frequency City are functional render engines; Neon Velvet remains the only visual prototype.
+- All six approved visual engines are functional render engines. Neon Velvet still requires the product owner's real-track MP4 acceptance before merge.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -95,4 +101,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-Frequency City V1 is developed on `agent/frequency-city-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, Analyze → Create, Jazz Geometry V1, and Liquid Colors V1 checkpoints in `main`.
+Neon Velvet V1 is developed on `agent/neon-velvet-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, Analyze → Create, Jazz Geometry V1, Liquid Colors V1, and Frequency City V1 checkpoints in `main`.

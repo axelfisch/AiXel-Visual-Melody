@@ -145,3 +145,11 @@ Liquid Colors is the fourth deterministic renderer. Layered organic ink fields, 
 **Status:** Implemented on 2026-07-17.
 
 Frequency City is the fifth deterministic renderer. Twenty-four independently pulsing buildings form a true architectural skyline with illuminated windows, antennas, magenta–cyan–violet facades, and a cyan perspective horizon. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.
+
+The product owner accepted a 5:46 real-track MP4 export with successful QuickTime playback on 2026-07-17. PR #7 was then merged into `main`.
+
+## B10 — Neon Velvet V1
+
+**Status:** Implemented on 2026-07-17; awaiting product-owner MP4 acceptance.
+
+Neon Velvet is the sixth deterministic renderer. Elegant cyan, violet, and magenta paths flow across a deep-purple velvet field with traveling highlights, restrained particles, and glow driven by analyzed energy and tempo. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.

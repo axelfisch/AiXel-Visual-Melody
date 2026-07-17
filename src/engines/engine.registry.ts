@@ -4,6 +4,7 @@ import { FrequencyCityEngine } from './frequency-city/FrequencyCityEngine';
 import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { LiquidColorsEngine } from './liquid-colors/LiquidColorsEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
+import { NeonVelvetEngine } from './neon-velvet/NeonVelvetEngine';
 
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
@@ -11,6 +12,7 @@ const engines = new Map<string, VisualEngine>([
   [FrequencyCityEngine.id, FrequencyCityEngine as VisualEngine],
   [JazzGeometryEngine.id, JazzGeometryEngine as VisualEngine],
   [LiquidColorsEngine.id, LiquidColorsEngine as VisualEngine],
+  [NeonVelvetEngine.id, NeonVelvetEngine as VisualEngine],
 ]);
 
 export function getEngine(id: string): VisualEngine {
