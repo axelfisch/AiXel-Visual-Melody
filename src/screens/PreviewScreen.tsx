@@ -36,7 +36,9 @@ export function PreviewScreen({
         ? 'L’encre lumineuse se replie et respire avec la musique.'
         : engine.id === 'frequency-city'
           ? 'La ville s’élève et pulse dans l’architecture du spectre.'
-          : 'Le disque réagit à l’énergie réelle du signal.';
+          : engine.id === 'neon-velvet'
+            ? 'La lumière glisse comme du velours électrique dans la nuit.'
+            : 'Le disque réagit à l’énergie réelle du signal.';
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (

@@ -1,5 +1,12 @@
 # Changelog
 
+## Neon Velvet V1 — Sixth Deterministic Engine
+
+- Added Neon Velvet as the sixth implemented `VisualEngine` with glamorous synthwave paths flowing across deep purple velvet.
+- Made cyan, violet, and magenta trail glow, curvature, traveling highlights, and motion respond deterministically to analyzed energy and tempo.
+- Connected Neon Velvet to the existing Create, Preview, Render Progress, cancellation, and synchronized MP4 export chain.
+- Completed the first functional set of all six approved visual engines without changing the Claude Design interface.
+
 ## Frequency City V1 — Fifth Deterministic Engine
 
 - Added Frequency City as the fifth implemented `VisualEngine` with a real architectural skyline, luminous windows, antennas, and a perspective horizon.
