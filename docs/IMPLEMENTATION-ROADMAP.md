@@ -29,5 +29,7 @@ Do not begin real audio analysis or video rendering in this phase.
 - Frequency City V1 implemented as the fifth deterministic engine on `agent/frequency-city-v1` with independent architectural spectrum pulses, luminous windows, and a perspective horizon.
 - Frequency City output accepted with a real 5:46 track and merged through PR #7.
 - Neon Velvet V1 implemented as the sixth deterministic engine on `agent/neon-velvet-v1` with traveling synthwave trails and deep-purple velvet light.
-- After Neon Velvet export acceptance, the six-engine parameter sets should inform an explicit AiXel Director V1 mapping before any currently read-only control becomes active.
+- Neon Velvet accepted by the product owner and merged through PR #8.
+- AiXel Director V1 technical mapping contract created on `agent/aixel-director-v1-contract` with normalized profiles, capability reporting, and pure engine adapters.
+- Next: persist Director state in the project and activate only supported controls while keeping Preview and Export configuration identical.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

@@ -150,6 +150,16 @@ The product owner accepted a 5:46 real-track MP4 export with successful QuickTim
 
 ## B10 — Neon Velvet V1
 
-**Status:** Implemented on 2026-07-17; awaiting product-owner MP4 acceptance.
+**Status:** Accepted and merged on 2026-07-17.
 
 Neon Velvet is the sixth deterministic renderer. Elegant cyan, violet, and magenta paths flow across a deep-purple velvet field with traveling highlights, restrained particles, and glow driven by analyzed energy and tempo. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.
+
+The product owner accepted the renderer on 2026-07-17. PR #8 was then merged into `main`, completing the first functional six-engine set.
+
+## B11 — AiXel Director V1
+
+**Status:** Technical mapping contract implemented; UI integration pending.
+
+Director uses eight normalized creative dimensions and six complete mood profiles. Its V1 contract translates only supported dimensions into real engine parameters: Fluidity and Dynamics across all six engines, plus Particles or Motion Complexity when a renderer exposes a meaningful density or count. Emotion, Space, Light, and Color Energy remain intentionally unmapped until explicit renderer parameters exist.
+
+The next checkpoint adds migration-safe project persistence and activates only supported controls without changing the approved Claude Design composition.
