@@ -34,7 +34,9 @@ export function PreviewScreen({
       ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
       : engine.id === 'liquid-colors'
         ? 'L’encre lumineuse se replie et respire avec la musique.'
-        : 'Le disque réagit à l’énergie réelle du signal.';
+        : engine.id === 'frequency-city'
+          ? 'La ville s’élève et pulse dans l’architecture du spectre.'
+          : 'Le disque réagit à l’énergie réelle du signal.';
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (
