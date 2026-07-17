@@ -12,4 +12,20 @@ describe('project serialization', () => {
   it('rejects unknown schema versions', () => {
     expect(() => parseProject('{"schemaVersion":2}')).toThrow(/version/i);
   });
+
+  it('migrates legacy Director mood parameters into structured state', () => {
+    const project = createProject();
+    const legacy = {
+      ...project,
+      engine: {
+        engineId: project.engine.engineId,
+        presetId: project.engine.presetId,
+        parameters: { directorMood: 'More Dreamy' },
+      },
+    };
+    const parsed = parseProject(JSON.stringify(legacy));
+    expect(parsed.engine.director.mood).toBe('More Dreamy');
+    expect(parsed.engine.director.values.space).toBe(88);
+    expect(parsed.engine.parameters.directorMood).toBeUndefined();
+  });
 });

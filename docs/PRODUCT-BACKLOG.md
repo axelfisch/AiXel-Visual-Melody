@@ -124,7 +124,7 @@ The asset is visually strong but belongs to a broader Music Lab identity and is 
 
 Analyze must explain the detected musical profile without selecting a visual engine on the user’s behalf. Its forward action routes to Create, where the imported track title and all six engine choices are visible. Preview remains the first stage that presents the selected functional renderer with synchronized audio.
 
-AiXel Director fine-tuning remains intentionally read-only until its common controls can be mapped honestly to multiple implemented engine configurations.
+AiXel Director fine-tuning now activates only controls mapped honestly to the selected engine; unsupported dimensions remain disabled.
 
 ## B7 — Jazz Geometry V1
 
@@ -158,8 +158,8 @@ The product owner accepted the renderer on 2026-07-17. PR #8 was then merged int
 
 ## B11 — AiXel Director V1
 
-**Status:** Technical mapping contract implemented; UI integration pending.
+**Status:** Functional Create integration implemented; owner acceptance pending.
 
 Director uses eight normalized creative dimensions and six complete mood profiles. Its V1 contract translates only supported dimensions into real engine parameters: Fluidity and Dynamics across all six engines, plus Particles or Motion Complexity when a renderer exposes a meaningful density or count. Emotion, Space, Light, and Color Energy remain intentionally unmapped until explicit renderer parameters exist.
 
-The next checkpoint adds migration-safe project persistence and activates only supported controls without changing the approved Claude Design composition.
+Director state now persists with migration-safe defaults. Mood profiles and supported sliders update validated engine parameters immediately; engine changes preserve and remap the normalized intent. Preview, Render Progress, and Export share the identical mapped configuration without changing the approved Claude Design composition.

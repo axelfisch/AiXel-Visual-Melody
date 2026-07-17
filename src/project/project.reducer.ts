@@ -1,4 +1,5 @@
 import { createProject } from './project.defaults';
+import type { DirectorMood, DirectorState } from '../director/director.types';
 import type {
   EngineParameterValue,
   ExportSettings,
@@ -16,6 +17,12 @@ export type ProjectAction =
   | { type: 'ANALYSIS_FAILED' }
   | { type: 'SELECT_ENGINE'; engineId: string; parameters?: Record<string, EngineParameterValue> }
   | { type: 'SELECT_PRESET'; presetId: string | null }
+  | {
+      type: 'APPLY_DIRECTOR';
+      mood: DirectorMood | null;
+      values: DirectorState;
+      parameters: Record<string, EngineParameterValue>;
+    }
   | { type: 'UPDATE_ENGINE_PARAMETER'; parameterId: string; value: EngineParameterValue }
   | { type: 'UPDATE_EXPORT_SETTINGS'; settings: Partial<ExportSettings> }
   | { type: 'RESET_PROJECT' };
@@ -39,6 +46,7 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
       return touched({
         ...project,
         engine: {
+          ...project.engine,
           engineId: action.engineId,
           presetId: null,
           parameters: action.parameters ? { ...action.parameters } : {},
@@ -46,6 +54,18 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
       });
     case 'SELECT_PRESET':
       return touched({ ...project, engine: { ...project.engine, presetId: action.presetId } });
+    case 'APPLY_DIRECTOR':
+      return touched({
+        ...project,
+        engine: {
+          ...project.engine,
+          parameters: { ...action.parameters },
+          director: {
+            mood: action.mood,
+            values: { ...action.values },
+          },
+        },
+      });
     case 'UPDATE_ENGINE_PARAMETER':
       return touched({
         ...project,

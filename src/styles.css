@@ -923,6 +923,14 @@ blockquote {
   border-top: 1px solid rgba(160, 180, 255, 0.12);
 }
 
+.director-control-disabled {
+  opacity: 0.42;
+}
+
+.director-control-disabled input {
+  cursor: not-allowed;
+}
+
 .fine-tuning label {
   display: grid;
   gap: 8px;

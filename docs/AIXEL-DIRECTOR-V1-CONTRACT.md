@@ -4,7 +4,7 @@
 
 AiXel Director is a common creative language above six visually different engines. A Director control must change a real renderer parameter; it must never pretend that every visual world supports the same behavior.
 
-This checkpoint defines and tests the translation contract. It deliberately does not activate the existing read-only sliders or change the Claude Design interface.
+The translation contract is implemented and tested. The functional integration activates only supported sliders while preserving the Claude Design interface.
 
 ## Eight creative dimensions
 
@@ -52,13 +52,13 @@ The six approved mood buttons produce complete eight-dimension profiles:
 - More Organic
 - More Minimal
 
-Applying a mood profile and persisting Director state in the project model belong to the next implementation checkpoint.
+Applying a mood profile now persists the complete Director state in the project model and immediately maps it to validated engine parameters.
 
-## Next implementation checkpoint
+## Functional integration
 
-1. Add Director state to the project schema with migration-safe defaults.
-2. Apply mood profiles through the pure mapping layer.
-3. Activate only supported sliders for the selected engine.
-4. Preview changes immediately through the existing shared renderer.
-5. Ensure Export receives the identical mapped engine configuration.
-6. Add screen-level tests before changing any visual treatment.
+1. Director state is part of the project schema with migration-safe defaults for existing serialized projects.
+2. Mood profiles pass through the pure mapping layer and update state and renderer parameters atomically.
+3. Only supported sliders are active for the selected engine; unsupported controls stay visible and disabled.
+4. A manual slider change preserves the full normalized state and clears the selected preset mood to represent a custom Director state.
+5. Engine changes preserve creative intent and remap it through the selected engine adapter.
+6. Preview and Export consume the same mapped `project.engine.parameters`; no parallel export-only configuration exists.

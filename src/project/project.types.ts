@@ -1,3 +1,5 @@
+import type { DirectorMood, DirectorState } from '../director/director.types';
+
 export type ProjectId = string;
 export type ProjectSchemaVersion = 1;
 
@@ -24,6 +26,10 @@ export type EngineSelection = {
   engineId: string;
   presetId: string | null;
   parameters: Record<string, EngineParameterValue>;
+  director: {
+    mood: DirectorMood | null;
+    values: DirectorState;
+  };
 };
 
 export type ExportSettings = {

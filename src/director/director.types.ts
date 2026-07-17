@@ -1,5 +1,3 @@
-import type { EngineParameterValue } from '../project/project.types';
-
 export type DirectorDimension =
   | 'emotion'
   | 'space'
@@ -22,5 +20,5 @@ export type DirectorMood =
 
 export type DirectorEngineMapping = {
   supportedDimensions: DirectorDimension[];
-  parameters: Record<string, EngineParameterValue>;
+  parameters: Record<string, number | string | boolean>;
 };

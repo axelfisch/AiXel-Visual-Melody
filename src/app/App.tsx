@@ -24,6 +24,14 @@ import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalys
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { getEngineOrDefault } from '../engines/engine.registry';
+import {
+  directorCapabilities,
+  directorMoodProfiles,
+  mapDirectorToEngine,
+  type DirectorDimension,
+  type DirectorMood,
+  type DirectorState,
+} from '../director';
 import { useProject } from '../project/project.context';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
@@ -143,12 +151,22 @@ export function App() {
   const renderEngine = useMemo(() => getEngineOrDefault(project.engine.engineId), [project.engine.engineId]);
   const activeEngine = engine.key;
   const activePreset = project.engine.presetId ?? 'Naomi';
-  const selectedMood = typeof project.engine.parameters.directorMood === 'string'
-    ? project.engine.parameters.directorMood
-    : 'More Emotional';
+  const selectedMood = project.engine.director.mood;
+  const directorValues = project.engine.director.values;
+  const supportedDirectorDimensions = useMemo(
+    () => directorCapabilities(project.engine.engineId),
+    [project.engine.engineId],
+  );
   const selectEngine = (key: EngineKey) => {
     const selected = engines.find((item) => item.key === key);
-    if (selected) dispatch({ type: 'SELECT_ENGINE', engineId: selected.id, parameters: project.engine.parameters });
+    if (selected) {
+      const mapped = mapDirectorToEngine(selected.id, directorValues);
+      dispatch({ type: 'SELECT_ENGINE', engineId: selected.id, parameters: mapped.parameters });
+    }
+  };
+  const applyDirector = (values: DirectorState, mood: DirectorMood | null) => {
+    const mapped = mapDirectorToEngine(project.engine.engineId, values, project.engine.parameters);
+    dispatch({ type: 'APPLY_DIRECTOR', mood, values, parameters: mapped.parameters });
   };
   const analysis = useMemo<AudioAnalysis | null>(() => {
     if (!project.analysis || !project.audio || !runtime.decodedAudio) return null;
@@ -219,11 +237,14 @@ export function App() {
             activeEngine={activeEngine}
             activePreset={activePreset}
             selectedMood={selectedMood}
+            directorValues={directorValues}
+            supportedDirectorDimensions={supportedDirectorDimensions}
             engine={engine}
             projectName={project.name}
             onEngine={selectEngine}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
-            onMood={(value) => dispatch({ type: 'UPDATE_ENGINE_PARAMETER', parameterId: 'directorMood', value })}
+            onMood={(mood) => applyDirector(directorMoodProfiles[mood], mood)}
+            onDirectorChange={(dimension, value) => applyDirector({ ...directorValues, [dimension]: value }, null)}
             onNavigate={navigate}
           />
         )}
@@ -485,25 +506,41 @@ function CreateScreen({
   activeEngine,
   activePreset,
   selectedMood,
+  directorValues,
+  supportedDirectorDimensions,
   engine,
   projectName,
   onEngine,
   onPreset,
   onMood,
+  onDirectorChange,
   onNavigate,
 }: {
   activeEngine: EngineKey;
   activePreset: string;
-  selectedMood: string;
+  selectedMood: DirectorMood | null;
+  directorValues: DirectorState;
+  supportedDirectorDimensions: DirectorDimension[];
   engine: Engine;
   projectName: string;
   onEngine: (engine: EngineKey) => void;
   onPreset: (preset: string) => void;
-  onMood: (mood: string) => void;
+  onMood: (mood: DirectorMood) => void;
+  onDirectorChange: (dimension: DirectorDimension, value: number) => void;
   onNavigate: (screen: Screen) => void;
 }) {
   const presets = ['Naomi', 'Dream', 'Universe', 'Rain', 'Blue', 'Neon', 'Galaxy', 'Jazz Club', 'Deep Space', 'Ocean'];
-  const moods = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
+  const moods: DirectorMood[] = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
+  const directorControls: Array<{ dimension: DirectorDimension; label: string }> = [
+    { dimension: 'emotion', label: 'Emotion' },
+    { dimension: 'space', label: 'Space' },
+    { dimension: 'fluidity', label: 'Fluidity' },
+    { dimension: 'light', label: 'Light' },
+    { dimension: 'dynamics', label: 'Dynamics' },
+    { dimension: 'particles', label: 'Particles' },
+    { dimension: 'colorEnergy', label: 'Color Energy' },
+    { dimension: 'motionComplexity', label: 'Motion Complexity' },
+  ];
 
   return (
     <section className="screen create-layout">
@@ -552,24 +589,28 @@ function CreateScreen({
             ))}
           </div>
           <div className="fine-tuning">
-            {[
-              ['Emotion', 72],
-              ['Space', 58],
-              ['Fluidity', 64],
-              ['Light', 80],
-              ['Dynamics', 45],
-              ['Particles', 66],
-              ['Color Energy', 52],
-              ['Motion Complexity', 38],
-            ].map(([label, value]) => (
-              <label key={label as string}>
+            {directorControls.map(({ dimension, label }) => {
+              const supported = supportedDirectorDimensions.includes(dimension);
+              const value = directorValues[dimension];
+              return (
+              <label className={supported ? '' : 'director-control-disabled'} key={dimension}>
                 <span>
                   {label}
                   <em>{value}%</em>
                 </span>
-                <input type="range" min="0" max="100" value={value as number} readOnly />
+                <input
+                  aria-label={label}
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={value}
+                  disabled={!supported}
+                  title={supported ? `Ajuster ${label}` : 'Ce moteur ne prend pas encore en charge ce réglage.'}
+                  onChange={(event) => onDirectorChange(dimension, Number(event.target.value))}
+                />
               </label>
-            ))}
+              );
+            })}
           </div>
           <button className="primary-action full" onClick={() => onNavigate('preview')}>
             Continue to Preview

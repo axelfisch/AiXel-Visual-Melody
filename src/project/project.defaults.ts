@@ -1,4 +1,5 @@
 import { DEFAULT_ENGINE_ID } from '../engines/engine.defaults';
+import { directorDefaultState } from '../director/director.profiles';
 import type { ExportSettings, VisualMelodyProject } from './project.types';
 
 export const PROJECT_SCHEMA_VERSION = 1 as const;
@@ -26,7 +27,12 @@ export function createProject(name = 'Untitled Visual Melody'): VisualMelodyProj
     updatedAt: now,
     audio: null,
     analysis: null,
-    engine: { engineId: DEFAULT_ENGINE_ID, presetId: 'Naomi', parameters: { directorMood: 'More Emotional' } },
+    engine: {
+      engineId: DEFAULT_ENGINE_ID,
+      presetId: 'Naomi',
+      parameters: {},
+      director: { mood: 'More Emotional', values: { ...directorDefaultState } },
+    },
     export: { ...DEFAULT_EXPORT_SETTINGS },
   };
 }
