@@ -45,7 +45,7 @@ The React + Vite + TypeScript shell translates the approved visual direction int
 - Settings remains accessible from every screen.
 - The six approved visual engines are present.
 - Create includes engine-reactive theming for accent color, preview surface, and radius.
-- The complete functional chain now includes real browser audio analysis, synchronized Preview, and local MP4 rendering through three deterministic engines: Minimal Album Art, Cosmic Waves, and Jazz Geometry.
+- The complete functional chain now includes real browser audio analysis, synchronized Preview, and local MP4 rendering through four deterministic engines: Minimal Album Art, Cosmic Waves, Jazz Geometry, and Liquid Colors.
 
 Run locally with:
 
@@ -70,4 +70,4 @@ AiXel-Visual-Melody/
 
 ## Current Functional Checkpoint
 
-Jazz Geometry V1 is the third functional engine. Analyze hands an analyzed track to Create without forcing a visual choice; Create displays the imported track name and lets the user choose the engine before Preview. Minimal Album Art, Cosmic Waves, and Jazz Geometry each drive the same audio-reactive renderer in Preview, Render Progress, and the downloaded MP4. Liquid Colors, Frequency City, and Neon Velvet remain visual prototypes.
+Liquid Colors V1 is the fourth functional engine. Analyze hands an analyzed track to Create without forcing a visual choice; Create displays the imported track name and lets the user choose the engine before Preview. Minimal Album Art, Cosmic Waves, Jazz Geometry, and Liquid Colors each drive the same audio-reactive renderer in Preview, Render Progress, and the downloaded MP4. Frequency City and Neon Velvet remain visual prototypes.

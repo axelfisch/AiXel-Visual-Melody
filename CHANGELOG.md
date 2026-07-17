@@ -1,5 +1,12 @@
 # Changelog
 
+## Liquid Colors V1 — Fourth Deterministic Engine
+
+- Added Liquid Colors as the fourth implemented `VisualEngine` with layered organic ink fields and continuous orange–magenta–indigo bands.
+- Made flow, folding, glow, droplets, and band amplitude respond deterministically to analyzed energy and tempo.
+- Connected Liquid Colors to the existing Create, Preview, Render Progress, cancellation, and synchronized MP4 export chain.
+- Preserved the approved Claude Design composition and kept Frequency City and Neon Velvet as safe prototype fallbacks.
+
 ## Jazz Geometry V1 — Third Deterministic Engine
 
 - Added Jazz Geometry as the third implemented `VisualEngine` with concentric harmonic arcs, orbital accents, and a luminous geometric core.

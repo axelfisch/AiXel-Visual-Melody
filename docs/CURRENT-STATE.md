@@ -1,8 +1,8 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Jazz Geometry V1 — third deterministic visual engine
+**Checkpoint:** Liquid Colors V1 — fourth deterministic visual engine
 
-**Date:** 2026-07-16
+**Date:** 2026-07-17
 
 **Local application:** `http://localhost:5173/#home`
 
@@ -43,11 +43,15 @@
 - Jazz Geometry implemented as the third registered deterministic engine.
 - Concentric harmonic arcs, orbital accents, and the luminous core react to analyzed energy and tempo without random frame state.
 - Preview, Render Progress, cancellation, and MP4 export all use the same Jazz Geometry renderer and validated configuration.
-- The three remaining prototype selections safely fall back to Minimal Album Art in functional Preview/Export.
+- “The God Code (Ouf! Boom!)” was exported with Jazz Geometry and published by the product owner as the first public YouTube visualizer created with AiXel Visual Melody.
+- Liquid Colors implemented as the fourth registered deterministic engine.
+- Layered organic ink fields and continuous orange–magenta–indigo bands react to analyzed energy and tempo without random frame state.
+- Preview, Render Progress, cancellation, and MP4 export all use the same Liquid Colors renderer and validated configuration.
+- The two remaining prototype selections safely fall back to Minimal Album Art in functional Preview/Export.
 
 ## Verification at checkpoint
 
-- `npm test -- --run`: 15 test files, 31 tests passing.
+- `npm test -- --run`: 16 test files, 32 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -55,18 +59,19 @@
 - Browser smoke test: an analyzed Golden Reference enabled “Continuer vers Create”, routed to Create, and displayed the current project title with all six engine choices.
 - Owner-supplied Cosmic Waves MP4 inspected at 1280 × 720, 216.275 seconds, H.264 video, and stereo 48 kHz Opus audio.
 - Browser acceptance test: Jazz Geometry selected in Create, animated in synchronized Preview, appeared in the live Render Progress canvas, and returned to the ready state after cancellation.
+- Browser acceptance test: Liquid Colors selected in Create, animated in synchronized Preview, filled the live Render Progress canvas with evolving liquid bands, and returned to the ready state after cancellation.
 
 ## Exact next recommended step
 
-Choose the **fourth deterministic visual engine** as a separate checkpoint, with Liquid Colors V1 as the leading candidate. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after enough real engine parameters exist to map them consistently.
+Implement **Frequency City V1** as the fifth deterministic visual engine on a separate branch. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after enough real engine parameters exist to map them consistently.
 
 ## Claude Design timing
 
-Jazz Geometry reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
+Liquid Colors reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
 
 ## Known limitations to preserve honestly
 
-- Minimal Album Art, Cosmic Waves, and Jazz Geometry are functional render engines; the other three remain visual prototypes.
+- Minimal Album Art, Cosmic Waves, Jazz Geometry, and Liquid Colors are functional render engines; Frequency City and Neon Velvet remain visual prototypes.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -85,4 +90,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-Jazz Geometry V1 is developed on `agent/jazz-geometry-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, and Analyze → Create checkpoints in `main`.
+Liquid Colors V1 is developed on `agent/liquid-colors-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, Analyze → Create, and Jazz Geometry V1 checkpoints in `main`.
