@@ -32,7 +32,9 @@ export function PreviewScreen({
     ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
     : engine.id === 'jazz-geometry'
       ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
-      : 'Le disque réagit à l’énergie réelle du signal.';
+      : engine.id === 'liquid-colors'
+        ? 'L’encre lumineuse se replie et respire avec la musique.'
+        : 'Le disque réagit à l’énergie réelle du signal.';
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (
