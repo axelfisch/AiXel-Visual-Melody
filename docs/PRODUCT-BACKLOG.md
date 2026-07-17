@@ -125,3 +125,9 @@ The asset is visually strong but belongs to a broader Music Lab identity and is 
 Analyze must explain the detected musical profile without selecting a visual engine on the user’s behalf. Its forward action routes to Create, where the imported track title and all six engine choices are visible. Preview remains the first stage that presents the selected functional renderer with synchronized audio.
 
 AiXel Director fine-tuning remains intentionally read-only until its common controls can be mapped honestly to multiple implemented engine configurations.
+
+## B7 — Jazz Geometry V1
+
+**Status:** Implemented on 2026-07-16.
+
+Jazz Geometry is the third deterministic renderer. Its concentric arcs, orbital accents, central geometry, glow, and scale respond to analyzed energy and tempo. Create selection, synchronized Preview, live Render Progress, cancellation, and MP4 export all use the same registered engine without changing the approved Claude Design interface.

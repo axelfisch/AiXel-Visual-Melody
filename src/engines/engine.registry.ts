@@ -1,10 +1,12 @@
 import type { VisualEngine } from './engine.types';
 import { CosmicWavesEngine } from './cosmic-waves/CosmicWavesEngine';
+import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
 
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
   [CosmicWavesEngine.id, CosmicWavesEngine as VisualEngine],
+  [JazzGeometryEngine.id, JazzGeometryEngine as VisualEngine],
 ]);
 
 export function getEngine(id: string): VisualEngine {
