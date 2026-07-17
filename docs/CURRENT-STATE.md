@@ -68,6 +68,7 @@
 - Unsupported sliders remain visible but disabled, preserving the approved Claude Design composition honestly.
 - Changing engines preserves the Director intent and remaps it to the new engine's validated parameters.
 - Preview, Render Progress, and Export all consume the identical mapped `project.engine.parameters` object.
+- The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
 
 ## Verification at checkpoint
 
