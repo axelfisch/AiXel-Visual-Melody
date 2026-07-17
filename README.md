@@ -70,4 +70,4 @@ AiXel-Visual-Melody/
 
 ## Current Functional Checkpoint
 
-Cosmic Waves V1 is the second functional engine. Selecting Cosmic Waves in Create now drives the same audio-reactive renderer in Preview, Render Progress, and the downloaded MP4. Minimal Album Art remains fully functional; Jazz Geometry, Liquid Colors, Frequency City, and Neon Velvet remain visual prototypes.
+Cosmic Waves V1 is the second functional engine. Analyze now hands an analyzed track to Create without forcing a visual choice; Create displays the imported track name and lets the user choose the engine before Preview. Selecting Cosmic Waves drives the same audio-reactive renderer in Preview, Render Progress, and the downloaded MP4. Minimal Album Art remains fully functional; Jazz Geometry, Liquid Colors, Frequency City, and Neon Velvet remain visual prototypes.

@@ -210,10 +210,7 @@ export function App() {
         {screen === 'analyze' && (
           <AnalyzeScreen
             analysis={analysis}
-            onAnalysis={(file, result) => {
-              setAnalyzedAudio(file, result);
-              selectEngine('album');
-            }}
+            onAnalysis={setAnalyzedAudio}
             onNavigate={navigate}
           />
         )}
@@ -223,6 +220,7 @@ export function App() {
             activePreset={activePreset}
             selectedMood={selectedMood}
             engine={engine}
+            projectName={project.name}
             onEngine={selectEngine}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
             onMood={(value) => dispatch({ type: 'UPDATE_ENGINE_PARAMETER', parameterId: 'directorMood', value })}
@@ -417,6 +415,9 @@ function AnalyzeScreen({
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const intelligenceSummary = analysis
+    ? `${analysis.bpm < 80 ? 'Tempo posé' : analysis.bpm < 120 ? 'Tempo modéré' : 'Tempo énergique'}. ${analysis.averageEnergy < 0.2 ? 'Dynamique délicate' : analysis.averageEnergy < 0.5 ? 'Dynamique équilibrée' : 'Dynamique intense'}. L’analyse est prête : choisissez maintenant votre moteur visuel dans Create.`
+    : 'Importez un morceau pour obtenir son profil musical avant de choisir un moteur visuel.';
 
   const importFile = async (file?: File) => {
     if (!file) return;
@@ -468,10 +469,10 @@ function AnalyzeScreen({
         <GlassPanel className="ai-panel">
           <PanelHeading icon={<WandSparkles size={18} />} label="AiXel Intelligence" />
           <blockquote>
-            Ballad detected. Moderate dynamics. Rich harmonic movement. Recommended palette: Blue Aurora.
+            {intelligenceSummary}
           </blockquote>
-          <button className="primary-action" disabled={!analysis} onClick={() => onNavigate('preview')}>
-            Prévisualiser Minimal Album Art
+          <button className="primary-action" disabled={!analysis} onClick={() => onNavigate('create')}>
+            Continuer vers Create
             <ChevronRight size={17} />
           </button>
         </GlassPanel>
@@ -485,6 +486,7 @@ function CreateScreen({
   activePreset,
   selectedMood,
   engine,
+  projectName,
   onEngine,
   onPreset,
   onMood,
@@ -494,6 +496,7 @@ function CreateScreen({
   activePreset: string;
   selectedMood: string;
   engine: Engine;
+  projectName: string;
   onEngine: (engine: EngineKey) => void;
   onPreset: (preset: string) => void;
   onMood: (mood: string) => void;
@@ -504,7 +507,7 @@ function CreateScreen({
 
   return (
     <section className="screen create-layout">
-      <ScreenTitle eyebrow="Creative Studio" title="In the Spirit of Naomi" note={engine.mood} />
+      <ScreenTitle eyebrow="Creative Studio" title={projectName} note={engine.mood} />
       <div className="engine-tabs">
         {engines.map((item) => (
           <button

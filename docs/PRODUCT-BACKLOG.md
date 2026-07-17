@@ -117,3 +117,11 @@ Supplied on 2026-07-16:
 - visible product name: “AiXel Music Lab”.
 
 The asset is visually strong but belongs to a broader Music Lab identity and is more metallic/cosmic than the restrained Visual Melody navigation brand. Do not replace the current Visual Melody logo or insert this animation into the workflow without an explicit branding decision aligned with the Claude Design source of truth. Candidate future uses include an AiXel Studio family ident, splash animation, or end-card after a dedicated brand review.
+
+## B6 — Analyze → Create workflow clarity
+
+**Status:** Implemented on 2026-07-16.
+
+Analyze must explain the detected musical profile without selecting a visual engine on the user’s behalf. Its forward action routes to Create, where the imported track title and all six engine choices are visible. Preview remains the first stage that presents the selected functional renderer with synchronized audio.
+
+AiXel Director fine-tuning remains intentionally read-only until its common controls can be mapped honestly to multiple implemented engine configurations.
