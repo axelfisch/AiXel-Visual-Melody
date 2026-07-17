@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Analyze → Create workflow handoff
+**Checkpoint:** Jazz Geometry V1 — third deterministic visual engine
 
 **Date:** 2026-07-16
 
@@ -35,34 +35,38 @@
 - Shared `EngineCanvas` makes Preview render the implemented engine selected in Create.
 - Cosmic Waves uses deterministic particles, layered nebulas, and luminous waves driven by analyzed signal energy.
 - Export and Render Progress receive the same selected engine and validated configuration used by Preview.
-- The four unimplemented engine selections safely fall back to Minimal Album Art in functional Preview/Export.
 - Cosmic Waves MP4 accepted by the product owner with a real imported track.
 - Analyze no longer forces Minimal Album Art after an import.
 - Analyze reports tempo and dynamics from the real analysis, then routes forward to Create.
 - Create displays the current imported project name instead of the hard-coded Golden Reference title.
 - Engine choice now happens at the intended stage: after analysis and before Preview.
+- Jazz Geometry implemented as the third registered deterministic engine.
+- Concentric harmonic arcs, orbital accents, and the luminous core react to analyzed energy and tempo without random frame state.
+- Preview, Render Progress, cancellation, and MP4 export all use the same Jazz Geometry renderer and validated configuration.
+- The three remaining prototype selections safely fall back to Minimal Album Art in functional Preview/Export.
 
 ## Verification at checkpoint
 
-- `npm run test:run`: 14 test files, 30 tests passing.
+- `npm test -- --run`: 15 test files, 31 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
 - Golden Reference asset served as `audio/mp4`.
 - Browser smoke test: an analyzed Golden Reference enabled “Continuer vers Create”, routed to Create, and displayed the current project title with all six engine choices.
 - Owner-supplied Cosmic Waves MP4 inspected at 1280 × 720, 216.275 seconds, H.264 video, and stereo 48 kHz Opus audio.
+- Browser acceptance test: Jazz Geometry selected in Create, animated in synchronized Preview, appeared in the live Render Progress canvas, and returned to the ready state after cancellation.
 
 ## Exact next recommended step
 
-Choose and implement the **third deterministic visual engine** as a separate checkpoint. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after enough real engine parameters exist to map them consistently.
+Choose the **fourth deterministic visual engine** as a separate checkpoint, with Liquid Colors V1 as the leading candidate. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after enough real engine parameters exist to map them consistently.
 
 ## Claude Design timing
 
-Cosmic Waves reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
+Jazz Geometry reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
 
 ## Known limitations to preserve honestly
 
-- Minimal Album Art and Cosmic Waves are functional render engines; the other four remain visual prototypes.
+- Minimal Album Art, Cosmic Waves, and Jazz Geometry are functional render engines; the other three remain visual prototypes.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -81,4 +85,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-The Analyze → Create handoff is developed on `agent/analyze-create-handoff`, based on merged Preview Player V1, Export V1, and Cosmic Waves V1 checkpoints in `main`.
+Jazz Geometry V1 is developed on `agent/jazz-geometry-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, and Analyze → Create checkpoints in `main`.

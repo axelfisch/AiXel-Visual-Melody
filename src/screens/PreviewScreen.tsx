@@ -28,6 +28,11 @@ export function PreviewScreen({
     autoPlay,
     onAutoPlayHandled,
   });
+  const poeticLine = engine.id === 'cosmic-waves'
+    ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
+    : engine.id === 'jazz-geometry'
+      ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
+      : 'Le disque réagit à l’énergie réelle du signal.';
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (
@@ -58,11 +63,7 @@ export function PreviewScreen({
           <div>
             <p className="tiny-label">{engine.name} · Live Preview</p>
             <h1>{project.name}</h1>
-            <p className="poetic">
-              {engine.id === 'cosmic-waves'
-                ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
-                : 'Le disque réagit à l’énergie réelle du signal.'}
-            </p>
+            <p className="poetic">{poeticLine}</p>
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>
             Export

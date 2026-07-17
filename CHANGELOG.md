@@ -1,5 +1,12 @@
 # Changelog
 
+## Jazz Geometry V1 — Third Deterministic Engine
+
+- Added Jazz Geometry as the third implemented `VisualEngine` with concentric harmonic arcs, orbital accents, and a luminous geometric core.
+- Made rotation, ring motion, glow, and scale react deterministically to the analyzed audio energy and tempo.
+- Connected Jazz Geometry to the existing Create, Preview, Render Progress, cancellation, and synchronized MP4 export chain.
+- Preserved the approved Claude Design screen composition and kept Liquid Colors, Frequency City, and Neon Velvet as safe prototype fallbacks.
+
 ## Analyze → Create Workflow Handoff
 
 - Removed the premature “Prévisualiser Minimal Album Art” action from Analyze.
