@@ -1,7 +1,11 @@
 import type { VisualEngine } from './engine.types';
+import { CosmicWavesEngine } from './cosmic-waves/CosmicWavesEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
 
-const engines = new Map<string, VisualEngine>([[MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine]]);
+const engines = new Map<string, VisualEngine>([
+  [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
+  [CosmicWavesEngine.id, CosmicWavesEngine as VisualEngine],
+]);
 
 export function getEngine(id: string): VisualEngine {
   const engine = engines.get(id);
@@ -11,4 +15,8 @@ export function getEngine(id: string): VisualEngine {
 
 export function listEngines(): VisualEngine[] {
   return [...engines.values()];
+}
+
+export function getEngineOrDefault(id: string): VisualEngine {
+  return engines.get(id) ?? MinimalAlbumArtEngine as VisualEngine;
 }

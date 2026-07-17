@@ -2,6 +2,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AudioAnalysis } from '../audio';
+import { CosmicWavesEngine } from '../engines/cosmic-waves/CosmicWavesEngine';
 import { DEFAULT_EXPORT_SETTINGS } from '../project/project.defaults';
 import { ExportScreen } from './ExportScreen';
 
@@ -56,13 +57,20 @@ describe('ExportScreen', () => {
       return new Blob(['mp4'], { type: 'video/mp4' });
     });
     const user = userEvent.setup();
-    render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+    render(
+      <ExportScreen
+        analysis={analysis}
+        engine={CosmicWavesEngine}
+        previewBackground="#05060b"
+        settings={DEFAULT_EXPORT_SETTINGS}
+      />,
+    );
 
     const canvas = screen.getByLabelText('Image vidéo actuellement rendue');
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
 
     await screen.findByText('MP4 terminé et téléchargé.');
-    expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({ canvas }));
+    expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({ canvas, engine: CosmicWavesEngine }));
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
     const exportAgain = screen.getByRole('link', { name: 'Exporter de nouveau' });
     expect(exportAgain).toHaveAttribute('href', 'blob:export');

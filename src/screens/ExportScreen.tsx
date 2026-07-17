@@ -2,6 +2,7 @@ import { Download, Film, Gauge, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { formatTime, type AudioAnalysis } from '../audio';
 import { GlassPanel } from '../components/layout/GlassPanel';
+import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
 import { renderMp4 } from '../export/renderMp4';
@@ -23,10 +24,14 @@ function downloadExport({ filename, url }: CompletedExport) {
 
 export function ExportScreen({
   analysis,
+  engine = MinimalAlbumArtEngine,
+  engineConfig,
   previewBackground,
   settings,
 }: {
   analysis: AudioAnalysis | null;
+  engine?: VisualEngine;
+  engineConfig?: unknown;
   previewBackground: string;
   settings: ExportSettings;
 }) {
@@ -86,7 +91,8 @@ export function ExportScreen({
     try {
       const blob = await renderMp4({
         analysis,
-        engine: MinimalAlbumArtEngine,
+        engine,
+        engineConfig,
         settings,
         mimeType,
         canvas,

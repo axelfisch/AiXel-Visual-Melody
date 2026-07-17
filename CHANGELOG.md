@@ -1,5 +1,13 @@
 # Changelog
 
+## Cosmic Waves V1 — Second Deterministic Engine
+
+- Added Cosmic Waves as the second implemented `VisualEngine` with deterministic particles, nebulas, and audio-reactive light waves.
+- Added shared `EngineCanvas` rendering so Preview follows the implemented engine selected in Create.
+- Connected the selected implemented engine and its validated configuration to MP4 Export and Render Progress.
+- Preserved Minimal Album Art as the safe fallback for the four remaining prototype engines.
+- Recorded the supplied AiXel Music Lab logo animation as a future brand reference without changing the Claude Design interface.
+
 ## Export V1 — Live Render Progress
 
 - Extracted native MP4 support detection and the MediaRecorder render service from `App.tsx`.

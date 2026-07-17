@@ -45,7 +45,7 @@ The React + Vite + TypeScript shell translates the approved visual direction int
 - Settings remains accessible from every screen.
 - The six approved visual engines are present.
 - Create includes engine-reactive theming for accent color, preview surface, and radius.
-- The first complete functional chain now includes real browser audio analysis, synchronized Preview, and local MP4 rendering through the Minimal Album Art engine.
+- The complete functional chain now includes real browser audio analysis, synchronized Preview, and local MP4 rendering through two deterministic engines: Minimal Album Art and Cosmic Waves.
 
 Run locally with:
 
@@ -70,4 +70,4 @@ AiXel-Visual-Melody/
 
 ## Current Functional Checkpoint
 
-Export V1 displays the actual canvas being encoded, reports rendered time and progress, supports cancellation, handles completed, cancelled, unsupported, and failed states, and keeps a completed MP4 available for download retry until the Export screen closes. The next gate is full downloaded-file acceptance in Safari before beginning another deterministic visual engine.
+Cosmic Waves V1 is the second functional engine. Selecting Cosmic Waves in Create now drives the same audio-reactive renderer in Preview, Render Progress, and the downloaded MP4. Minimal Album Art remains fully functional; Jazz Geometry, Liquid Colors, Frequency City, and Neon Velvet remain visual prototypes.

@@ -19,6 +19,7 @@ Do not begin real audio analysis or video rendering in this phase.
 
 - Real browser audio analysis implemented for the first functional chain.
 - Preview Player V1 implemented and merged into `main`.
-- Export V1 live canvas, progress, cancellation, and terminal states implemented on `agent/export-v1`.
-- Complete full downloaded-MP4 acceptance before beginning the second deterministic visual engine.
+- Export V1 live canvas, progress, cancellation, download retry, and terminal states implemented and merged into `main` after owner acceptance.
+- Cosmic Waves V1 implemented as the second deterministic engine on `agent/cosmic-waves-v1`.
+- Next engine work should begin only after Cosmic Waves Preview and MP4 acceptance.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

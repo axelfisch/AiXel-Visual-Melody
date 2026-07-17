@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Export V1 — live render progress
+**Checkpoint:** Cosmic Waves V1 — second deterministic engine
 
 **Date:** 2026-07-16
 
@@ -15,7 +15,7 @@
 - Golden Reference web asset and Home-to-Preview flow for “In the Spirit of Naomi”.
 - Stable visual-engine interface and registry.
 - Minimal Album Art implemented as the first deterministic engine.
-- Minimal Album Art renderer shared by Preview and the current export implementation.
+- The selected registered engine renderer is shared by Preview and Export.
 - Preview Player V1 extracted from `App.tsx`.
 - Synchronized play, pause, seek, end-of-track handling, and smooth frame-time updates.
 - Preview volume slider and mute control; listening volume does not alter export audio.
@@ -24,39 +24,46 @@
 - 4K and 8K Preview options explicitly disabled until implemented.
 - MP4 support detection extracted into `src/export/mediaRecorderSupport.ts`.
 - MP4 recording and engine rendering extracted into `src/export/renderMp4.ts`.
-- Export uses the project resolution, frame rate, bitrate, decoded audio buffer, and the same Minimal Album Art renderer as Preview.
+- Export uses the project resolution, frame rate, bitrate, decoded audio buffer, and the same selected engine renderer as Preview.
 - `ExportScreen.tsx` extracted from `App.tsx` without changing the approved Claude Design structure.
 - `Render Progress` displays the actual 1280 × 720 canvas currently sent to `MediaRecorder`.
 - Rendered time, percentage, completed, cancelled, unsupported, and failed states implemented.
 - Active export cancellation connected through `AbortSignal`, with browser media resources released after completion or cancellation.
+- Export V1 accepted by the product owner with a browser-decoded WAV longer than four minutes; image, audio, live Render Progress, and MP4 download confirmed.
+- Completed MP4 Blob retained for immediate download retry until Export closes.
+- Cosmic Waves implemented as the second registered deterministic engine.
+- Shared `EngineCanvas` makes Preview render the implemented engine selected in Create.
+- Cosmic Waves uses deterministic particles, layered nebulas, and luminous waves driven by analyzed signal energy.
+- Export and Render Progress receive the same selected engine and validated configuration used by Preview.
+- The four unimplemented engine selections safely fall back to Minimal Album Art in functional Preview/Export.
 
 ## Verification at checkpoint
 
-- `npm run test:run`: 13 test files, 28 tests passing.
+- `npm run test:run`: 14 test files, 30 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
 - Golden Reference asset served as `audio/mp4`.
-- Browser smoke test with “In the Spirit of Naomi”: real canvas visible at 1280 × 720, rendered time and progress advancing, cancellation confirmed and restart action restored.
+- Browser smoke test with “In the Spirit of Naomi”: Cosmic Waves selected in Create, identified in Preview, and visually rendered on the real 1280 × 720 canvas.
 
 ## Exact next recommended step
 
-Complete the **Export V1 acceptance pass** before starting another visual engine:
+Complete the **Cosmic Waves V1 acceptance pass**:
 
-1. render the full Golden Reference to MP4 in Safari;
-2. play the downloaded file from beginning to end;
-3. verify audio presence, duration, final frame, and perceptible synchronization;
-4. record any Safari-specific MediaRecorder limitation honestly;
-5. use Claude Design only to review the existing live thumbnail, progress copy, and cancellation hierarchy;
-6. after acceptance, begin the second deterministic visual engine in a separate checkpoint.
+1. select Cosmic Waves in Create after loading an analyzed track;
+2. verify its Preview label, particles, light waves, seeking, volume, and audio response;
+3. begin an MP4 export and confirm the Cosmic Waves canvas appears in Render Progress;
+4. cancel a short test once, then complete one downloaded MP4;
+5. verify audio presence, duration, final frame, and perceptible synchronization;
+6. after acceptance, choose the third deterministic engine as a separate checkpoint.
 
 ## Claude Design timing
 
-The useful Export V1 review point has now been reached. Claude Design may review the existing live-render thumbnail, progress states, cancellation control, and transport hierarchy. Treat that review as validation of the approved system, not authorization to redesign it.
+Cosmic Waves reuses the approved Preview and Export composition without structural changes. Claude Design may later review the motion character and visual balance of the engine itself. Treat that review as refinement within the approved system, not authorization to redesign the surrounding interface.
 
 ## Known limitations to preserve honestly
 
-- Only Minimal Album Art is a functional render engine; the other five remain visual prototypes.
+- Minimal Album Art and Cosmic Waves are functional render engines; the other four remain visual prototypes.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -71,7 +78,8 @@ See `PRODUCT-BACKLOG.md` for:
 - MP4 audio extraction;
 - automatic normalization and conversion;
 - consolidation of useful services from other AiXel applications.
+- the supplied AiXel Music Lab animated logo as a future family-brand reference.
 
 ## Branch note
 
-Export V1 work is developed on `agent/export-v1`, based on the merged Preview Player V1 checkpoint in `main`.
+Cosmic Waves V1 work is developed on `agent/cosmic-waves-v1`, based on merged Preview Player V1 and Export V1 checkpoints in `main`.
