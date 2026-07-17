@@ -1,5 +1,12 @@
 # Changelog
 
+## Analyze → Create Workflow Handoff
+
+- Removed the premature “Prévisualiser Minimal Album Art” action from Analyze.
+- Stopped forcing Minimal Album Art whenever a new audio file finishes analysis.
+- Added a real tempo/dynamics summary followed by “Continuer vers Create”.
+- Made the Create screen title follow the imported project track instead of always showing the Golden Reference.
+
 ## Cosmic Waves V1 — Second Deterministic Engine
 
 - Added Cosmic Waves as the second implemented `VisualEngine` with deterministic particles, nebulas, and audio-reactive light waves.

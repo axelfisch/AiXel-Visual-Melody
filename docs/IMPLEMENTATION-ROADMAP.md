@@ -21,5 +21,7 @@ Do not begin real audio analysis or video rendering in this phase.
 - Preview Player V1 implemented and merged into `main`.
 - Export V1 live canvas, progress, cancellation, download retry, and terminal states implemented and merged into `main` after owner acceptance.
 - Cosmic Waves V1 implemented as the second deterministic engine on `agent/cosmic-waves-v1`.
-- Next engine work should begin only after Cosmic Waves Preview and MP4 acceptance.
+- Cosmic Waves Preview and MP4 accepted by the product owner and merged into `main`.
+- Analyze → Create handoff corrected on `agent/analyze-create-handoff` before beginning a third engine.
+- Next engine work should use the shared deterministic engine architecture without activating the read-only AiXel Director controls prematurely.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

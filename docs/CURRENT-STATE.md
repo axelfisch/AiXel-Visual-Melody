@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Cosmic Waves V1 — second deterministic engine
+**Checkpoint:** Analyze → Create workflow handoff
 
 **Date:** 2026-07-16
 
@@ -36,6 +36,11 @@
 - Cosmic Waves uses deterministic particles, layered nebulas, and luminous waves driven by analyzed signal energy.
 - Export and Render Progress receive the same selected engine and validated configuration used by Preview.
 - The four unimplemented engine selections safely fall back to Minimal Album Art in functional Preview/Export.
+- Cosmic Waves MP4 accepted by the product owner with a real imported track.
+- Analyze no longer forces Minimal Album Art after an import.
+- Analyze reports tempo and dynamics from the real analysis, then routes forward to Create.
+- Create displays the current imported project name instead of the hard-coded Golden Reference title.
+- Engine choice now happens at the intended stage: after analysis and before Preview.
 
 ## Verification at checkpoint
 
@@ -44,18 +49,12 @@
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
 - Golden Reference asset served as `audio/mp4`.
-- Browser smoke test with “In the Spirit of Naomi”: Cosmic Waves selected in Create, identified in Preview, and visually rendered on the real 1280 × 720 canvas.
+- Browser smoke test: an analyzed Golden Reference enabled “Continuer vers Create”, routed to Create, and displayed the current project title with all six engine choices.
+- Owner-supplied Cosmic Waves MP4 inspected at 1280 × 720, 216.275 seconds, H.264 video, and stereo 48 kHz Opus audio.
 
 ## Exact next recommended step
 
-Complete the **Cosmic Waves V1 acceptance pass**:
-
-1. select Cosmic Waves in Create after loading an analyzed track;
-2. verify its Preview label, particles, light waves, seeking, volume, and audio response;
-3. begin an MP4 export and confirm the Cosmic Waves canvas appears in Render Progress;
-4. cancel a short test once, then complete one downloaded MP4;
-5. verify audio presence, duration, final frame, and perceptible synchronization;
-6. after acceptance, choose the third deterministic engine as a separate checkpoint.
+Choose and implement the **third deterministic visual engine** as a separate checkpoint. Preserve the corrected Import → Analyze → Create → Preview → Export sequence. AiXel Director sliders remain a later integration step after enough real engine parameters exist to map them consistently.
 
 ## Claude Design timing
 
@@ -82,4 +81,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-Cosmic Waves V1 work is developed on `agent/cosmic-waves-v1`, based on merged Preview Player V1 and Export V1 checkpoints in `main`.
+The Analyze → Create handoff is developed on `agent/analyze-create-handoff`, based on merged Preview Player V1, Export V1, and Cosmic Waves V1 checkpoints in `main`.
