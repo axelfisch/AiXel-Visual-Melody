@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Neon Velvet V1 — sixth deterministic visual engine
+**Checkpoint:** AiXel Director V1 — technical mapping contract after six engines
 
 **Date:** 2026-07-17
 
@@ -57,10 +57,15 @@
 - Deep-purple velvet folds and cyan–violet–magenta synthwave paths use deterministic curvature, glow, traveling dash offsets, and musical energy response.
 - Preview, Render Progress, cancellation, and MP4 export all use the same Neon Velvet renderer and validated configuration.
 - All six approved visual selections now resolve to their own functional renderer; no prototype fallback remains in the approved engine catalog.
+- Neon Velvet MP4 accepted by the product owner and PR #8 merged into `main` at `0f4bb61`.
+- AiXel Director now has a pure, tested translation contract above all six renderer configurations.
+- Eight normalized creative dimensions and six complete mood profiles are defined without activating the existing read-only controls.
+- Fluidity and Dynamics map to real parameters on every engine; Particles and Motion Complexity map only where the engine exposes a meaningful density or count.
+- Unsupported dimensions remain explicit instead of producing decorative or misleading UI behavior.
 
 ## Verification at checkpoint
 
-- `npm test -- --run`: 18 test files, 34 tests passing.
+- `npm test -- --run`: 19 test files, 44 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -74,7 +79,7 @@
 
 ## Exact next recommended step
 
-Have the product owner validate **Neon Velvet V1** with a real imported track and MP4 export. After acceptance and merge, define the AiXel Director V1 parameter-mapping contract across the six real engine configurations before enabling its controls. Settings remains a later step once those shared behaviors are genuine.
+Integrate the tested **AiXel Director V1 contract** into the project model and Create screen without redesigning the interface. Mood buttons should apply real profiles, only supported controls should be active for the selected engine, and Preview and Export must receive the same mapped configuration. Settings remains a later step.
 
 ## Claude Design timing
 
@@ -82,7 +87,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 
 ## Known limitations to preserve honestly
 
-- All six approved visual engines are functional render engines. Neon Velvet still requires the product owner's real-track MP4 acceptance before merge.
+- All six approved visual engines are functional and merged. The Director mapping contract exists, but its controls remain intentionally read-only until project persistence and screen-level behavior are implemented.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -101,4 +106,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-Neon Velvet V1 is developed on `agent/neon-velvet-v1`, based on the merged Preview Player V1, Export V1, Cosmic Waves V1, Analyze → Create, Jazz Geometry V1, Liquid Colors V1, and Frequency City V1 checkpoints in `main`.
+The AiXel Director V1 mapping contract is developed on `agent/aixel-director-v1-contract`, based on the merged six-engine functional set in `main`.

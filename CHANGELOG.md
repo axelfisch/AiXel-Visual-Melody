@@ -1,5 +1,12 @@
 # Changelog
 
+## AiXel Director V1 — Technical Mapping Contract
+
+- Added normalized eight-dimension Director state and six complete mood profiles.
+- Added tested engine adapters for all six visual engines without activating the existing read-only controls.
+- Mapped Fluidity and Dynamics everywhere, plus only the structure dimensions supported honestly by each renderer.
+- Documented the capability matrix and the project-model/UI integration sequence for the next checkpoint.
+
 ## Neon Velvet V1 — Sixth Deterministic Engine
 
 - Added Neon Velvet as the sixth implemented `VisualEngine` with glamorous synthwave paths flowing across deep purple velvet.
