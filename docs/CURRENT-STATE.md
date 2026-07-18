@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** AiXel Director V1 — technical mapping contract after six engines
+**Checkpoint:** AiXel Director V1 — functional Create integration after six engines
 
 **Date:** 2026-07-17
 
@@ -62,10 +62,17 @@
 - Eight normalized creative dimensions and six complete mood profiles are defined without activating the existing read-only controls.
 - Fluidity and Dynamics map to real parameters on every engine; Particles and Motion Complexity map only where the engine exposes a meaningful density or count.
 - Unsupported dimensions remain explicit instead of producing decorative or misleading UI behavior.
+- Director mood and normalized values are now stored in the project model with migration-safe defaults.
+- All six mood buttons apply the tested translation contract immediately in Create.
+- Supported sliders update the selected engine configuration immediately and switch the Director into a custom state.
+- Unsupported sliders remain visible but disabled, preserving the approved Claude Design composition honestly.
+- Changing engines preserves the Director intent and remaps it to the new engine's validated parameters.
+- Preview, Render Progress, and Export all consume the identical mapped `project.engine.parameters` object.
+- The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
 
 ## Verification at checkpoint
 
-- `npm test -- --run`: 19 test files, 44 tests passing.
+- `npm test -- --run`: 19 test files, 46 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -76,10 +83,11 @@
 - Browser acceptance test: Liquid Colors selected in Create, animated in synchronized Preview, filled the live Render Progress canvas with evolving liquid bands, and returned to the ready state after cancellation.
 - Browser smoke test: Frequency City selected in Create, identified correctly in synchronized Preview, and exposed the existing Render Progress and cancellation path without changing the Claude Design screen structure.
 - Browser acceptance smoke test: Neon Velvet selected in Create, displayed its own identity and poetic line in Preview, and animated its synthwave trails during synchronized Golden Reference playback in the narrow responsive layout.
+- Browser smoke test: Minimal Album Art exposed only Fluidity and Dynamics; Cosmic Waves additionally exposed Particles and Motion Complexity; a mood profile updated all normalized values; Preview opened without console errors.
 
 ## Exact next recommended step
 
-Integrate the tested **AiXel Director V1 contract** into the project model and Create screen without redesigning the interface. Mood buttons should apply real profiles, only supported controls should be active for the selected engine, and Preview and Export must receive the same mapped configuration. Settings remains a later step.
+Owner-test **AiXel Director V1** with a real imported track: apply multiple profiles and supported sliders in Create, confirm immediate motion changes in Preview, then export a short MP4 and compare the rendered motion. After acceptance, merge the integration PR. Settings remains a later step.
 
 ## Claude Design timing
 
@@ -87,7 +95,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 
 ## Known limitations to preserve honestly
 
-- All six approved visual engines are functional and merged. The Director mapping contract exists, but its controls remain intentionally read-only until project persistence and screen-level behavior are implemented.
+- All six approved visual engines are functional and merged. Director V1 intentionally leaves Emotion, Space, Light, and Color Energy disabled until engines expose honest renderer parameters for them.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -106,4 +114,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-The AiXel Director V1 mapping contract is developed on `agent/aixel-director-v1-contract`, based on the merged six-engine functional set in `main`.
+The AiXel Director V1 functional integration is developed on `agent/aixel-director-v1-integration`, based on the merged mapping contract in `main` at `c0f71fa`.

@@ -1,5 +1,13 @@
 # Changelog
 
+## AiXel Director V1 — Functional Create Integration
+
+- Persisted Director mood and normalized values in the project model with backward-compatible migration of the legacy mood parameter.
+- Made all six mood profiles apply real, validated renderer parameters immediately from Create.
+- Activated only the sliders honestly supported by the selected engine; unsupported dimensions remain visible and disabled.
+- Kept engine changes, Preview, Render Progress, and Export on the same mapped configuration without changing the Claude Design interface.
+- Seeded the export canvas before recorder initialization to prevent a first Netlify MP4 from being recognized as audio-only by QuickTime.
+
 ## AiXel Director V1 — Technical Mapping Contract
 
 - Added normalized eight-dimension Director state and six complete mood profiles.

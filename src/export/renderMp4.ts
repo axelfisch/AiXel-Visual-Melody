@@ -46,6 +46,24 @@ export async function renderMp4({
   if (!context) throw new Error("Le canevas d’export n’est pas disponible.");
 
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
+  engine.render(
+    { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
+    {
+      time: 0,
+      duration: analysis.duration,
+      progress: 0,
+      energy: energyAt(analysis, 0),
+      bpm: analysis.bpm,
+      title: analysis.name,
+    },
+    config,
+  );
+  onProgress?.({ progress: 0, renderedTime: 0, duration: analysis.duration, canvas });
+
+  // Seed the canvas before captureStream/MediaRecorder initialization. On a fresh
+  // HTTPS deployment, some browsers otherwise produce a first MP4 with audio but
+  // no recognized video track; a second export works only because the canvas then
+  // already contains its last rendered frame.
   const audioContext = new AudioContext();
   const destination = audioContext.createMediaStreamDestination();
   const source = audioContext.createBufferSource();
@@ -118,7 +136,7 @@ export async function renderMp4({
         }
       };
 
-      frame();
+      animationFrame = requestAnimationFrame(frame);
     });
 
     stopRecorder();

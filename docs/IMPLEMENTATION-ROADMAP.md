@@ -31,5 +31,6 @@ Do not begin real audio analysis or video rendering in this phase.
 - Neon Velvet V1 implemented as the sixth deterministic engine on `agent/neon-velvet-v1` with traveling synthwave trails and deep-purple velvet light.
 - Neon Velvet accepted by the product owner and merged through PR #8.
 - AiXel Director V1 technical mapping contract created on `agent/aixel-director-v1-contract` with normalized profiles, capability reporting, and pure engine adapters.
-- Next: persist Director state in the project and activate only supported controls while keeping Preview and Export configuration identical.
+- AiXel Director V1 integrated on `agent/aixel-director-v1-integration`: migration-safe project state, functional mood profiles, honest per-engine sliders, and one identical Preview/Export configuration.
+- Next: owner-test the Director with a real track and short MP4 export before merging the integration PR. Settings remains later.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

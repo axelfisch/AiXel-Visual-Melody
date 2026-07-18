@@ -71,17 +71,23 @@ const engine: VisualEngine = {
   render: vi.fn(),
 };
 
-function fakeCanvas() {
+function fakeCanvas(onCapture?: () => void) {
   const stream = new FakeMediaStream(tracks());
   return {
     width: 0,
     height: 0,
     getContext: () => ({} as CanvasRenderingContext2D),
-    captureStream: () => stream,
+    captureStream: () => {
+      onCapture?.();
+      return stream;
+    },
   } as unknown as HTMLCanvasElement;
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe('renderMp4', () => {
   it('renders the selected engine with project export settings and reports progress', async () => {
@@ -96,7 +102,7 @@ describe('renderMp4', () => {
     });
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
     const onProgress = vi.fn();
-    const canvas = fakeCanvas();
+    const canvas = fakeCanvas(() => expect(engine.render).toHaveBeenCalledTimes(1));
 
     const result = await renderMp4({
       analysis,

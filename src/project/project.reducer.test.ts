@@ -15,7 +15,24 @@ describe('projectReducer', () => {
     const project = createProject('Naomi');
     expect(project.name).toBe('Naomi');
     expect(project.engine.engineId).toBe('minimal-album-art');
+    expect(project.engine.director.mood).toBe('More Emotional');
+    expect(project.engine.director.values.fluidity).toBe(64);
     expect(project.schemaVersion).toBe(1);
+  });
+
+  it('applies Director state and engine parameters atomically', () => {
+    const project = createProject();
+    const values = { ...project.engine.director.values, fluidity: 91 };
+    const next = projectReducer(project, {
+      type: 'APPLY_DIRECTOR',
+      mood: null,
+      values,
+      parameters: { rotationSpeed: 0.8, energyResponse: 1.2 },
+    });
+    expect(next.engine.director.mood).toBeNull();
+    expect(next.engine.director.values.fluidity).toBe(91);
+    expect(next.engine.parameters.rotationSpeed).toBe(0.8);
+    expect(project.engine.director.values.fluidity).toBe(64);
   });
 
   it('invalidates the previous analysis when the audio source changes', () => {
