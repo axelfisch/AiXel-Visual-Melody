@@ -158,8 +158,19 @@ The product owner accepted the renderer on 2026-07-17. PR #8 was then merged int
 
 ## B11 — AiXel Director V1
 
-**Status:** Functional Create integration implemented; owner acceptance pending.
+**Status:** Accepted and merged through PR #10.
 
 Director uses eight normalized creative dimensions and six complete mood profiles. Its V1 contract translates only supported dimensions into real engine parameters: Fluidity and Dynamics across all six engines, plus Particles or Motion Complexity when a renderer exposes a meaningful density or count. Emotion, Space, Light, and Color Energy remain intentionally unmapped until explicit renderer parameters exist.
 
 Director state now persists with migration-safe defaults. Mood profiles and supported sliders update validated engine parameters immediately; engine changes preserve and remap the normalized intent. Preview, Render Progress, and Export share the identical mapped configuration without changing the approved Claude Design composition.
+
+## B12 — Export End Card V1
+
+**Status:** Approved for the next Export checkpoint after the Home engine thumbnails.
+
+Every MP4 exported by the free version should end with a short, restrained brand card rendered directly into the same export canvas. The initial copy is:
+
+- `Visual created with AiXel Visual Melody`;
+- `Music by Axel Fisch`.
+
+The end card should last approximately three seconds, preserve the exported resolution and frame rate, and use the established navy, ivory, and gold Visual Melody identity. It must be part of the encoded video rather than a separate file or decorative Export-screen preview. The implementation must extend the audio/video timeline coherently, preserve cancellation and progress reporting, and remain identical in the downloaded MP4. A future paid/licensed product may expose attribution controls; the free version includes the credit automatically.

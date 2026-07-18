@@ -20,6 +20,12 @@ import {
 import planReference from '../../references/Plan-Visual-Melody.png';
 import studioReference from '../../references/AiXel-Studio-Visual-Melody.png';
 import logoReference from '../../references/logo-references/Logo-AiXel-Visual-Melody.png';
+import cosmicWavesThumbnail from '../assets/engine-thumbnails/cosmic-waves.jpg';
+import frequencyCityThumbnail from '../assets/engine-thumbnails/frequency-city.jpg';
+import jazzGeometryThumbnail from '../assets/engine-thumbnails/jazz-geometry.jpg';
+import liquidColorsThumbnail from '../assets/engine-thumbnails/liquid-colors.jpg';
+import minimalAlbumArtThumbnail from '../assets/engine-thumbnails/minimal-album-art.jpg';
+import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
 import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
@@ -49,6 +55,7 @@ type Engine = {
   accentFrom: string;
   accentTo: string;
   preview: string;
+  thumbnail: string;
   radius: number;
   mood: string;
 };
@@ -64,6 +71,7 @@ const engines: Engine[] = [
     accentFrom: '#7fe0ff',
     accentTo: '#8a6bff',
     preview: 'radial-gradient(circle at 30% 25%, #3a6bd8 0%, #1a2a66 42%, #05060b 100%)',
+    thumbnail: cosmicWavesThumbnail,
     radius: 22,
     mood: 'The light breathes, nebulas drifting slowly like held breath.',
   },
@@ -77,6 +85,7 @@ const engines: Engine[] = [
     accentFrom: '#e7c977',
     accentTo: '#f4e3b0',
     preview: 'radial-gradient(circle at 55% 40%, #2a2f4a 0%, #10121e 65%, #05060b 100%)',
+    thumbnail: jazzGeometryThumbnail,
     radius: 14,
     mood: 'Everything becomes geometric, circles moving in quiet harmony.',
   },
@@ -90,6 +99,7 @@ const engines: Engine[] = [
     accentFrom: '#e08a4a',
     accentTo: '#a24fc9',
     preview: 'linear-gradient(120deg, #c9682f, #7a2f8a, #1a2a66)',
+    thumbnail: liquidColorsThumbnail,
     radius: 34,
     mood: 'The interface turns liquid, ink folding into ink.',
   },
@@ -103,6 +113,7 @@ const engines: Engine[] = [
     accentFrom: '#e750b4',
     accentTo: '#5fd0ff',
     preview: 'linear-gradient(0deg, #05060b 0%, #1a1030 42%, #2a1040 100%)',
+    thumbnail: frequencyCityThumbnail,
     radius: 12,
     mood: 'A skyline of sound, architecture built from spectrum.',
   },
@@ -116,6 +127,7 @@ const engines: Engine[] = [
     accentFrom: '#e7c977',
     accentTo: '#ffffff',
     preview: 'radial-gradient(circle at 50% 50%, #1a1a1a 0%, #060606 65%, #05060b 100%)',
+    thumbnail: minimalAlbumArtThumbnail,
     radius: 20,
     mood: 'Minimal and monochrome, the record spinning in silence.',
   },
@@ -129,6 +141,7 @@ const engines: Engine[] = [
     accentFrom: '#5fd0ff',
     accentTo: '#8a6bff',
     preview: 'linear-gradient(135deg, #150a2e 0%, #2a0a4a 52%, #05060b 100%)',
+    thumbnail: neonVelvetThumbnail,
     radius: 22,
     mood: 'Lights turn to velvet, synthwave trails in the dark.',
   },
@@ -745,7 +758,10 @@ function NeonVisual() {
 function EngineCard({ engine, onClick }: { engine: Engine; onClick: () => void }) {
   return (
     <button className="engine-card" onClick={onClick}>
-      <div className="engine-thumb" style={{ background: engine.preview }}>
+      <div
+        className="engine-thumb"
+        style={{ backgroundImage: `linear-gradient(180deg, rgba(5, 6, 11, 0.04), rgba(5, 6, 11, 0.42)), url(${engine.thumbnail})` }}
+      >
         <span>{engine.number}</span>
       </div>
       <strong>{engine.name}</strong>

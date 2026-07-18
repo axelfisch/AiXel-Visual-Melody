@@ -32,5 +32,7 @@ Do not begin real audio analysis or video rendering in this phase.
 - Neon Velvet accepted by the product owner and merged through PR #8.
 - AiXel Director V1 technical mapping contract created on `agent/aixel-director-v1-contract` with normalized profiles, capability reporting, and pure engine adapters.
 - AiXel Director V1 integrated on `agent/aixel-director-v1-integration`: migration-safe project state, functional mood profiles, honest per-engine sliders, and one identical Preview/Export configuration.
-- Next: owner-test the Director with a real track and short MP4 export before merging the integration PR. Settings remains later.
+- AiXel Director V1 accepted and merged through PR #10.
+- Six real Home engine thumbnails integrated into the existing approved card layout on `agent/home-engine-thumbnails`.
+- Next: add Export End Card V1 as a separate checkpoint. Settings remains later.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

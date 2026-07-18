@@ -553,6 +553,8 @@ button:disabled {
   position: relative;
   height: 140px;
   overflow: hidden;
+  background-position: center;
+  background-size: cover;
 }
 
 .engine-thumb span {
@@ -562,6 +564,7 @@ button:disabled {
   color: rgba(255, 255, 255, 0.72);
   font-size: 10px;
   font-weight: 800;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.92);
 }
 
 .engine-card strong {
