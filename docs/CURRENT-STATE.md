@@ -69,6 +69,8 @@
 - Changing engines preserves the Director intent and remaps it to the new engine's validated parameters.
 - Preview, Render Progress, and Export all consume the identical mapped `project.engine.parameters` object.
 - The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
+- Export End Card V1 appends a three-second branded canvas sequence after the original audio ends, with automatic `AiXel Visual Melody` and `Music by Axel Fisch` attribution.
+- The end card is encoded inside the same MP4 and shares the existing progress, Render Progress, cancellation, cleanup, and download path.
 
 ## Verification at checkpoint
 
@@ -87,7 +89,7 @@
 
 ## Exact next recommended step
 
-Owner-test **AiXel Director V1** with a real imported track: apply multiple profiles and supported sliders in Create, confirm immediate motion changes in Preview, then export a short MP4 and compare the rendered motion. After acceptance, merge the integration PR. Settings remains a later step.
+Owner-test **Export End Card V1** with a short real track: confirm the original audio and renderer remain unchanged, then verify the silent three-second AiXel credit and the total MP4 duration. Settings remains a later step.
 
 ## Claude Design timing
 
@@ -102,6 +104,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 - MP4 audio extraction and automatic normalization remain backlog work.
 - Current hard audio limits are 150 MB and 15 minutes.
 - Native MP4 recording support varies by browser.
+- End Card V1 currently uses the default artist credit `Axel Fisch`; editable artist metadata remains a future project setting.
 
 ## Future work already recorded
 
@@ -114,4 +117,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-The AiXel Director V1 functional integration is developed on `agent/aixel-director-v1-integration`, based on the merged mapping contract in `main` at `c0f71fa`.
+Export End Card V1 is developed on `agent/export-end-card-v1`, based on `main` after the merged AiXel Director V1 checkpoint.

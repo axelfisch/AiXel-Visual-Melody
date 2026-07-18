@@ -1,6 +1,12 @@
 import { energyAt, type AudioAnalysis } from '../audio';
 import type { VisualEngine } from '../engines/engine.types';
 import type { ExportSettings } from '../project/project.types';
+import {
+  DEFAULT_END_CARD_CREDITS,
+  EXPORT_END_CARD_DURATION,
+  renderEndCard,
+  type EndCardCredits,
+} from './endCard';
 
 export type RenderMp4Progress = {
   progress: number;
@@ -17,6 +23,7 @@ export type RenderMp4Options = {
   mimeType: string;
   canvas?: HTMLCanvasElement;
   signal?: AbortSignal;
+  endCardCredits?: Partial<EndCardCredits>;
   onProgress?: (progress: RenderMp4Progress) => void;
 };
 
@@ -36,6 +43,7 @@ export async function renderMp4({
   mimeType,
   canvas = document.createElement('canvas'),
   signal,
+  endCardCredits,
   onProgress,
 }: RenderMp4Options): Promise<Blob> {
   throwIfAborted(signal);
@@ -45,6 +53,8 @@ export async function renderMp4({
   const context = canvas.getContext('2d');
   if (!context) throw new Error("Le canevas d’export n’est pas disponible.");
 
+  const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
+  const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
   engine.render(
     { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
@@ -58,7 +68,7 @@ export async function renderMp4({
     },
     config,
   );
-  onProgress?.({ progress: 0, renderedTime: 0, duration: analysis.duration, canvas });
+  onProgress?.({ progress: 0, renderedTime: 0, duration: totalDuration, canvas });
 
   // Seed the canvas before captureStream/MediaRecorder initialization. On a fresh
   // HTTPS deployment, some browsers otherwise produce a first MP4 with audio but
@@ -113,23 +123,35 @@ export async function renderMp4({
       const frame = () => {
         try {
           throwIfAborted(signal);
-          const renderedTime = Math.min(analysis.duration, audioContext.currentTime - startedAt);
-          const progress = analysis.duration > 0 ? renderedTime / analysis.duration : 1;
-          engine.render(
-            { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-            {
-              time: renderedTime,
-              duration: analysis.duration,
-              progress,
-              energy: energyAt(analysis, renderedTime),
-              bpm: analysis.bpm,
-              title: analysis.name,
-            },
-            config,
-          );
-          onProgress?.({ progress, renderedTime, duration: analysis.duration, canvas });
+          const renderedTime = Math.min(totalDuration, audioContext.currentTime - startedAt);
+          const progress = totalDuration > 0 ? renderedTime / totalDuration : 1;
+          if (renderedTime < analysis.duration) {
+            const trackProgress = analysis.duration > 0 ? renderedTime / analysis.duration : 1;
+            engine.render(
+              { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
+              {
+                time: renderedTime,
+                duration: analysis.duration,
+                progress: trackProgress,
+                energy: energyAt(analysis, renderedTime),
+                bpm: analysis.bpm,
+                title: analysis.name,
+              },
+              config,
+            );
+          } else {
+            renderEndCard({
+              context,
+              width: canvas.width,
+              height: canvas.height,
+              elapsed: renderedTime - analysis.duration,
+              duration: EXPORT_END_CARD_DURATION,
+              ...credits,
+            });
+          }
+          onProgress?.({ progress, renderedTime, duration: totalDuration, canvas });
 
-          if (renderedTime < analysis.duration) animationFrame = requestAnimationFrame(frame);
+          if (renderedTime < totalDuration) animationFrame = requestAnimationFrame(frame);
           else finish(resolve);
         } catch (reason) {
           finish(() => reject(reason));
