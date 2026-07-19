@@ -134,7 +134,7 @@ describe('renderMp4', () => {
     expect(result.type).toBe('video/mp4');
     expect(canvas.width).toBe(1280);
     expect(canvas.height).toBe(720);
-    expect(engine.render).toHaveBeenCalledTimes(2);
+    expect(engine.render).toHaveBeenCalledTimes(3);
     expect(context.fillText).toHaveBeenCalledWith('AiXel Visual Melody', 640, expect.any(Number));
     expect(context.fillText).toHaveBeenCalledWith('Music by Axel Fisch', 640, expect.any(Number));
     expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({

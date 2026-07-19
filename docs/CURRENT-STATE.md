@@ -1,8 +1,8 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** AiXel Director V1 — functional Create integration after six engines
+**Checkpoint:** MVP release candidate — bilingual interface and stabilized browser export
 
-**Date:** 2026-07-17
+**Date:** 2026-07-19
 
 **Local application:** `http://localhost:5173/#home`
 
@@ -73,6 +73,9 @@
 - The end card is encoded inside the same MP4 and shares the existing progress, Render Progress, cancellation, cleanup, and download path.
 - AiXel Director V1 was accepted and merged through PR #10 at `a6fd238`.
 - Home now uses six real, engine-specific thumbnail images inside the existing approved cards; desktop and mobile layouts are unchanged.
+- The complete product interface can now be switched between French and English from the existing top navigation; the preference persists locally and updates the document language.
+- Export now explicitly asks the user to keep the tab visible and active until rendering is complete because background-tab throttling can freeze browser canvas animation.
+- The export pipeline repaints and explicitly requests its first canvas frame after `MediaRecorder.start()`, strengthening the existing first-export protection for fresh HTTPS/Netlify sessions.
 
 ## Verification at checkpoint
 
@@ -91,7 +94,7 @@
 
 ## Exact next recommended step
 
-Choose the next product checkpoint after the merged six-thumbnail and Export End Card V1 foundation. Settings remains a later step until that decision is made.
+Deploy and validate this MVP release candidate on Netlify, including a fresh-session first export and a second export on desktop plus a responsive interface check on iPhone and iPad. Once accepted, begin Project Identity V1 on a clean branch so the track title and artist can flow consistently through Preview, filename, and End Card without coupling metadata work to MVP stabilization.
 
 ## Claude Design timing
 
@@ -106,6 +109,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 - MP4 audio extraction and automatic normalization remain backlog work.
 - Current hard audio limits are 150 MB and 15 minutes.
 - Native MP4 recording support varies by browser.
+- The browser must keep the export tab visible and active; background-tab throttling can freeze the canvas image while audio processing continues.
 - End Card V1 currently uses the default artist credit `Axel Fisch`; editable artist metadata remains a future project setting.
 
 ## Future work already recorded

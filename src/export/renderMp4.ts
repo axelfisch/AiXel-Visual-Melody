@@ -56,7 +56,7 @@ export async function renderMp4({
   const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
-  engine.render(
+  const renderInitialFrame = () => engine.render(
     { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
     {
       time: 0,
@@ -68,6 +68,7 @@ export async function renderMp4({
     },
     config,
   );
+  renderInitialFrame();
   onProgress?.({ progress: 0, renderedTime: 0, duration: totalDuration, canvas });
 
   // Seed the canvas before captureStream/MediaRecorder initialization. On a fresh
@@ -81,6 +82,7 @@ export async function renderMp4({
   source.connect(destination);
 
   const canvasStream = canvas.captureStream(settings.frameRate);
+  const videoTrack = canvasStream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack | undefined;
   const stream = new MediaStream([
     ...canvasStream.getVideoTracks(),
     ...destination.stream.getAudioTracks(),
@@ -106,6 +108,11 @@ export async function renderMp4({
 
   try {
     recorder.start(1000);
+    // Paint and explicitly request the first encoded frame after MediaRecorder is
+    // active. This protects a fresh HTTPS session where the pre-capture seed may
+    // not be emitted until a later canvas change, producing an audio-only MP4.
+    renderInitialFrame();
+    videoTrack?.requestFrame?.();
     source.start();
     const startedAt = audioContext.currentTime;
 

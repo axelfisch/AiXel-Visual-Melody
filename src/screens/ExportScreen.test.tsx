@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AudioAnalysis } from '../audio';
 import { CosmicWavesEngine } from '../engines/cosmic-waves/CosmicWavesEngine';
+import { LocaleProvider } from '../i18n/LocaleContext';
 import { DEFAULT_EXPORT_SETTINGS } from '../project/project.defaults';
 import { ExportScreen } from './ExportScreen';
 
@@ -31,7 +32,12 @@ const analysis = {
   energy: [0.4, 0.7],
 } satisfies AudioAnalysis;
 
+function renderExport(element: React.ReactElement) {
+  return render(<LocaleProvider>{element}</LocaleProvider>);
+}
+
 beforeEach(() => {
+  localStorage.setItem('aixel-visual-melody-locale', 'fr');
   mocks.getSupportedMp4MimeType.mockReset();
   mocks.renderMp4.mockReset();
   mocks.getSupportedMp4MimeType.mockReturnValue('video/mp4');
@@ -57,7 +63,7 @@ describe('ExportScreen', () => {
       return new Blob(['mp4'], { type: 'video/mp4' });
     });
     const user = userEvent.setup();
-    render(
+    renderExport(
       <ExportScreen
         analysis={analysis}
         engine={CosmicWavesEngine}
@@ -67,12 +73,13 @@ describe('ExportScreen', () => {
     );
 
     const canvas = screen.getByLabelText('Image vidéo actuellement rendue');
+    expect(screen.getByText(/Gardez cet onglet visible et actif/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
 
     await screen.findByText('MP4 terminé et téléchargé.');
     expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({ canvas, engine: CosmicWavesEngine }));
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
-    const exportAgain = screen.getByRole('link', { name: 'Exporter de nouveau' });
+    const exportAgain = screen.getByRole('link', { name: 'Télécharger de nouveau' });
     expect(exportAgain).toHaveAttribute('href', 'blob:export');
     expect(exportAgain).toHaveAttribute('download', 'In-the-Spirit-of-Naomi.mp4');
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
@@ -81,7 +88,7 @@ describe('ExportScreen', () => {
   it('keeps the completed MP4 available until the screen unmounts', async () => {
     mocks.renderMp4.mockResolvedValue(new Blob(['mp4'], { type: 'video/mp4' }));
     const user = userEvent.setup();
-    const view = render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+    const view = renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
 
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
     await screen.findByText('MP4 terminé et téléchargé.');
@@ -95,7 +102,7 @@ describe('ExportScreen', () => {
       signal.addEventListener('abort', () => reject(new DOMException('Cancelled', 'AbortError')), { once: true });
     }));
     const user = userEvent.setup();
-    render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+    renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
 
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
     await user.click(await screen.findByRole('button', { name: 'Annuler le rendu' }));
@@ -107,14 +114,14 @@ describe('ExportScreen', () => {
   it('reports unsupported and failed renders without changing the layout', async () => {
     const user = userEvent.setup();
     mocks.getSupportedMp4MimeType.mockReturnValueOnce(null);
-    const view = render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+    const view = renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
 
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
     expect(screen.getByText(/encodeur MP4 natif/)).toBeInTheDocument();
 
     view.unmount();
     mocks.renderMp4.mockRejectedValueOnce(new Error('Échec simulé.'));
-    render(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+    renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
 
     await waitFor(() => expect(screen.getByText('Échec simulé.')).toBeInTheDocument());
