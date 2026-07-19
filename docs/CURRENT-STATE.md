@@ -76,6 +76,7 @@
 - The complete product interface can now be switched between French and English from the existing top navigation; the preference persists locally and updates the document language.
 - Export now explicitly asks the user to keep the tab visible and active until rendering is complete because background-tab throttling can freeze browser canvas animation.
 - The export pipeline repaints and explicitly requests its first canvas frame after `MediaRecorder.start()`, strengthening the existing first-export protection for fresh HTTPS/Netlify sessions.
+- Audio import uses explicit supported filename extensions instead of `accept="audio/*"`, working around WebKit bug 242110 where iPhone and iPad incorrectly filter the Files picker to video content.
 
 ## Verification at checkpoint
 

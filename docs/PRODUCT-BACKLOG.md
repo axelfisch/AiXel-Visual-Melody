@@ -186,3 +186,9 @@ The complete interface supports French and English through a compact persistent 
 **Status:** Next checkpoint after MVP deployment validation.
 
 Add editable project-level track title and artist identity with migration-safe defaults. Preview, the exported filename, and End Card attribution must consume the same project metadata. Preserve automatic AiXel Visual Melody attribution in the free MVP and do not redesign the approved Claude Design screens.
+
+## B15 — iPhone and iPad audio-file picker compatibility
+
+**Status:** Implemented; physical-device Netlify validation pending.
+
+Replace the `audio/*` file-input wildcard with explicit supported extensions. This avoids WebKit bug 242110, which incorrectly presents video files for `accept="audio/*"` on iOS and iPadOS. File size, extension/MIME validation, browser decoding, and the 15-minute duration limit remain enforced after selection.
