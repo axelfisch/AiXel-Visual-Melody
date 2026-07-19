@@ -166,11 +166,11 @@ Director state now persists with migration-safe defaults. Mood profiles and supp
 
 ## B12 — Export End Card V1
 
-**Status:** Approved for the next Export checkpoint after the Home engine thumbnails.
+**Status:** Accepted and merged through PR #12.
 
-Every MP4 exported by the free version should end with a short, restrained brand card rendered directly into the same export canvas. The initial copy is:
+Every MP4 exported by the free version ends with a restrained three-second brand card rendered directly into the same export canvas:
 
 - `Visual created with AiXel Visual Melody`;
 - `Music by Axel Fisch`.
 
-The end card should last approximately three seconds, preserve the exported resolution and frame rate, and use the established navy, ivory, and gold Visual Melody identity. It must be part of the encoded video rather than a separate file or decorative Export-screen preview. The implementation must extend the audio/video timeline coherently, preserve cancellation and progress reporting, and remain identical in the downloaded MP4. A future paid/licensed product may expose attribution controls; the free version includes the credit automatically.
+The card preserves the selected export resolution and frame rate. It begins after the original source audio ends, while the audio destination continues silently for the three-second credit. Progress duration, live Render Progress, cancellation, resource cleanup, and the downloaded MP4 all use the extended timeline. A future project metadata setting should replace the default artist name for other users; the free-version AiXel attribution remains automatic.

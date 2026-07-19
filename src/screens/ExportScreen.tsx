@@ -5,6 +5,7 @@ import { GlassPanel } from '../components/layout/GlassPanel';
 import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
+import { EXPORT_END_CARD_DURATION } from '../export/endCard';
 import { renderMp4 } from '../export/renderMp4';
 import type { ExportSettings } from '../project/project.types';
 
@@ -40,6 +41,7 @@ export function ExportScreen({
   const [completedExport, setCompletedExport] = useState<CompletedExport | null>(null);
   const [progress, setProgress] = useState(0);
   const [renderedTime, setRenderedTime] = useState(0);
+  const [renderDuration, setRenderDuration] = useState(0);
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
@@ -52,7 +54,7 @@ export function ExportScreen({
     if (!analysis) return 'Importez d’abord un morceau dans Analyze.';
     switch (state) {
       case 'rendering':
-        return `Rendu ${formatTime(renderedTime)} / ${formatTime(analysis.duration)} · ${Math.round(progress * 100)}%`;
+        return `Rendu ${formatTime(renderedTime)} / ${formatTime(renderDuration)} · ${Math.round(progress * 100)}%`;
       case 'completed':
         return 'MP4 terminé et téléchargé.';
       case 'cancelled':
@@ -62,7 +64,7 @@ export function ExportScreen({
       case 'failed':
         return errorMessage || "L’export a échoué.";
       default:
-        return `${formatTime(analysis.duration)} à rendre`;
+        return `${formatTime(analysis.duration)} + générique AiXel de ${EXPORT_END_CARD_DURATION} s`;
     }
   })();
 
@@ -85,6 +87,7 @@ export function ExportScreen({
     abortControllerRef.current = controller;
     setProgress(0);
     setRenderedTime(0);
+    setRenderDuration(analysis.duration + EXPORT_END_CARD_DURATION);
     setErrorMessage('');
     setState('rendering');
 
@@ -97,9 +100,10 @@ export function ExportScreen({
         mimeType,
         canvas,
         signal: controller.signal,
-        onProgress: ({ progress: value, renderedTime: time }) => {
+        onProgress: ({ progress: value, renderedTime: time, duration }) => {
           setProgress(value);
           setRenderedTime(time);
+          setRenderDuration(duration);
         },
       });
       const url = URL.createObjectURL(blob);
@@ -110,7 +114,7 @@ export function ExportScreen({
       setCompletedExport(completedExport);
       downloadExport(completedExport);
       setProgress(1);
-      setRenderedTime(analysis.duration);
+      setRenderedTime(analysis.duration + EXPORT_END_CARD_DURATION);
       setState('completed');
     } catch (reason) {
       if (reason instanceof DOMException && reason.name === 'AbortError') {

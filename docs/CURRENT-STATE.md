@@ -69,6 +69,8 @@
 - Changing engines preserves the Director intent and remaps it to the new engine's validated parameters.
 - Preview, Render Progress, and Export all consume the identical mapped `project.engine.parameters` object.
 - The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
+- Export End Card V1 appends a three-second branded canvas sequence after the original audio ends, with automatic `AiXel Visual Melody` and `Music by Axel Fisch` attribution.
+- The end card is encoded inside the same MP4 and shares the existing progress, Render Progress, cancellation, cleanup, and download path.
 - AiXel Director V1 was accepted and merged through PR #10 at `a6fd238`.
 - Home now uses six real, engine-specific thumbnail images inside the existing approved cards; desktop and mobile layouts are unchanged.
 
@@ -89,7 +91,7 @@
 
 ## Exact next recommended step
 
-Implement **Export End Card V1** as a separate checkpoint: append an approximately three-second branded credit to the encoded MP4, with coherent progress, duration, audio handling, and cancellation. Settings remains a later step.
+Choose the next product checkpoint after the merged six-thumbnail and Export End Card V1 foundation. Settings remains a later step until that decision is made.
 
 ## Claude Design timing
 
@@ -104,6 +106,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 - MP4 audio extraction and automatic normalization remain backlog work.
 - Current hard audio limits are 150 MB and 15 minutes.
 - Native MP4 recording support varies by browser.
+- End Card V1 currently uses the default artist credit `Axel Fisch`; editable artist metadata remains a future project setting.
 
 ## Future work already recorded
 
@@ -116,4 +119,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-AiXel Director V1 is merged in `main` through PR #10. The completed Home thumbnail integration is awaiting its GitHub checkpoint on `agent/home-engine-thumbnails`.
+AiXel Director V1 is merged through PR #10, the Home thumbnail integration through PR #11, and Export End Card V1 through PR #12.

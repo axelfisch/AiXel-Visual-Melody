@@ -71,12 +71,29 @@ const engine: VisualEngine = {
   render: vi.fn(),
 };
 
-function fakeCanvas(onCapture?: () => void) {
+function fakeContext() {
+  const gradient = { addColorStop: vi.fn() } as unknown as CanvasGradient;
+  return {
+    arc: vi.fn(),
+    beginPath: vi.fn(),
+    createLinearGradient: vi.fn(() => gradient),
+    fill: vi.fn(),
+    fillRect: vi.fn(),
+    fillText: vi.fn(),
+    lineTo: vi.fn(),
+    moveTo: vi.fn(),
+    restore: vi.fn(),
+    save: vi.fn(),
+    stroke: vi.fn(),
+  } as unknown as CanvasRenderingContext2D;
+}
+
+function fakeCanvas(onCapture?: () => void, context = fakeContext()) {
   const stream = new FakeMediaStream(tracks());
   return {
     width: 0,
     height: 0,
-    getContext: () => ({} as CanvasRenderingContext2D),
+    getContext: () => context,
     captureStream: () => {
       onCapture?.();
       return stream;
@@ -102,7 +119,8 @@ describe('renderMp4', () => {
     });
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
     const onProgress = vi.fn();
-    const canvas = fakeCanvas(() => expect(engine.render).toHaveBeenCalledTimes(1));
+    const context = fakeContext();
+    const canvas = fakeCanvas(() => expect(engine.render).toHaveBeenCalledTimes(1), context);
 
     const result = await renderMp4({
       analysis,
@@ -116,8 +134,15 @@ describe('renderMp4', () => {
     expect(result.type).toBe('video/mp4');
     expect(canvas.width).toBe(1280);
     expect(canvas.height).toBe(720);
-    expect(engine.render).toHaveBeenCalledTimes(3);
-    expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({ progress: 1, renderedTime: 1, canvas }));
+    expect(engine.render).toHaveBeenCalledTimes(2);
+    expect(context.fillText).toHaveBeenCalledWith('AiXel Visual Melody', 640, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('Music by Axel Fisch', 640, expect.any(Number));
+    expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({
+      progress: 1,
+      renderedTime: 4,
+      duration: 4,
+      canvas,
+    }));
     expect(FakeAudioContext.latest?.close).toHaveBeenCalledOnce();
   });
 
