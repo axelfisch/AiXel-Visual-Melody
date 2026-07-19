@@ -166,7 +166,7 @@ Director state now persists with migration-safe defaults. Mood profiles and supp
 
 ## B12 — Export End Card V1
 
-**Status:** Implemented; owner acceptance pending.
+**Status:** Accepted and merged through PR #12.
 
 Every MP4 exported by the free version ends with a restrained three-second brand card rendered directly into the same export canvas:
 

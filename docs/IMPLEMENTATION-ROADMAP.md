@@ -33,6 +33,7 @@ Do not begin real audio analysis or video rendering in this phase.
 - AiXel Director V1 technical mapping contract created on `agent/aixel-director-v1-contract` with normalized profiles, capability reporting, and pure engine adapters.
 - AiXel Director V1 integrated on `agent/aixel-director-v1-integration`: migration-safe project state, functional mood profiles, honest per-engine sliders, and one identical Preview/Export configuration.
 - AiXel Director V1 accepted and merged through PR #10.
-- Export End Card V1 implemented on `agent/export-end-card-v1` as a three-second branded sequence encoded after the source audio.
-- Next: owner-test the end card with a short real export before its GitHub checkpoint. Settings remains later.
+- Six real Home engine thumbnails integrated and merged through PR #11 without changing the approved card layout.
+- Export End Card V1 accepted and merged through PR #12 as a three-second branded sequence encoded after the source audio.
+- Next: choose the next product checkpoint. Settings remains later until that decision is made.
 - Track approved future additions and their integration timing in `PRODUCT-BACKLOG.md`.

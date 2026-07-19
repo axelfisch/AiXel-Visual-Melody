@@ -71,6 +71,8 @@
 - The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
 - Export End Card V1 appends a three-second branded canvas sequence after the original audio ends, with automatic `AiXel Visual Melody` and `Music by Axel Fisch` attribution.
 - The end card is encoded inside the same MP4 and shares the existing progress, Render Progress, cancellation, cleanup, and download path.
+- AiXel Director V1 was accepted and merged through PR #10 at `a6fd238`.
+- Home now uses six real, engine-specific thumbnail images inside the existing approved cards; desktop and mobile layouts are unchanged.
 
 ## Verification at checkpoint
 
@@ -89,7 +91,7 @@
 
 ## Exact next recommended step
 
-Owner-test **Export End Card V1** with a short real track: confirm the original audio and renderer remain unchanged, then verify the silent three-second AiXel credit and the total MP4 duration. Settings remains a later step.
+Choose the next product checkpoint after the merged six-thumbnail and Export End Card V1 foundation. Settings remains a later step until that decision is made.
 
 ## Claude Design timing
 
@@ -117,4 +119,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-Export End Card V1 is developed on `agent/export-end-card-v1`, based on `main` after the merged AiXel Director V1 checkpoint.
+AiXel Director V1 is merged through PR #10, the Home thumbnail integration through PR #11, and Export End Card V1 through PR #12.
