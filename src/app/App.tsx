@@ -26,7 +26,7 @@ import jazzGeometryThumbnail from '../assets/engine-thumbnails/jazz-geometry.jpg
 import liquidColorsThumbnail from '../assets/engine-thumbnails/liquid-colors.jpg';
 import minimalAlbumArtThumbnail from '../assets/engine-thumbnails/minimal-album-art.jpg';
 import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
-import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
+import { AUDIO_FILE_ACCEPT, analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { getEngineOrDefault } from '../engines/engine.registry';
@@ -484,7 +484,7 @@ function AnalyzeScreen({
         <label className="primary-action file-action">
           <FileAudio size={18} />
           {busy ? t('analyzing') : t('chooseTrack')}
-          <input type="file" accept="audio/*" disabled={busy} onChange={(event) => void importFile(event.target.files?.[0])} />
+          <input type="file" accept={AUDIO_FILE_ACCEPT} disabled={busy} onChange={(event) => void importFile(event.target.files?.[0])} />
         </label>
         <p className="muted">{t('formats')}</p>
         {error && <p className="error-message" role="alert">{error}</p>}

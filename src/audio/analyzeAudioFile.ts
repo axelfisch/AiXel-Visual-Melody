@@ -1,4 +1,5 @@
 import { decodeAudioFile, mixToMono } from './audioBuffer';
+import { hasSupportedAudioExtension } from './audioFileTypes';
 import type { AnalyzeAudioResult } from './audio.types';
 import { buildEnergyTimeline } from './energy';
 import { estimateBpm } from './tempo';
@@ -10,7 +11,7 @@ export const MAX_AUDIO_DURATION = 15 * 60;
 function validateFile(file: File) {
   if (file.size === 0) throw new Error('Le fichier audio est vide.');
   if (file.size > MAX_AUDIO_FILE_SIZE) throw new Error('Le fichier dépasse la limite de 150 Mo.');
-  const audioExtension = /\.(aac|flac|m4a|mp3|ogg|wav)$/i.test(file.name);
+  const audioExtension = hasSupportedAudioExtension(file.name);
   if (file.type && !file.type.startsWith('audio/') && !audioExtension) {
     throw new Error('Veuillez choisir un fichier audio compatible.');
   }
