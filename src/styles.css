@@ -164,7 +164,7 @@ button:disabled {
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto minmax(44px, 1fr);
+  grid-template-columns: minmax(210px, 1fr) auto auto 44px;
   align-items: center;
   gap: 24px;
   max-width: 1540px;
@@ -221,6 +221,34 @@ button:disabled {
   border: 0;
   background: transparent;
   cursor: pointer;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  padding: 3px;
+  border: 1px solid rgba(160, 180, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.language-switch button {
+  min-width: 34px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.language-switch button.active {
+  color: #05060b;
+  background: linear-gradient(120deg, var(--accent-from), var(--accent-to));
 }
 
 .top-nav nav button {
@@ -665,6 +693,25 @@ button:disabled {
   gap: 10px;
   margin-bottom: 18px;
   color: var(--accent-from);
+}
+
+.export-focus-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: -4px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(231, 201, 119, 0.3);
+  border-radius: 10px;
+  color: #d9c98f;
+  background: rgba(231, 201, 119, 0.06);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.export-focus-notice svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 
 .metric {
@@ -1235,7 +1282,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 @media (max-width: 1180px) {
   .top-nav {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
   }
 
   .top-nav nav {

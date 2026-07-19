@@ -30,6 +30,7 @@ import { analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalys
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { getEngineOrDefault } from '../engines/engine.registry';
+import { useLocale } from '../i18n/LocaleContext';
 import {
   directorCapabilities,
   directorMoodProfiles,
@@ -307,27 +308,32 @@ function CosmicBackground() {
 }
 
 function TopNavigation({ current, onNavigate }: { current: Screen; onNavigate: (screen: Screen) => void }) {
+  const { locale, setLocale, t } = useLocale();
   return (
     <header className="top-nav">
-      <button className="brand" onClick={() => onNavigate('home')} aria-label="Go to Home">
+      <button className="brand" onClick={() => onNavigate('home')} aria-label={t('goHome')}>
         <img src={logoReference} alt="" />
         <span>
           <strong>AiXel</strong> Visual Melody
           <small>AiXel Studio</small>
         </span>
       </button>
-      <nav aria-label="Primary">
+      <nav aria-label={t('primaryNavigation')}>
         {screens.map((item) => (
           <button
             className={current === item.id ? 'active' : ''}
             key={item.id}
             onClick={() => onNavigate(item.id)}
           >
-            {item.label}
+            {t(item.id)}
           </button>
         ))}
       </nav>
-      <button className="icon-button" onClick={() => onNavigate('settings')} aria-label="Settings">
+      <div className="language-switch" aria-label={t('language')} role="group">
+        <button className={locale === 'fr' ? 'active' : ''} onClick={() => setLocale('fr')} aria-pressed={locale === 'fr'}>FR</button>
+        <button className={locale === 'en' ? 'active' : ''} onClick={() => setLocale('en')} aria-pressed={locale === 'en'}>EN</button>
+      </div>
+      <button className="icon-button" onClick={() => onNavigate('settings')} aria-label={t('settings')}>
         <Settings size={17} />
       </button>
     </header>
@@ -347,22 +353,23 @@ function HomeScreen({
   goldenBusy: boolean;
   goldenError: string;
 }) {
+  const { t } = useLocale();
   return (
     <section className="screen home-screen">
       <div className="hero">
-        <p className="eyebrow">Visual Intelligence for Music</p>
+        <p className="eyebrow">{t('heroEyebrow')}</p>
         <h1>
-          Transform Your Music Into <span>Living Visuals</span>
+          {t('heroTitle')} <span>{t('heroTitleAccent')}</span>
         </h1>
-        <p className="poetic">Every Note Becomes Light.</p>
+        <p className="poetic">{t('heroPoetic')}</p>
         <div className="hero-actions">
           <button className="primary-action" onClick={() => onNavigate('analyze')}>
             <FileAudio size={18} />
-            Import Music
+            {t('importMusic')}
           </button>
           <button className="secondary-action" onClick={() => onNavigate('create')}>
             <WandSparkles size={18} />
-            Create New Project
+            {t('createProject')}
           </button>
         </div>
       </div>
@@ -372,23 +379,23 @@ function HomeScreen({
           className="play-disc"
           onClick={onGoldenReference}
           disabled={goldenBusy}
-          aria-label="Play In the Spirit of Naomi in reactive preview"
+          aria-label={t('goldenPlayLabel')}
         >
           <Play size={16} fill="currentColor" />
         </button>
         <div>
-          <p className="tiny-label gold">Golden Reference Track</p>
+          <p className="tiny-label gold">{t('goldenTrack')}</p>
           <h2>In the Spirit of Naomi</h2>
         </div>
         <Waveform bars={waveform.slice(0, 56)} />
         <button className="golden-open" onClick={onGoldenReference} disabled={goldenBusy}>
-          {goldenBusy ? 'Analyzing the light…' : 'Open Reactive Preview'}
+          {goldenBusy ? t('analyzingLight') : t('openReactivePreview')}
           <ChevronRight size={16} />
         </button>
       </GlassPanel>
       {goldenError && <p className="error-message golden-error" role="alert">{goldenError}</p>}
 
-      <SectionHeader label="Six Visual Engines" note="Every world has its own language of light" />
+      <SectionHeader label={t('sixEngines')} note={t('enginesNote')} />
       <div className="engine-grid">
         {engines.map((engine) => (
           <EngineCard
@@ -404,14 +411,14 @@ function HomeScreen({
 
       <div className="home-lower">
         <GlassPanel>
-          <SectionHeader label="The Creative Pipeline" compact />
+          <SectionHeader label={t('pipeline')} compact />
           <div className="pipeline">
             {[
-              ['Import', FileAudio],
-              ['Analyze', AudioLines],
-              ['Create', Sparkles],
-              ['Preview', Eye],
-              ['Export', Download],
+              [t('import'), FileAudio],
+              [t('analyzeStep'), AudioLines],
+              [t('createStep'), Sparkles],
+              [t('previewStep'), Eye],
+              [t('exportStep'), Download],
             ].map(([label, Icon], index) => {
               const PipelineIcon = Icon as typeof FileAudio;
               return (
@@ -427,10 +434,10 @@ function HomeScreen({
           </div>
         </GlassPanel>
         <GlassPanel>
-          <SectionHeader label="Approved References" compact />
+          <SectionHeader label={t('approvedReferences')} compact />
           <div className="reference-gallery">
-            <img src={planReference} alt="Approved AiXel Visual Melody plan board" />
-            <img src={studioReference} alt="Approved AiXel Visual Melody studio reference" />
+            <img src={planReference} alt={t('planAlt')} />
+            <img src={studioReference} alt={t('studioAlt')} />
           </div>
         </GlassPanel>
       </div>
@@ -447,11 +454,14 @@ function AnalyzeScreen({
   onAnalysis: (file: File, result: AnalyzeAudioResult) => void;
   onNavigate: (screen: Screen) => void;
 }) {
+  const { locale, t } = useLocale();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const intelligenceSummary = analysis
-    ? `${analysis.bpm < 80 ? 'Tempo posé' : analysis.bpm < 120 ? 'Tempo modéré' : 'Tempo énergique'}. ${analysis.averageEnergy < 0.2 ? 'Dynamique délicate' : analysis.averageEnergy < 0.5 ? 'Dynamique équilibrée' : 'Dynamique intense'}. L’analyse est prête : choisissez maintenant votre moteur visuel dans Create.`
-    : 'Importez un morceau pour obtenir son profil musical avant de choisir un moteur visuel.';
+    ? locale === 'fr'
+      ? `${analysis.bpm < 80 ? 'Tempo posé' : analysis.bpm < 120 ? 'Tempo modéré' : 'Tempo énergique'}. ${analysis.averageEnergy < 0.2 ? 'Dynamique délicate' : analysis.averageEnergy < 0.5 ? 'Dynamique équilibrée' : 'Dynamique intense'}. ${t('readySummary')}`
+      : `${analysis.bpm < 80 ? 'Relaxed tempo' : analysis.bpm < 120 ? 'Moderate tempo' : 'Energetic tempo'}. ${analysis.averageEnergy < 0.2 ? 'Delicate dynamics' : analysis.averageEnergy < 0.5 ? 'Balanced dynamics' : 'Intense dynamics'}. ${t('readySummary')}`
+    : t('importSummary');
 
   const importFile = async (file?: File) => {
     if (!file) return;
@@ -469,44 +479,44 @@ function AnalyzeScreen({
 
   return (
     <section className="screen analysis-layout">
-      <ScreenTitle eyebrow="Analyze" title={analysis?.name ?? 'Import a short track'} note="L’analyse audio est effectuée localement dans votre navigateur." />
+      <ScreenTitle eyebrow={t('analyze')} title={analysis?.name ?? t('analyzeTitle')} note={t('analyzeNote')} />
       <GlassPanel className="audio-import span-2">
         <label className="primary-action file-action">
           <FileAudio size={18} />
-          {busy ? 'Analyse en cours…' : 'Choisir un morceau'}
+          {busy ? t('analyzing') : t('chooseTrack')}
           <input type="file" accept="audio/*" disabled={busy} onChange={(event) => void importFile(event.target.files?.[0])} />
         </label>
-        <p className="muted">WAV, MP3, M4A, AAC, OGG ou FLAC · 15 minutes et 150 Mo maximum.</p>
+        <p className="muted">{t('formats')}</p>
         {error && <p className="error-message" role="alert">{error}</p>}
       </GlassPanel>
       <div className="analysis-grid">
         <GlassPanel className="span-2">
-          <PanelHeading icon={<AudioLines size={18} />} label="Waveform and FFT Spectrum" />
+          <PanelHeading icon={<AudioLines size={18} />} label={t('waveformSpectrum')} />
           <Waveform bars={analysis?.waveform ?? waveform} large />
           <Spectrum bars={(analysis?.energy.slice(0, 44).map((value) => 12 + value * 88)) ?? spectrum} />
         </GlassPanel>
         <GlassPanel>
-          <PanelHeading icon={<CircleGauge size={18} />} label="Detected Structure" />
-          <Metric label="BPM estimé" value={analysis ? String(analysis.bpm) : '—'} />
-          <Metric label="Durée" value={analysis ? formatTime(analysis.duration) : '—'} />
-          <Metric label="Échantillonnage" value={analysis ? `${Math.round(analysis.sampleRate / 1000)} kHz` : '—'} />
-          <Metric label="Pic" value={analysis ? `${Math.round(analysis.peak * 100)}%` : '—'} />
+          <PanelHeading icon={<CircleGauge size={18} />} label={t('detectedStructure')} />
+          <Metric label={t('estimatedBpm')} value={analysis ? String(analysis.bpm) : '—'} />
+          <Metric label={t('duration')} value={analysis ? formatTime(analysis.duration) : '—'} />
+          <Metric label={t('sampleRate')} value={analysis ? `${Math.round(analysis.sampleRate / 1000)} kHz` : '—'} />
+          <Metric label={t('peak')} value={analysis ? `${Math.round(analysis.peak * 100)}%` : '—'} />
         </GlassPanel>
         <GlassPanel>
-          <PanelHeading icon={<Sparkles size={18} />} label="Emotion Profile" />
+          <PanelHeading icon={<Sparkles size={18} />} label={t('emotionProfile')} />
           <div className="chips">
-            {['Reflective', 'Expansive', 'Tender', 'Dreamy', 'Luminous', 'Calm'].map((chip) => (
-              <span key={chip}>{chip}</span>
+            {['reflective', 'expansive', 'tender', 'dreamy', 'luminous', 'calm'].map((chip) => (
+              <span key={chip}>{t(chip)}</span>
             ))}
           </div>
         </GlassPanel>
         <GlassPanel className="ai-panel">
-          <PanelHeading icon={<WandSparkles size={18} />} label="AiXel Intelligence" />
+          <PanelHeading icon={<WandSparkles size={18} />} label={t('aixelIntelligence')} />
           <blockquote>
             {intelligenceSummary}
           </blockquote>
           <button className="primary-action" disabled={!analysis} onClick={() => onNavigate('create')}>
-            Continuer vers Create
+            {t('continueCreate')}
             <ChevronRight size={17} />
           </button>
         </GlassPanel>
@@ -542,22 +552,31 @@ function CreateScreen({
   onDirectorChange: (dimension: DirectorDimension, value: number) => void;
   onNavigate: (screen: Screen) => void;
 }) {
+  const { t } = useLocale();
   const presets = ['Naomi', 'Dream', 'Universe', 'Rain', 'Blue', 'Neon', 'Galaxy', 'Jazz Club', 'Deep Space', 'Ocean'];
   const moods: DirectorMood[] = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
   const directorControls: Array<{ dimension: DirectorDimension; label: string }> = [
-    { dimension: 'emotion', label: 'Emotion' },
-    { dimension: 'space', label: 'Space' },
-    { dimension: 'fluidity', label: 'Fluidity' },
-    { dimension: 'light', label: 'Light' },
-    { dimension: 'dynamics', label: 'Dynamics' },
-    { dimension: 'particles', label: 'Particles' },
-    { dimension: 'colorEnergy', label: 'Color Energy' },
-    { dimension: 'motionComplexity', label: 'Motion Complexity' },
+    { dimension: 'emotion', label: t('emotion') },
+    { dimension: 'space', label: t('space') },
+    { dimension: 'fluidity', label: t('fluidity') },
+    { dimension: 'light', label: t('light') },
+    { dimension: 'dynamics', label: t('dynamics') },
+    { dimension: 'particles', label: t('particles') },
+    { dimension: 'colorEnergy', label: t('colorEnergy') },
+    { dimension: 'motionComplexity', label: t('motionComplexity') },
   ];
+  const moodLabels: Record<DirectorMood, string> = {
+    'More Cinematic': t('moreCinematic'),
+    'More Emotional': t('moreEmotional'),
+    'More Dreamy': t('moreDreamy'),
+    'More Powerful': t('morePowerful'),
+    'More Organic': t('moreOrganic'),
+    'More Minimal': t('moreMinimal'),
+  };
 
   return (
     <section className="screen create-layout">
-      <ScreenTitle eyebrow="Creative Studio" title={projectName} note={engine.mood} />
+      <ScreenTitle eyebrow={t('creativeStudio')} title={projectName} note={t(`${engine.key}Mood`)} />
       <div className="engine-tabs">
         {engines.map((item) => (
           <button
@@ -573,7 +592,7 @@ function CreateScreen({
         <div className="studio-main">
           <PreviewCanvas engine={engine} />
           <GlassPanel>
-            <PanelHeading icon={<Palette size={18} />} label="Visual Presets" />
+            <PanelHeading icon={<Palette size={18} />} label={t('visualPresets')} />
             <div className="chips wrap">
               {presets.map((preset) => (
                 <button
@@ -589,7 +608,7 @@ function CreateScreen({
         </div>
         <GlassPanel className="director">
           <PanelHeading icon={<SlidersHorizontal size={18} />} label="AiXel Director" />
-          <p className="muted">Tell it how to feel. The shell translates that into sample motion settings.</p>
+          <p className="muted">{t('directorHelp')}</p>
           <div className="chips wrap mood-chips">
             {moods.map((mood) => (
               <button
@@ -597,7 +616,7 @@ function CreateScreen({
                 key={mood}
                 onClick={() => onMood(mood)}
               >
-                {mood}
+                {moodLabels[mood]}
               </button>
             ))}
           </div>
@@ -618,7 +637,7 @@ function CreateScreen({
                   max="100"
                   value={value}
                   disabled={!supported}
-                  title={supported ? `Ajuster ${label}` : 'Ce moteur ne prend pas encore en charge ce réglage.'}
+                  title={supported ? `${t('adjust')} ${label}` : t('unsupportedControl')}
                   onChange={(event) => onDirectorChange(dimension, Number(event.target.value))}
                 />
               </label>
@@ -626,7 +645,7 @@ function CreateScreen({
             })}
           </div>
           <button className="primary-action full" onClick={() => onNavigate('preview')}>
-            Continue to Preview
+            {t('continuePreview')}
             <ChevronRight size={17} />
           </button>
         </GlassPanel>
@@ -636,28 +655,36 @@ function CreateScreen({
 }
 
 function SettingsScreen({ onNavigate }: { onNavigate: (screen: Screen) => void }) {
+  const { locale, t } = useLocale();
+  const sections = locale === 'fr'
+    ? [
+        ['Audio', ["Sensibilité d’entrée", "Cache d’analyse", 'Verrouillage de la piste de référence']],
+        ['Visuel', ['Mouvement réduit', "Qualité de l’aperçu", 'Synchronisation des accents du moteur']],
+        ['Performance', ['Mode aperçu GPU', 'File de rendu en arrière-plan', 'Économie de mémoire']],
+      ]
+    : [
+        ['Audio', ['Input sensitivity', 'Analysis cache', 'Reference track lock']],
+        ['Visual', ['Reduced motion aware', 'Preview quality', 'Engine accent sync']],
+        ['Performance', ['GPU preview mode', 'Background render queue', 'Memory saver']],
+      ];
   return (
     <section className="screen settings-layout">
-      <ScreenTitle eyebrow="Settings" title="Three sections only" note="Settings remain accessible from every screen." />
+      <ScreenTitle eyebrow={t('settings')} title={t('settingsTitle')} note={t('settingsNote')} />
       <div className="settings-grid">
-        {[
-          ['Audio', ['Input sensitivity', 'Analysis cache', 'Reference track lock']],
-          ['Visual', ['Reduced motion aware', 'Preview quality', 'Engine accent sync']],
-          ['Performance', ['GPU preview mode', 'Background render queue', 'Memory saver']],
-        ].map(([section, rows]) => (
+        {sections.map(([section, rows]) => (
           <GlassPanel key={section as string}>
             <PanelHeading icon={<Settings size={18} />} label={section as string} />
             {(rows as string[]).map((row) => (
               <div className="setting-row" key={row}>
                 <span>{row}</span>
-                <button>On</button>
+                <button>{t('on')}</button>
               </div>
             ))}
           </GlassPanel>
         ))}
       </div>
       <button className="secondary-action" onClick={() => onNavigate('design-system')}>
-        View Design System
+        {t('viewDesignSystem')}
       </button>
     </section>
   );
@@ -756,6 +783,7 @@ function NeonVisual() {
 }
 
 function EngineCard({ engine, onClick }: { engine: Engine; onClick: () => void }) {
+  const { t } = useLocale();
   return (
     <button className="engine-card" onClick={onClick}>
       <div
@@ -765,7 +793,7 @@ function EngineCard({ engine, onClick }: { engine: Engine; onClick: () => void }
         <span>{engine.number}</span>
       </div>
       <strong>{engine.name}</strong>
-      <p>{engine.character}</p>
+      <p>{t(`${engine.key}Character`)}</p>
     </button>
   );
 }

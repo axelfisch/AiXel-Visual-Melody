@@ -4,6 +4,7 @@ import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { EngineCanvas } from '../engines/EngineCanvas';
 import { getEngineOrDefault } from '../engines/engine.registry';
+import { useLocale } from '../i18n/LocaleContext';
 import { useSynchronizedPlayback } from '../preview/useSynchronizedPlayback';
 import { useProject } from '../project/project.context';
 import { canPreview } from '../project/project.selectors';
@@ -18,6 +19,7 @@ export function PreviewScreen({
   autoPlay: boolean;
   onAutoPlayHandled: () => void;
 }) {
+  const { locale, t } = useLocale();
   const { project } = useProject();
   const engine = getEngineOrDefault(project.engine.engineId);
   const audioUrl = project.audio?.objectUrl ?? null;
@@ -28,7 +30,7 @@ export function PreviewScreen({
     autoPlay,
     onAutoPlayHandled,
   });
-  const poeticLine = engine.id === 'cosmic-waves'
+  const poeticLine = locale === 'fr' ? (engine.id === 'cosmic-waves'
     ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
     : engine.id === 'jazz-geometry'
       ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
@@ -38,17 +40,27 @@ export function PreviewScreen({
           ? 'La ville s’élève et pulse dans l’architecture du spectre.'
           : engine.id === 'neon-velvet'
             ? 'La lumière glisse comme du velours électrique dans la nuit.'
-            : 'Le disque réagit à l’énergie réelle du signal.';
+            : 'Le disque réagit à l’énergie réelle du signal.') : (engine.id === 'cosmic-waves'
+    ? 'Waves of light breathe with the real energy of the signal.'
+    : engine.id === 'jazz-geometry'
+      ? 'Harmonic circles draw the living geometry of the track.'
+      : engine.id === 'liquid-colors'
+        ? 'Luminous ink folds and breathes with the music.'
+        : engine.id === 'frequency-city'
+          ? 'The city rises and pulses through the architecture of the spectrum.'
+          : engine.id === 'neon-velvet'
+            ? 'Light glides like electric velvet through the night.'
+            : 'The record reacts to the real energy of the signal.');
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (
       <section className="screen preview-screen">
         <GlassPanel className="preview-empty">
           <FileAudio size={28} />
-          <p className="eyebrow">Preview</p>
-          <h1>La musique doit d’abord être analysée.</h1>
-          <p>Importez une piste ou ouvrez le Golden Reference pour activer la Preview audio-réactive.</p>
-          <button className="primary-action" onClick={() => onNavigate('analyze')}>Open Analyze</button>
+          <p className="eyebrow">{t('preview')}</p>
+          <h1>{t('previewNeedsAnalysis')}</h1>
+          <p>{t('previewEmptyHelp')}</p>
+          <button className="primary-action" onClick={() => onNavigate('analyze')}>{t('openAnalyze')}</button>
         </GlassPanel>
       </section>
     );
@@ -67,12 +79,12 @@ export function PreviewScreen({
         />
         <div className="cinema-overlay">
           <div>
-            <p className="tiny-label">{engine.name} · Live Preview</p>
+            <p className="tiny-label">{engine.name} · {t('livePreview')}</p>
             <h1>{project.name}</h1>
             <p className="poetic">{poeticLine}</p>
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>
-            Export
+            {t('export')}
             <Download size={17} />
           </button>
         </div>
@@ -83,7 +95,7 @@ export function PreviewScreen({
           <button
             className="icon-button"
             onClick={() => void playback.togglePlayback()}
-            aria-label={playback.playing ? 'Pause preview' : 'Play preview'}
+            aria-label={playback.playing ? t('pausePreview') : t('playPreview')}
           >
             {playback.playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
           </button>
@@ -109,12 +121,12 @@ export function PreviewScreen({
             <button
               className="icon-button"
               onClick={playback.toggleMuted}
-              aria-label={playback.muted ? 'Unmute preview' : 'Mute preview'}
+              aria-label={playback.muted ? t('unmutePreview') : t('mutePreview')}
             >
               {playback.muted || playback.volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
             </button>
             <input
-              aria-label="Preview volume"
+              aria-label={t('previewVolume')}
               type="range"
               min="0"
               max="1"
@@ -126,10 +138,10 @@ export function PreviewScreen({
           </div>
         </div>
 
-        <div className="quality" aria-label="Preview quality">
+        <div className="quality" aria-label={t('previewQuality')}>
           <button className="selected">1080p</button>
-          <button disabled title="Disponible dans une future version">4K</button>
-          <button disabled title="Disponible dans une future version">8K</button>
+          <button disabled title={t('futureVersion')}>4K</button>
+          <button disabled title={t('futureVersion')}>8K</button>
         </div>
 
         <audio ref={playback.audioRef} src={audioUrl ?? undefined} preload="metadata" />

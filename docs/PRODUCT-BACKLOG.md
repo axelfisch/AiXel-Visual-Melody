@@ -174,3 +174,15 @@ Every MP4 exported by the free version ends with a restrained three-second brand
 - `Music by Axel Fisch`.
 
 The card preserves the selected export resolution and frame rate. It begins after the original source audio ends, while the audio destination continues silently for the three-second credit. Progress duration, live Render Progress, cancellation, resource cleanup, and the downloaded MP4 all use the extended timeline. A future project metadata setting should replace the default artist name for other users; the free-version AiXel attribution remains automatic.
+
+## B13 — MVP localization and export-session guidance
+
+**Status:** Implemented in the MVP release candidate; production validation pending.
+
+The complete interface supports French and English through a compact persistent selector in the approved navigation. Export warns users to keep the rendering tab visible and active because browser background throttling can freeze a canvas-based video even while audio processing continues. The encoder now also repaints and requests its first frame immediately after `MediaRecorder` starts to strengthen fresh-session export reliability.
+
+## B14 — Project Identity V1
+
+**Status:** Next checkpoint after MVP deployment validation.
+
+Add editable project-level track title and artist identity with migration-safe defaults. Preview, the exported filename, and End Card attribution must consume the same project metadata. Preserve automatic AiXel Visual Melody attribution in the free MVP and do not redesign the approved Claude Design screens.
