@@ -192,3 +192,9 @@ Add editable project-level track title and artist identity with migration-safe d
 **Status:** Implemented; physical-device Netlify validation pending.
 
 Replace the `audio/*` file-input wildcard with explicit supported extensions. This avoids WebKit bug 242110, which incorrectly presents video files for `accept="audio/*"` on iOS and iPadOS. File size, extension/MIME validation, browser decoding, and the 15-minute duration limit remain enforced after selection.
+
+## B16 — Private-test sharing identity
+
+**Status:** Implemented; Netlify validation pending.
+
+Provide a branded favicon, Apple touch icon, canonical Netlify URL, and a 1200 × 630 social sharing image through Open Graph and Twitter Card metadata. This gives private-test links a recognizable AiXel Visual Melody identity without changing the Claude Design application interface or beginning the later public marketing campaign.
