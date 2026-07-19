@@ -69,6 +69,8 @@
 - Changing engines preserves the Director intent and remaps it to the new engine's validated parameters.
 - Preview, Render Progress, and Export all consume the identical mapped `project.engine.parameters` object.
 - The export canvas is seeded with a deterministic first frame before `captureStream()` and `MediaRecorder` initialization, addressing the reproduced Netlify first-export audio-only container issue.
+- AiXel Director V1 was accepted and merged through PR #10 at `a6fd238`.
+- Home now uses six real, engine-specific thumbnail images inside the existing approved cards; desktop and mobile layouts are unchanged.
 
 ## Verification at checkpoint
 
@@ -87,7 +89,7 @@
 
 ## Exact next recommended step
 
-Owner-test **AiXel Director V1** with a real imported track: apply multiple profiles and supported sliders in Create, confirm immediate motion changes in Preview, then export a short MP4 and compare the rendered motion. After acceptance, merge the integration PR. Settings remains a later step.
+Implement **Export End Card V1** as a separate checkpoint: append an approximately three-second branded credit to the encoded MP4, with coherent progress, duration, audio handling, and cancellation. Settings remains a later step.
 
 ## Claude Design timing
 
@@ -114,4 +116,4 @@ See `PRODUCT-BACKLOG.md` for:
 
 ## Branch note
 
-The AiXel Director V1 functional integration is developed on `agent/aixel-director-v1-integration`, based on the merged mapping contract in `main` at `c0f71fa`.
+AiXel Director V1 is merged in `main` through PR #10. The completed Home thumbnail integration is awaiting its GitHub checkpoint on `agent/home-engine-thumbnails`.
