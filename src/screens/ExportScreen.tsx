@@ -8,7 +8,7 @@ import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
 import { EXPORT_END_CARD_DURATION } from '../export/endCard';
 import { useLocale } from '../i18n/LocaleContext';
 import { renderMp4 } from '../export/renderMp4';
-import type { ExportSettings } from '../project/project.types';
+import type { ExportSettings, ProjectIdentity } from '../project/project.types';
 
 type ExportState = 'idle' | 'rendering' | 'completed' | 'cancelled' | 'unsupported' | 'failed';
 
@@ -30,12 +30,14 @@ export function ExportScreen({
   engineConfig,
   previewBackground,
   settings,
+  identity,
 }: {
   analysis: AudioAnalysis | null;
   engine?: VisualEngine;
   engineConfig?: unknown;
   previewBackground: string;
   settings: ExportSettings;
+  identity: ProjectIdentity;
 }) {
   const { t } = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -102,6 +104,11 @@ export function ExportScreen({
         mimeType,
         canvas,
         signal: controller.signal,
+        title: identity.title.trim() || analysis.name,
+        endCardCredits: {
+          trackTitle: identity.title.trim() || analysis.name,
+          artistName: identity.artist.trim() || 'Axel Fisch',
+        },
         onProgress: ({ progress: value, renderedTime: time, duration }) => {
           setProgress(value);
           setRenderedTime(time);
@@ -110,7 +117,7 @@ export function ExportScreen({
       });
       const url = URL.createObjectURL(blob);
       const completedExport = {
-        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`,
+        filename: `${(identity.title.trim() || analysis.name).replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`,
         url,
       };
       setCompletedExport(completedExport);

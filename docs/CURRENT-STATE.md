@@ -1,8 +1,8 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** MVP release candidate — bilingual interface and stabilized browser export
+**Checkpoint:** Project Identity V1 — unified title and artist metadata
 
-**Date:** 2026-07-19
+**Date:** 2026-07-24
 
 **Local application:** `http://localhost:5173/#home`
 
@@ -78,6 +78,9 @@
 - The export pipeline repaints and explicitly requests its first canvas frame after `MediaRecorder.start()`, strengthening the existing first-export protection for fresh HTTPS/Netlify sessions.
 - Audio import uses explicit supported filename extensions instead of `accept="audio/*"`, working around WebKit bug 242110 where iPhone and iPad incorrectly filter the Files picker to video content.
 - The Netlify site now has a branded favicon, Apple touch icon, canonical URL, and a 1200 × 630 Open Graph/Twitter sharing card for professional private-test links in Messenger, WhatsApp, and other compatible services.
+- Project schema V2 adds one migration-safe identity object with an editable track title and artist name.
+- Create exposes the two bilingual identity fields inside the approved panel system without redesigning the Claude interface.
+- Preview, renderer titles, MP4 filename, and Export End Card all consume the same project identity.
 
 ## Verification at checkpoint
 
@@ -96,7 +99,7 @@
 
 ## Exact next recommended step
 
-Deploy and validate this MVP release candidate on Netlify, including a fresh-session first export and a second export on desktop plus a responsive interface check on iPhone and iPad. Once accepted, begin Project Identity V1 on a clean branch so the track title and artist can flow consistently through Preview, filename, and End Card without coupling metadata work to MVP stabilization.
+Merge and validate Project Identity V1, then begin AiXel Director V2 with real named palettes plus honest Light and Color Energy mappings for all six engines.
 
 ## Claude Design timing
 
@@ -112,7 +115,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 - Current hard audio limits are 150 MB and 15 minutes.
 - Native MP4 recording support varies by browser.
 - The browser must keep the export tab visible and active; background-tab throttling can freeze the canvas image while audio processing continues.
-- End Card V1 currently uses the default artist credit `Axel Fisch`; editable artist metadata remains a future project setting.
+- End Card V1 now uses the editable project artist and track title, with `Axel Fisch` as the safe migrated default.
 
 ## Future work already recorded
 

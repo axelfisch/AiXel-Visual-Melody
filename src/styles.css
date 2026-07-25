@@ -965,6 +965,40 @@ blockquote {
   height: fit-content;
 }
 
+.project-identity-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.project-identity-fields label {
+  display: grid;
+  gap: 8px;
+  color: #aab2d9;
+  font-size: 12px;
+}
+
+.project-identity-fields input {
+  width: 100%;
+  border: 1px solid rgba(160, 180, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(4, 7, 15, 0.72);
+  color: #eef1fb;
+  padding: 12px 14px;
+  outline: none;
+}
+
+.project-identity-fields input:focus {
+  border-color: color-mix(in srgb, var(--accent-from) 60%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent-from) 18%, transparent);
+}
+
+.preview-artist {
+  margin-top: 4px;
+  color: #d9c98f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
 .fine-tuning {
   display: grid;
   gap: 16px;
@@ -1041,6 +1075,12 @@ input[type="range"]::-webkit-slider-thumb {
 
 .transport {
   margin-top: 16px;
+}
+
+@media (max-width: 720px) {
+  .project-identity-fields {
+    grid-template-columns: 1fr;
+  }
 }
 
 .transport-main {

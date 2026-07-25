@@ -128,6 +128,8 @@ describe('renderMp4', () => {
       settings: DEFAULT_EXPORT_SETTINGS,
       mimeType: 'video/mp4',
       canvas,
+      title: 'Golden Light',
+      endCardCredits: { artistName: 'AiXel Studio' },
       onProgress,
     });
 
@@ -135,8 +137,10 @@ describe('renderMp4', () => {
     expect(canvas.width).toBe(1280);
     expect(canvas.height).toBe(720);
     expect(engine.render).toHaveBeenCalledTimes(3);
+    expect(engine.render).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ title: 'Golden Light' }), expect.anything());
     expect(context.fillText).toHaveBeenCalledWith('AiXel Visual Melody', 640, expect.any(Number));
-    expect(context.fillText).toHaveBeenCalledWith('Music by Axel Fisch', 640, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('Golden Light', 640, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('Music by AiXel Studio', 640, expect.any(Number));
     expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({
       progress: 1,
       renderedTime: 4,

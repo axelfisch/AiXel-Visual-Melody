@@ -75,12 +75,13 @@ export function PreviewScreen({
           duration={duration}
           engine={engine}
           time={playback.currentTime}
-          title={project.name}
+          title={project.identity.title || project.name}
         />
         <div className="cinema-overlay">
           <div>
             <p className="tiny-label">{engine.name} · {t('livePreview')}</p>
-            <h1>{project.name}</h1>
+            <h1>{project.identity.title || project.name}</h1>
+            <p className="preview-artist">{project.identity.artist}</p>
             <p className="poetic">{poeticLine}</p>
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>

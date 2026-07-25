@@ -14,10 +14,11 @@ describe('projectReducer', () => {
   it('creates a valid project with Minimal Album Art selected', () => {
     const project = createProject('Naomi');
     expect(project.name).toBe('Naomi');
+    expect(project.identity).toEqual({ title: 'Naomi', artist: 'Axel Fisch' });
     expect(project.engine.engineId).toBe('minimal-album-art');
     expect(project.engine.director.mood).toBe('More Emotional');
     expect(project.engine.director.values.fluidity).toBe(64);
-    expect(project.schemaVersion).toBe(1);
+    expect(project.schemaVersion).toBe(2);
   });
 
   it('applies Director state and engine parameters atomically', () => {
@@ -43,6 +44,17 @@ describe('projectReducer', () => {
     const next = projectReducer(analyzed, { type: 'SET_AUDIO_SOURCE', audio });
     expect(next.analysis).toBeNull();
     expect(next.name).toBe('Naomi');
+    expect(next.identity.title).toBe('Naomi');
+  });
+
+  it('updates title and artist as one project identity', () => {
+    const project = createProject('Naomi');
+    const next = projectReducer(project, {
+      type: 'UPDATE_PROJECT_IDENTITY',
+      identity: { title: 'Golden Light', artist: 'AiXel Studio' },
+    });
+    expect(next.identity).toEqual({ title: 'Golden Light', artist: 'AiXel Studio' });
+    expect(project.identity).toEqual({ title: 'Naomi', artist: 'Axel Fisch' });
   });
 
   it('updates engine parameters without mutating the prior project', () => {

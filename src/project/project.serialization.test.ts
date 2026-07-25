@@ -10,7 +10,22 @@ describe('project serialization', () => {
   });
 
   it('rejects unknown schema versions', () => {
-    expect(() => parseProject('{"schemaVersion":2}')).toThrow(/version/i);
+    expect(() => parseProject('{"schemaVersion":3}')).toThrow(/version/i);
+  });
+
+  it('migrates schema V1 projects to the default identity safely', () => {
+    const project = createProject('Legacy Song');
+    const { identity: _identity, ...legacy } = project;
+    const parsed = parseProject(JSON.stringify({ ...legacy, schemaVersion: 1 }));
+
+    expect(parsed.schemaVersion).toBe(2);
+    expect(parsed.identity).toEqual({ title: 'Legacy Song', artist: 'Axel Fisch' });
+  });
+
+  it('preserves a customized project identity through serialization', () => {
+    const project = createProject('Naomi');
+    project.identity = { title: 'In the Spirit of Naomi', artist: 'AiXel Studio' };
+    expect(parseProject(serializeProject(project)).identity).toEqual(project.identity);
   });
 
   it('migrates legacy Director mood parameters into structured state', () => {
