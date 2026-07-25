@@ -759,7 +759,15 @@ function DesignSystemScreen() {
 
 function PreviewCanvas({ engine, full = false }: { engine: Engine; full?: boolean }) {
   return (
-    <div className={`preview-canvas ${full ? 'full' : ''}`} style={{ background: engine.preview, borderRadius: `var(--preview-radius)` }}>
+    <div
+      className={`preview-canvas preview-${engine.key} ${full ? 'full' : ''}`}
+      style={{ background: engine.preview, borderRadius: `var(--preview-radius)` }}
+    >
+      <div
+        aria-hidden="true"
+        className="preview-reference-art"
+        style={{ backgroundImage: `url(${engine.thumbnail})` }}
+      />
       {engine.key === 'cosmic' && <CosmicVisual />}
       {engine.key === 'geometry' && <GeometryVisual />}
       {engine.key === 'liquid' && <LiquidVisual />}
@@ -787,6 +795,8 @@ function CosmicVisual() {
 function GeometryVisual() {
   return (
     <div className="geometry-visual">
+      <span />
+      <span />
       <span />
       <span />
       <span />

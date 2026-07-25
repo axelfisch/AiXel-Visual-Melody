@@ -33,6 +33,10 @@ Settings is accessible from every screen.
 5. Minimal Album Art
 6. Neon Velvet
 
+## Special Engine Concept
+
+A seventh **Particle Orb Special** is recorded as a feasibility concept, not an implemented engine. Its supplied visual reference, target behavior, Director mapping, WebGL approach, and technical decision gate are documented in [`docs/PARTICLE-ORB-SPECIAL-CONCEPT.md`](docs/PARTICLE-ORB-SPECIAL-CONCEPT.md).
+
 ## Design Source of Truth
 
 The approved **AiXel Visual Melody — Master Design Package V1.0** created with Claude Design remains the visual source of truth. Functional implementation must preserve its identity, hierarchy, and user experience unless the product owner explicitly requests a design change.

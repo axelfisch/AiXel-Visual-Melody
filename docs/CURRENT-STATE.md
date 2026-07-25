@@ -1,8 +1,8 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** MVP release candidate — bilingual interface and stabilized browser export
+**Checkpoint:** Six-engine MVP accepted — Director palettes, stabilized first export, and complete Create previews
 
-**Date:** 2026-07-19
+**Date:** 2026-07-25
 
 **Local application:** `http://localhost:5173/#home`
 
@@ -76,12 +76,18 @@
 - The complete product interface can now be switched between French and English from the existing top navigation; the preference persists locally and updates the document language.
 - Export now explicitly asks the user to keep the tab visible and active until rendering is complete because background-tab throttling can freeze browser canvas animation.
 - The export pipeline repaints and explicitly requests its first canvas frame after `MediaRecorder.start()`, strengthening the existing first-export protection for fresh HTTPS/Netlify sessions.
+- Create now blends the approved engine artwork with the existing animated overlays across all six engines, restoring complete studio previews without redesigning the Create composition.
+- MP4 export now uses an explicitly driven canvas video track, waits for the recorder start event, and submits two painted frames before audio begins so the first export works from a fresh session.
+- Export edge backgrounds and the AiXel end card now derive from the active engine accent colors, keeping Director palettes coherent in the encoded MP4.
+- Netlify has explicit Vite build and `dist` publish settings in `netlify.toml`.
 - Audio import uses explicit supported filename extensions instead of `accept="audio/*"`, working around WebKit bug 242110 where iPhone and iPad incorrectly filter the Files picker to video content.
 - The Netlify site now has a branded favicon, Apple touch icon, canonical URL, and a 1200 × 630 Open Graph/Twitter sharing card for professional private-test links in Messenger, WhatsApp, and other compatible services.
+- The owner accepted the local and Netlify versions with all six hybrid Create previews, all Director faders and palettes, first-attempt MP4 export, and palette-aware export backgrounds working.
+- A seventh `Particle Orb Special` is recorded as a reference-only feasibility concept in `docs/PARTICLE-ORB-SPECIAL-CONCEPT.md`; implementation has not started.
 
 ## Verification at checkpoint
 
-- `npm test -- --run`: 19 test files, 46 tests passing.
+- `npm run test:run`: 23 test files, 60 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -96,7 +102,7 @@
 
 ## Exact next recommended step
 
-Deploy and validate this MVP release candidate on Netlify, including a fresh-session first export and a second export on desktop plus a responsive interface check on iPhone and iPad. Once accepted, begin Project Identity V1 on a clean branch so the track title and artist can flow consistently through Preview, filename, and End Card without coupling metadata work to MVP stabilization.
+Review the `Particle Orb Special` technical spike proposal with the product owner. If approved, prototype the GPU-backed sphere and validate a first-attempt five-second MP4 export before registering a seventh production engine.
 
 ## Claude Design timing
 
@@ -104,7 +110,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 
 ## Known limitations to preserve honestly
 
-- All six approved visual engines are functional and merged. Director V1 intentionally leaves Emotion, Space, Light, and Color Energy disabled until engines expose honest renderer parameters for them.
+- All six approved visual engines are functional. All eight Director dimensions now map to validated renderer parameters on every engine.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.

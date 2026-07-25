@@ -7,6 +7,7 @@ import {
   renderEndCard,
   type EndCardCredits,
 } from './endCard';
+import { getExportPaletteColors, renderPaletteEdgeTint } from './paletteBackdrop';
 
 export type RenderMp4Progress = {
   progress: number;
@@ -35,6 +36,26 @@ function throwIfAborted(signal?: AbortSignal) {
   if (signal?.aborted) throw abortError();
 }
 
+function waitForAnimationFrame(signal?: AbortSignal) {
+  if (signal?.aborted) return Promise.reject(abortError());
+
+  return new Promise<void>((resolve, reject) => {
+    let frameId = 0;
+    const cleanup = () => signal?.removeEventListener('abort', cancel);
+    const cancel = () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      cleanup();
+      reject(abortError());
+    };
+
+    signal?.addEventListener('abort', cancel, { once: true });
+    frameId = requestAnimationFrame(() => {
+      cleanup();
+      resolve();
+    });
+  });
+}
+
 export async function renderMp4({
   analysis,
   engine,
@@ -56,18 +77,22 @@ export async function renderMp4({
   const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
-  const renderInitialFrame = () => engine.render(
-    { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-    {
-      time: 0,
-      duration: analysis.duration,
-      progress: 0,
-      energy: energyAt(analysis, 0),
-      bpm: analysis.bpm,
-      title: analysis.name,
-    },
-    config,
-  );
+  const paletteColors = getExportPaletteColors(engine, config);
+  const renderInitialFrame = () => {
+    engine.render(
+      { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
+      {
+        time: 0,
+        duration: analysis.duration,
+        progress: 0,
+        energy: energyAt(analysis, 0),
+        bpm: analysis.bpm,
+        title: analysis.name,
+      },
+      config,
+    );
+    renderPaletteEdgeTint(context, canvas.width, canvas.height, paletteColors);
+  };
   renderInitialFrame();
   onProgress?.({ progress: 0, renderedTime: 0, duration: totalDuration, canvas });
 
@@ -81,8 +106,12 @@ export async function renderMp4({
   source.buffer = analysis.buffer;
   source.connect(destination);
 
-  const canvasStream = canvas.captureStream(settings.frameRate);
+  // A zero-rate canvas stream lets us submit every painted frame explicitly.
+  // This is more reliable than waiting for Safari to detect the first canvas
+  // mutation on a fresh page, which previously made the first MP4 audio-only.
+  const canvasStream = canvas.captureStream(0);
   const videoTrack = canvasStream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack | undefined;
+  if (!videoTrack) throw new Error("Le flux vidéo d’export n’est pas disponible.");
   const stream = new MediaStream([
     ...canvasStream.getVideoTracks(),
     ...destination.stream.getAudioTracks(),
@@ -93,6 +122,10 @@ export async function renderMp4({
   });
   const chunks: Blob[] = [];
   let animationFrame = 0;
+  const requestVideoFrame = () => videoTrack.requestFrame?.();
+  const recorderStarted = new Promise<void>((resolve) => {
+    recorder.onstart = () => resolve();
+  });
 
   const complete = new Promise<Blob>((resolve, reject) => {
     recorder.ondataavailable = (event) => {
@@ -107,12 +140,18 @@ export async function renderMp4({
   };
 
   try {
-    recorder.start(1000);
-    // Paint and explicitly request the first encoded frame after MediaRecorder is
-    // active. This protects a fresh HTTPS session where the pre-capture seed may
-    // not be emitted until a later canvas change, producing an audio-only MP4.
+    recorder.start(250);
+    await recorderStarted;
+
+    // Submit two painted frames only after MediaRecorder confirms it is active,
+    // and do so before audio starts. The first export now receives a real video
+    // keyframe instead of relying on state left behind by a previous attempt.
     renderInitialFrame();
-    videoTrack?.requestFrame?.();
+    requestVideoFrame();
+    await waitForAnimationFrame(signal);
+    renderInitialFrame();
+    requestVideoFrame();
+    throwIfAborted(signal);
     source.start();
     const startedAt = audioContext.currentTime;
 
@@ -146,6 +185,7 @@ export async function renderMp4({
               },
               config,
             );
+            renderPaletteEdgeTint(context, canvas.width, canvas.height, paletteColors);
           } else {
             renderEndCard({
               context,
@@ -153,9 +193,11 @@ export async function renderMp4({
               height: canvas.height,
               elapsed: renderedTime - analysis.duration,
               duration: EXPORT_END_CARD_DURATION,
+              paletteColors,
               ...credits,
             });
           }
+          requestVideoFrame();
           onProgress?.({ progress, renderedTime, duration: totalDuration, canvas });
 
           if (renderedTime < totalDuration) animationFrame = requestAnimationFrame(frame);

@@ -1,5 +1,18 @@
 # Changelog
 
+## Particle Orb Special — Reference and Feasibility
+
+- Captured a repository-safe still from the owner-supplied particle-sphere MP4 reference without committing the 30 MB screen recording or its unrelated application UI.
+- Documented the seventh special-engine intent, visual characteristics, proposed Director mapping, WebGL rendering approach, technical risks, and decision gate.
+- Kept the concept explicitly reference-only; no seventh engine implementation or registry change is included in this checkpoint.
+
+## Create Preview + First-Export Reliability
+
+- Blended the approved Home artwork into all six animated Create previews so every composition remains complete at the studio aspect ratio while preserving its existing motion layer.
+- Strengthened first-run MP4 capture by using an explicitly driven canvas video track, waiting for `MediaRecorder` to start, and submitting two painted video frames before starting audio.
+- Applied the active engine accent colors to the left and right export background and to the AiXel end card, keeping the encoded MP4 visually consistent with the selected Director palette.
+- Added explicit Netlify Vite build and `dist` publish settings for reproducible production deploys.
+
 ## AiXel Director V2 — Every Fader Functional + Color Palette
 
 - Rewired the Director mapping contract so all eight dimensions (Emotion, Space, Fluidity, Light, Dynamics, Particles, Color Energy, Motion Complexity) drive real, validated parameters on every one of the six engines — no fader is disabled anymore.
