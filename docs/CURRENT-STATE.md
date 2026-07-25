@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Six-engine MVP accepted — Director palettes, stabilized first export, and complete Create previews
+**Checkpoint:** Six-engine MVP accepted — Particle Orb WebGL technical prototype added
 
 **Date:** 2026-07-25
 
@@ -83,11 +83,11 @@
 - Audio import uses explicit supported filename extensions instead of `accept="audio/*"`, working around WebKit bug 242110 where iPhone and iPad incorrectly filter the Files picker to video content.
 - The Netlify site now has a branded favicon, Apple touch icon, canonical URL, and a 1200 × 630 Open Graph/Twitter sharing card for professional private-test links in Messenger, WhatsApp, and other compatible services.
 - The owner accepted the local and Netlify versions with all six hybrid Create previews, all Director faders and palettes, first-attempt MP4 export, and palette-aware export backgrounds working.
-- A seventh `Particle Orb Special` is recorded as a reference-only feasibility concept in `docs/PARTICLE-ORB-SPECIAL-CONCEPT.md`; implementation has not started.
+- A seventh `Particle Orb Special` is registered as an explicitly labeled Three.js/WebGL prototype, with 12,000 adaptive particles, a translucent shell, palette support, audio-energy deformation, and full Director mapping.
 
 ## Verification at checkpoint
 
-- `npm run test:run`: 23 test files, 60 tests passing.
+- `npm run test:run`: 24 test files, 62 tests passing.
 - `npm run build`: TypeScript and Vite production build passing.
 - `git diff --check`: clean.
 - Vite development server responding on port 5173.
@@ -102,7 +102,7 @@
 
 ## Exact next recommended step
 
-Review the `Particle Orb Special` technical spike proposal with the product owner. If approved, prototype the GPU-backed sphere and validate a first-attempt five-second MP4 export before registering a seventh production engine.
+Validate a first-attempt short Particle Orb MP4 on desktop Safari and check sustained frame rate before promoting it from `prototype` to `implemented`.
 
 ## Claude Design timing
 
@@ -110,7 +110,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 
 ## Known limitations to preserve honestly
 
-- All six approved visual engines are functional. All eight Director dimensions now map to validated renderer parameters on every engine.
+- All six approved visual engines are functional. Particle Orb remains an explicit technical prototype. All eight Director dimensions map to validated renderer parameters on every engine and the prototype.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.
@@ -128,6 +128,7 @@ See `PRODUCT-BACKLOG.md` for:
 - automatic normalization and conversion;
 - consolidation of useful services from other AiXel applications.
 - the supplied AiXel Music Lab animated logo as a future family-brand reference.
+- the future public contact footer with the supplied email, telephone number, and AiXel Studio website.
 
 ## Branch note
 

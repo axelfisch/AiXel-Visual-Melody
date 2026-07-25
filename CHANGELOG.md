@@ -1,5 +1,13 @@
 # Changelog
 
+## Particle Orb Special — Three.js Prototype
+
+- Added a special seventh visual choice built with Three.js/WebGL and kept it explicitly marked as a prototype.
+- Added a deterministic 12,000-point Fibonacci sphere, translucent shell, halo, organic audio-energy deformation, and adaptive point density.
+- Connected all eight AiXel Director dimensions and the existing color palettes.
+- Preserved Preview, Render Progress, end-card, and MP4 compatibility by copying each WebGL frame into the validated 2D export canvas.
+- Recorded the future public contact footer in the product backlog without implementing it prematurely.
+
 ## Particle Orb Special — Reference and Feasibility
 
 - Captured a repository-safe still from the owner-supplied particle-sphere MP4 reference without committing the 30 MB screen recording or its unrelated application UI.

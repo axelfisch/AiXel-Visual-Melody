@@ -10,6 +10,7 @@ const engines = [
   'liquid-colors',
   'frequency-city',
   'neon-velvet',
+  'particle-orb',
 ];
 
 const allDimensions = [

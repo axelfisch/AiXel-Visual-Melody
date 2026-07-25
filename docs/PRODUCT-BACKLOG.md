@@ -198,3 +198,21 @@ Replace the `audio/*` file-input wildcard with explicit supported extensions. Th
 **Status:** Implemented; Netlify validation pending.
 
 Provide a branded favicon, Apple touch icon, canonical Netlify URL, and a 1200 × 630 social sharing image through Open Graph and Twitter Card metadata. This gives private-test links a recognizable AiXel Visual Melody identity without changing the Claude Design application interface or beginning the later public marketing campaign.
+
+## B17 — Particle Orb Special
+
+**Status:** Three.js/WebGL technical prototype started on 2026-07-25; production acceptance pending.
+
+Create a seventh special engine based on the supplied particle-sphere MP4 reference. The prototype must prove real audio response, full AiXel Director mapping, palette changes, Preview/Export parity, and a valid first-attempt Safari MP4 before being promoted from `prototype` to `implemented`.
+
+## B18 — Public contact footer
+
+**Status:** Remembered for a later interface pass; not urgent and not implemented.
+
+Add a restrained contact area near the bottom of the public-facing experience. Candidate details supplied by the product owner:
+
+- email: `a.fisch@icloud.com`;
+- telephone: `+1 (819) 323-7169`;
+- website: `aixelstudio.com`.
+
+Prefer direct, accessible links (`mailto:`, `tel:`, and HTTPS). A compact contact form remains optional, but should only be added if there is a clear destination and spam-protection strategy; the direct contact block is the simpler first version.

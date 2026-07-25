@@ -26,6 +26,7 @@ import jazzGeometryThumbnail from '../assets/engine-thumbnails/jazz-geometry.jpg
 import liquidColorsThumbnail from '../assets/engine-thumbnails/liquid-colors.jpg';
 import minimalAlbumArtThumbnail from '../assets/engine-thumbnails/minimal-album-art.jpg';
 import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
+import particleOrbThumbnail from '../../references/Particle-Orb-Special-Reference.png';
 import { AUDIO_FILE_ACCEPT, analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
@@ -47,7 +48,7 @@ import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { screens, useHashNavigation, type Screen } from './navigation';
 
-type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon';
+type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'orb';
 
 type Engine = {
   id: string;
@@ -148,6 +149,20 @@ const engines: Engine[] = [
     thumbnail: neonVelvetThumbnail,
     radius: 22,
     mood: 'Lights turn to velvet, synthwave trails in the dark.',
+  },
+  {
+    id: 'particle-orb',
+    key: 'orb',
+    number: 'SPECIAL',
+    name: 'Particle Orb',
+    character: 'A luminous 3D sphere woven from living particles.',
+    motion: 'Organic deformation, orbital rotation and translucent shell.',
+    accentFrom: '#9eeaff',
+    accentTo: '#8a6bff',
+    preview: 'radial-gradient(circle at 50% 45%, #163c64 0%, #08152d 38%, #030713 78%)',
+    thumbnail: particleOrbThumbnail,
+    radius: 28,
+    mood: 'A living constellation turns slowly around the heart of the music.',
   },
 ];
 
@@ -407,7 +422,7 @@ function HomeScreen({
       </GlassPanel>
       {goldenError && <p className="error-message golden-error" role="alert">{goldenError}</p>}
 
-      <SectionHeader label={t('sixEngines')} note={t('enginesNote')} />
+      <SectionHeader label={t('sevenEngines')} note={t('enginesNote')} />
       <div className="engine-grid">
         {engines.map((engine) => (
           <EngineCard
@@ -774,6 +789,7 @@ function PreviewCanvas({ engine, full = false }: { engine: Engine; full?: boolea
       {engine.key === 'city' && <CityVisual />}
       {engine.key === 'album' && <AlbumVisual />}
       {engine.key === 'neon' && <NeonVisual />}
+      {engine.key === 'orb' && <ParticleOrbVisual />}
       <span className="live-badge">{engine.name}</span>
       <Waveform bars={waveform.slice(0, 40)} compact />
     </div>
@@ -789,6 +805,28 @@ function CosmicVisual() {
         <i className="particle" key={i} style={{ left: `${(i * 17) % 96}%`, animationDelay: `${(i % 9) * 0.5}s` }} />
       ))}
     </>
+  );
+}
+
+function ParticleOrbVisual() {
+  return (
+    <div className="particle-orb-visual" aria-hidden="true">
+      <span className="particle-orb-halo" />
+      <span className="particle-orb-shell" />
+      {Array.from({ length: 56 }, (_, index) => {
+        const angle = index * 137.508;
+        const radius = 8 + Math.sqrt(index / 55) * 42;
+        return (
+          <i
+            key={index}
+            style={{
+              transform: `rotate(${angle}deg) translateY(-${radius}%)`,
+              animationDelay: `${-(index % 13) * 0.17}s`,
+            }}
+          />
+        );
+      })}
+    </div>
   );
 }
 

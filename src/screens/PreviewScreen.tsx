@@ -40,7 +40,9 @@ export function PreviewScreen({
           ? 'La ville s’élève et pulse dans l’architecture du spectre.'
           : engine.id === 'neon-velvet'
             ? 'La lumière glisse comme du velours électrique dans la nuit.'
-            : 'Le disque réagit à l’énergie réelle du signal.') : (engine.id === 'cosmic-waves'
+            : engine.id === 'particle-orb'
+              ? 'Une constellation de particules respire autour du cœur de la musique.'
+              : 'Le disque réagit à l’énergie réelle du signal.') : (engine.id === 'cosmic-waves'
     ? 'Waves of light breathe with the real energy of the signal.'
     : engine.id === 'jazz-geometry'
       ? 'Harmonic circles draw the living geometry of the track.'
@@ -50,7 +52,9 @@ export function PreviewScreen({
           ? 'The city rises and pulses through the architecture of the spectrum.'
           : engine.id === 'neon-velvet'
             ? 'Light glides like electric velvet through the night.'
-            : 'The record reacts to the real energy of the signal.');
+            : engine.id === 'particle-orb'
+              ? 'A constellation of particles breathes around the heart of the music.'
+              : 'The record reacts to the real energy of the signal.');
 
   if (!canPreview(project) || !project.analysis || !project.audio) {
     return (
