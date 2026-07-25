@@ -201,9 +201,9 @@ Provide a branded favicon, Apple touch icon, canonical Netlify URL, and a 1200 �
 
 ## B17 — Particle Orb Special
 
-**Status:** Standalone Three.js/WebGL loop created on 2026-07-25; integration intentionally deferred.
+**Status:** Standalone Three.js/WebGL Sketch 01 accepted on 2026-07-25; integration intentionally deferred.
 
-Create a seventh special engine based on the supplied particle-sphere MP4 reference. The first sketch lives at `/particle-orb-lab.html` outside the official six-engine catalog. After its visual direction is accepted, the next prototype must prove real audio response, full AiXel Director mapping, palette changes, Preview/Export parity, and a valid first-attempt Safari MP4 before production integration.
+Create a seventh special engine based on the supplied particle-sphere MP4 reference. The accepted first sketch lives at `/particle-orb-lab.html` outside the official six-engine catalog and must remain the recoverable visual baseline. When work resumes, the next prototype must prove real audio response, full AiXel Director mapping, palette changes, Preview/Export parity, and a valid first-attempt Safari MP4 before production integration.
 
 ## B18 — Public contact footer
 

@@ -2,6 +2,7 @@
 
 ## Particle Orb Special — Standalone Three.js Sketch
 
+- Recorded product-owner acceptance of Sketch 01 as the preserved baseline for future Particle Orb work.
 - Added `particle-orb-lab.html`, a standalone nine-second looping sketch built with Three.js/WebGL.
 - Added a deterministic 12,000-point Fibonacci sphere, translucent shell, halo, organic audio-energy deformation, and adaptive point density.
 - Added three inclined orbital ribbons so the planetary rotation and depth read clearly.

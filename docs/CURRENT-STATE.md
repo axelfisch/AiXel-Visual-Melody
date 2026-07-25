@@ -84,6 +84,7 @@
 - The Netlify site now has a branded favicon, Apple touch icon, canonical URL, and a 1200 × 630 Open Graph/Twitter sharing card for professional private-test links in Messenger, WhatsApp, and other compatible services.
 - The owner accepted the local and Netlify versions with all six hybrid Create previews, all Director faders and palettes, first-attempt MP4 export, and palette-aware export backgrounds working.
 - A standalone `Particle Orb Special` laboratory sketch is available at `/particle-orb-lab.html`, with 12,000 adaptive particles, a translucent shell, three orbital ribbons, and a simulated nine-second pulse. It is not registered in the six-engine product catalog.
+- The product owner accepted Particle Orb Sketch 01 on 2026-07-25 as a strong first version and asked that this exact standalone loop be preserved as the baseline for later work.
 
 ## Verification at checkpoint
 
@@ -102,7 +103,7 @@
 
 ## Exact next recommended step
 
-Review the standalone Particle Orb loop visually. If accepted, connect real audio and Director controls, then validate a first-attempt short MP4 on desktop Safari before production integration.
+When work resumes, preserve the accepted standalone loop and begin a separate integration iteration with real audio and Director controls. Then validate a first-attempt short MP4 on desktop Safari before production integration.
 
 ## Claude Design timing
 
