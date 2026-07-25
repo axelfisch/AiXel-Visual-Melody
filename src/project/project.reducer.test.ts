@@ -51,4 +51,15 @@ describe('projectReducer', () => {
     expect(next.engine.parameters.rotationSpeed).toBe(0.4);
     expect(project.engine.parameters.rotationSpeed).toBeUndefined();
   });
+
+  it('applies a Color Palette by patching several engine parameters at once', () => {
+    const project = createProject();
+    const next = projectReducer(project, {
+      type: 'UPDATE_ENGINE_PARAMETERS',
+      parameters: { accentColor: '#ff5c8a', discColor: '#111111' },
+    });
+    expect(next.engine.parameters.accentColor).toBe('#ff5c8a');
+    expect(next.engine.parameters.discColor).toBe('#111111');
+    expect(project.engine.parameters.accentColor).toBeUndefined();
+  });
 });

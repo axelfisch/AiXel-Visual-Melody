@@ -24,6 +24,7 @@ export type ProjectAction =
       parameters: Record<string, EngineParameterValue>;
     }
   | { type: 'UPDATE_ENGINE_PARAMETER'; parameterId: string; value: EngineParameterValue }
+  | { type: 'UPDATE_ENGINE_PARAMETERS'; parameters: Record<string, EngineParameterValue> }
   | { type: 'UPDATE_EXPORT_SETTINGS'; settings: Partial<ExportSettings> }
   | { type: 'RESET_PROJECT' };
 
@@ -72,6 +73,14 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
         engine: {
           ...project.engine,
           parameters: { ...project.engine.parameters, [action.parameterId]: action.value },
+        },
+      });
+    case 'UPDATE_ENGINE_PARAMETERS':
+      return touched({
+        ...project,
+        engine: {
+          ...project.engine,
+          parameters: { ...project.engine.parameters, ...action.parameters },
         },
       });
     case 'UPDATE_EXPORT_SETTINGS':

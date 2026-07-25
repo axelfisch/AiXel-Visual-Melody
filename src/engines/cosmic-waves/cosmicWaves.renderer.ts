@@ -1,4 +1,5 @@
 import type { EngineFrame, RenderSurface } from '../engine.types';
+import { adjustSaturation, applyWarmthOverlay, drawAmbientSparkles } from '../engine.directorFx';
 import type { CosmicWavesConfig } from './cosmicWaves.types';
 
 const TAU = Math.PI * 2;
@@ -35,8 +36,11 @@ export function renderCosmicWaves(surface: RenderSurface, frame: EngineFrame, co
   const { context, width, height } = surface;
   const energy = clamp(frame.energy * config.energyResponse);
   const phase = frame.time * config.waveSpeed * TAU;
+  const cyan = adjustSaturation(config.cyanAccent, config.colorSaturation);
+  const violet = adjustSaturation(config.violetAccent, config.colorSaturation);
+  const reach = config.spaceScale;
 
-  const background = context.createRadialGradient(width * 0.48, height * 0.42, 16, width * 0.5, height * 0.48, width * 0.78);
+  const background = context.createRadialGradient(width * 0.48, height * 0.42, 16, width * 0.5, height * 0.48, width * 0.78 * reach);
   background.addColorStop(0, `hsl(${226 + energy * 12} 48% ${16 + energy * 8}%)`);
   background.addColorStop(0.48, '#0b1024');
   background.addColorStop(1, '#03050b');
@@ -44,7 +48,7 @@ export function renderCosmicWaves(surface: RenderSurface, frame: EngineFrame, co
   context.fillStyle = background;
   context.fillRect(0, 0, width, height);
 
-  const nebula = context.createRadialGradient(width * 0.28, height * 0.36, 0, width * 0.28, height * 0.36, width * 0.42);
+  const nebula = context.createRadialGradient(width * 0.28, height * 0.36, 0, width * 0.28, height * 0.36, width * 0.42 * reach);
   nebula.addColorStop(0, `rgba(92, 155, 255, ${0.13 + energy * 0.13})`);
   nebula.addColorStop(0.46, `rgba(91, 70, 196, ${0.08 + energy * 0.08})`);
   nebula.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -60,7 +64,7 @@ export function renderCosmicWaves(surface: RenderSurface, frame: EngineFrame, co
     const pulse = 0.5 + 0.5 * Math.sin(frame.time * (0.35 + (index % 5) * 0.07) + index * 1.7);
     const radius = 0.6 + (index % 4) * 0.42 + energy * pulse * 0.8;
     context.globalAlpha = 0.18 + pulse * 0.42 + energy * 0.18;
-    context.fillStyle = index % 7 === 0 ? config.cyanAccent : '#ffffff';
+    context.fillStyle = index % 7 === 0 ? cyan : '#ffffff';
     context.beginPath();
     context.arc(x, y, radius, 0, TAU);
     context.fill();
@@ -68,14 +72,16 @@ export function renderCosmicWaves(surface: RenderSurface, frame: EngineFrame, co
 
   context.save();
   context.globalCompositeOperation = 'screen';
-  context.shadowBlur = 24 + energy * 30;
-  context.shadowColor = config.violetAccent;
-  drawWave(context, width, height, height * 0.49, 58 + energy * 54, phase, config.violetAccent, 0.28 + energy * 0.3, 18 + energy * 10);
-  context.shadowColor = config.cyanAccent;
-  drawWave(context, width, height, height * 0.53, 42 + energy * 42, phase + 1.4, config.cyanAccent, 0.42 + energy * 0.36, 6 + energy * 7);
-  context.shadowBlur = 12 + energy * 18;
+  context.shadowBlur = (24 + energy * 30) * config.glowIntensity;
+  context.shadowColor = violet;
+  drawWave(context, width, height, height * 0.49, 58 + energy * 54, phase, violet, 0.28 + energy * 0.3, 18 + energy * 10);
+  context.shadowColor = cyan;
+  drawWave(context, width, height, height * 0.53, 42 + energy * 42, phase + 1.4, cyan, 0.42 + energy * 0.36, 6 + energy * 7);
+  context.shadowBlur = (12 + energy * 18) * config.glowIntensity;
   drawWave(context, width, height, height * 0.57, 27 + energy * 32, -phase * 0.72, '#d8e8ff', 0.26 + energy * 0.3, 2.2 + energy * 2);
   context.restore();
+
+  drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity, cyan);
 
   const horizon = context.createLinearGradient(0, height * 0.54, 0, height);
   horizon.addColorStop(0, 'rgba(5, 8, 20, 0)');
@@ -83,6 +89,8 @@ export function renderCosmicWaves(surface: RenderSurface, frame: EngineFrame, co
   context.globalAlpha = 1;
   context.fillStyle = horizon;
   context.fillRect(0, height * 0.5, width, height * 0.5);
+
+  applyWarmthOverlay(context, width, height, config.warmth);
 
   if (config.showTitle && frame.title) {
     context.fillStyle = '#eef1fb';

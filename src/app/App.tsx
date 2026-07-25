@@ -34,12 +34,15 @@ import { useLocale } from '../i18n/LocaleContext';
 import {
   directorCapabilities,
   directorMoodProfiles,
+  directorPalettes,
   mapDirectorToEngine,
   type DirectorDimension,
   type DirectorMood,
+  type DirectorPalette,
   type DirectorState,
 } from '../director';
 import { useProject } from '../project/project.context';
+import type { EngineParameterValue } from '../project/project.types';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { screens, useHashNavigation, type Screen } from './navigation';
@@ -182,6 +185,14 @@ export function App() {
     const mapped = mapDirectorToEngine(project.engine.engineId, values, project.engine.parameters);
     dispatch({ type: 'APPLY_DIRECTOR', mood, values, parameters: mapped.parameters });
   };
+  const applyPalette = (palette: DirectorPalette) => {
+    const colorParameterIds = renderEngine.parameters.filter((item) => item.type === 'color').map((item) => item.id);
+    const parameters: Record<string, EngineParameterValue> = {};
+    colorParameterIds.forEach((id, index) => {
+      parameters[id] = palette.colors[index % palette.colors.length];
+    });
+    dispatch({ type: 'UPDATE_ENGINE_PARAMETERS', parameters });
+  };
   const analysis = useMemo<AudioAnalysis | null>(() => {
     if (!project.analysis || !project.audio || !runtime.decodedAudio) return null;
     return {
@@ -259,6 +270,7 @@ export function App() {
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
             onMood={(mood) => applyDirector(directorMoodProfiles[mood], mood)}
             onDirectorChange={(dimension, value) => applyDirector({ ...directorValues, [dimension]: value }, null)}
+            onPalette={applyPalette}
             onNavigate={navigate}
           />
         )}
@@ -537,6 +549,7 @@ function CreateScreen({
   onPreset,
   onMood,
   onDirectorChange,
+  onPalette,
   onNavigate,
 }: {
   activeEngine: EngineKey;
@@ -550,11 +563,20 @@ function CreateScreen({
   onPreset: (preset: string) => void;
   onMood: (mood: DirectorMood) => void;
   onDirectorChange: (dimension: DirectorDimension, value: number) => void;
+  onPalette: (palette: DirectorPalette) => void;
   onNavigate: (screen: Screen) => void;
 }) {
   const { t } = useLocale();
+  const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
   const presets = ['Naomi', 'Dream', 'Universe', 'Rain', 'Blue', 'Neon', 'Galaxy', 'Jazz Club', 'Deep Space', 'Ocean'];
   const moods: DirectorMood[] = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
+  const paletteLabels: Record<string, string> = {
+    auroraViolet: t('paletteAuroraViolet'),
+    solarGold: t('paletteSolarGold'),
+    emeraldTide: t('paletteEmeraldTide'),
+    crimsonVelvet: t('paletteCrimsonVelvet'),
+    glacierMono: t('paletteGlacierMono'),
+  };
   const directorControls: Array<{ dimension: DirectorDimension; label: string }> = [
     { dimension: 'emotion', label: t('emotion') },
     { dimension: 'space', label: t('space') },
@@ -617,6 +639,27 @@ function CreateScreen({
                 onClick={() => onMood(mood)}
               >
                 {moodLabels[mood]}
+              </button>
+            ))}
+          </div>
+          <p className="muted palette-help">{t('colorPaletteHelp')}</p>
+          <div className="chips wrap palette-chips">
+            {directorPalettes.map((palette) => (
+              <button
+                className={selectedPalette === palette.id ? 'selected palette-swatch' : 'palette-swatch'}
+                key={palette.id}
+                onClick={() => {
+                  setSelectedPalette(palette.id);
+                  onPalette(palette);
+                }}
+                title={paletteLabels[palette.id]}
+              >
+                <span className="palette-dots">
+                  {palette.colors.map((swatch, index) => (
+                    <i key={index} style={{ background: swatch }} />
+                  ))}
+                </span>
+                {paletteLabels[palette.id]}
               </button>
             ))}
           </div>

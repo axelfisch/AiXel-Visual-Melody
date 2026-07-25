@@ -37,6 +37,8 @@ const copy: Record<Locale, Record<string, string>> = {
     reflective: 'Reflective', expansive: 'Expansive', tender: 'Tender', dreamy: 'Dreamy', luminous: 'Luminous', calm: 'Calm',
     moreCinematic: 'More Cinematic', moreEmotional: 'More Emotional', moreDreamy: 'More Dreamy', morePowerful: 'More Powerful', moreOrganic: 'More Organic', moreMinimal: 'More Minimal',
     emotion: 'Emotion', space: 'Space', fluidity: 'Fluidity', light: 'Light', dynamics: 'Dynamics', particles: 'Particles', colorEnergy: 'Color Energy', motionComplexity: 'Motion Complexity',
+    colorPalette: 'Color Palette', colorPaletteHelp: 'Apply a five-color palette across the active engine’s accents.',
+    paletteAuroraViolet: 'Aurora Violet', paletteSolarGold: 'Solar Gold', paletteEmeraldTide: 'Emerald Tide', paletteCrimsonVelvet: 'Crimson Velvet', paletteGlacierMono: 'Glacier Mono',
   },
   fr: {
     home: 'Accueil', analyze: 'Analyser', create: 'Créer', preview: 'Aperçu', export: 'Exporter', settings: 'Réglages',
@@ -72,6 +74,8 @@ const copy: Record<Locale, Record<string, string>> = {
     reflective: 'Réfléchi', expansive: 'Expansif', tender: 'Tendre', dreamy: 'Onirique', luminous: 'Lumineux', calm: 'Calme',
     moreCinematic: 'Plus cinématique', moreEmotional: 'Plus émotionnel', moreDreamy: 'Plus onirique', morePowerful: 'Plus puissant', moreOrganic: 'Plus organique', moreMinimal: 'Plus minimal',
     emotion: 'Émotion', space: 'Espace', fluidity: 'Fluidité', light: 'Lumière', dynamics: 'Dynamique', particles: 'Particules', colorEnergy: 'Énergie des couleurs', motionComplexity: 'Complexité du mouvement',
+    colorPalette: 'Palette de couleurs', colorPaletteHelp: 'Appliquez une palette de cinq couleurs aux accents du moteur actif.',
+    paletteAuroraViolet: 'Violet Aurore', paletteSolarGold: 'Or Solaire', paletteEmeraldTide: 'Marée Émeraude', paletteCrimsonVelvet: 'Velours Cramoisi', paletteGlacierMono: 'Glacier Monochrome',
   },
 };
 

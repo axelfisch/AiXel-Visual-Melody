@@ -5,45 +5,43 @@ import { validateDirectorState } from './director.profiles';
 import type { DirectorDimension, DirectorEngineMapping, DirectorState } from './director.types';
 
 type Adapter = {
+  /** Numeric parameter driven by the Fluidity fader (playback/animation speed). */
   speedParameter: string;
-  structureParameter?: string;
-  structureDimensions?: Array<{ dimension: DirectorDimension; weight: number }>;
+  /** Numeric parameter driven by the Motion Complexity fader (rings/buildings/trails/grooves/density). */
+  structureParameter: string;
 };
 
 const adapters: Record<string, Adapter> = {
-  'minimal-album-art': { speedParameter: 'rotationSpeed' },
-  'cosmic-waves': {
-    speedParameter: 'waveSpeed',
-    structureParameter: 'particleDensity',
-    structureDimensions: [
-      { dimension: 'particles', weight: 0.72 },
-      { dimension: 'motionComplexity', weight: 0.28 },
-    ],
-  },
-  'jazz-geometry': {
-    speedParameter: 'rotationSpeed',
-    structureParameter: 'ringCount',
-    structureDimensions: [{ dimension: 'motionComplexity', weight: 1 }],
-  },
-  'liquid-colors': {
-    speedParameter: 'flowSpeed',
-    structureParameter: 'inkDensity',
-    structureDimensions: [
-      { dimension: 'particles', weight: 0.34 },
-      { dimension: 'motionComplexity', weight: 0.66 },
-    ],
-  },
-  'frequency-city': {
-    speedParameter: 'pulseSpeed',
-    structureParameter: 'buildingCount',
-    structureDimensions: [{ dimension: 'motionComplexity', weight: 1 }],
-  },
-  'neon-velvet': {
-    speedParameter: 'trailSpeed',
-    structureParameter: 'trailCount',
-    structureDimensions: [{ dimension: 'motionComplexity', weight: 1 }],
-  },
+  'minimal-album-art': { speedParameter: 'rotationSpeed', structureParameter: 'grooveDetail' },
+  'cosmic-waves': { speedParameter: 'waveSpeed', structureParameter: 'particleDensity' },
+  'jazz-geometry': { speedParameter: 'rotationSpeed', structureParameter: 'ringCount' },
+  'liquid-colors': { speedParameter: 'flowSpeed', structureParameter: 'inkDensity' },
+  'frequency-city': { speedParameter: 'pulseSpeed', structureParameter: 'buildingCount' },
+  'neon-velvet': { speedParameter: 'trailSpeed', structureParameter: 'trailCount' },
 };
+
+/**
+ * All eight AiXel Director dimensions map onto a parameter every engine
+ * exposes, so every fader is functional for every engine:
+ *   fluidity           -> adapter.speedParameter
+ *   dynamics           -> energyResponse
+ *   motionComplexity   -> adapter.structureParameter
+ *   light              -> glowIntensity
+ *   space              -> spaceScale
+ *   colorEnergy        -> colorSaturation
+ *   particles          -> sparkleDensity
+ *   emotion            -> warmth
+ */
+const ALL_DIMENSIONS: DirectorDimension[] = [
+  'emotion',
+  'space',
+  'fluidity',
+  'light',
+  'dynamics',
+  'particles',
+  'colorEnergy',
+  'motionComplexity',
+];
 
 function definitionFor(definitions: EngineParameterDefinition[], id: string) {
   const definition = definitions.find((item) => item.id === id && item.type === 'number');
@@ -65,11 +63,6 @@ function interpolateAroundDefault(definition: EngineParameterDefinition, percent
   return step > 0 ? Math.round(raw / step) * step : raw;
 }
 
-function weightedPercent(state: DirectorState, dimensions: NonNullable<Adapter['structureDimensions']>) {
-  const totalWeight = dimensions.reduce((sum, item) => sum + item.weight, 0) || 1;
-  return dimensions.reduce((sum, item) => sum + state[item.dimension] * item.weight, 0) / totalWeight;
-}
-
 export function mapDirectorToEngine(
   engineId: string,
   directorValue: Partial<DirectorState>,
@@ -84,7 +77,6 @@ export function mapDirectorToEngine(
     ...(engine.defaultConfig as Record<string, EngineParameterValue>),
     ...baseParameters,
   };
-  const supportedDimensions: DirectorDimension[] = ['fluidity', 'dynamics'];
 
   parameters[adapter.speedParameter] = interpolateAroundDefault(
     definitionFor(engine.parameters, adapter.speedParameter),
@@ -94,28 +86,38 @@ export function mapDirectorToEngine(
     definitionFor(engine.parameters, 'energyResponse'),
     state.dynamics,
   );
+  parameters[adapter.structureParameter] = interpolateAroundDefault(
+    definitionFor(engine.parameters, adapter.structureParameter),
+    state.motionComplexity,
+  );
+  parameters.glowIntensity = interpolateAroundDefault(
+    definitionFor(engine.parameters, 'glowIntensity'),
+    state.light,
+  );
+  parameters.spaceScale = interpolateAroundDefault(
+    definitionFor(engine.parameters, 'spaceScale'),
+    state.space,
+  );
+  parameters.colorSaturation = interpolateAroundDefault(
+    definitionFor(engine.parameters, 'colorSaturation'),
+    state.colorEnergy,
+  );
+  parameters.sparkleDensity = interpolateAroundDefault(
+    definitionFor(engine.parameters, 'sparkleDensity'),
+    state.particles,
+  );
+  parameters.warmth = interpolateAroundDefault(
+    definitionFor(engine.parameters, 'warmth'),
+    state.emotion,
+  );
 
-  if (adapter.structureParameter && adapter.structureDimensions) {
-    parameters[adapter.structureParameter] = interpolateAroundDefault(
-      definitionFor(engine.parameters, adapter.structureParameter),
-      weightedPercent(state, adapter.structureDimensions),
-    );
-    supportedDimensions.push(...adapter.structureDimensions.map((item) => item.dimension));
-  }
-
-  const uniqueDimensions = [...new Set(supportedDimensions)];
   return {
-    supportedDimensions: uniqueDimensions,
+    supportedDimensions: [...ALL_DIMENSIONS],
     parameters: engine.validateConfig(parameters) as Record<string, EngineParameterValue>,
   };
 }
 
 export function directorCapabilities(engineId: string): DirectorDimension[] {
-  const adapter = adapters[engineId];
-  if (!adapter) throw new Error(`Adaptateur AiXel Director introuvable: ${engineId}`);
-  return [...new Set<DirectorDimension>([
-    'fluidity',
-    'dynamics',
-    ...(adapter.structureDimensions?.map((item) => item.dimension) ?? []),
-  ])];
+  if (!adapters[engineId]) throw new Error(`Adaptateur AiXel Director introuvable: ${engineId}`);
+  return [...ALL_DIMENSIONS];
 }

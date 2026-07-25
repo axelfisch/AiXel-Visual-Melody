@@ -1,5 +1,13 @@
 # Changelog
 
+## AiXel Director V2 — Every Fader Functional + Color Palette
+
+- Rewired the Director mapping contract so all eight dimensions (Emotion, Space, Fluidity, Light, Dynamics, Particles, Color Energy, Motion Complexity) drive real, validated parameters on every one of the six engines — no fader is disabled anymore.
+- Added five new universal renderer parameters (`glowIntensity`, `spaceScale`, `colorSaturation`, `sparkleDensity`, `warmth`) shared by every engine, plus a `grooveDetail` structure parameter for Minimal Album Art so Motion Complexity has something to drive there too.
+- Added shared rendering helpers (`adjustSaturation`, `drawAmbientSparkles`, `applyWarmthOverlay`) so accent-color saturation, ambient sparkle density, and a warm/cool emotional tint are consistent across all engines.
+- Added a five-color palette picker to AiXel Director (Aurora Violet, Solar Gold, Emerald Tide, Crimson Velvet, Glacier Mono) that applies its colors across the active engine's accent slots in one click.
+- Added an `UPDATE_ENGINE_PARAMETERS` reducer action to patch several engine parameters atomically for palette application.
+
 ## AiXel Director V1 — Functional Create Integration
 
 - Persisted Director mood and normalized values in the project model with backward-compatible migration of the legacy mood parameter.

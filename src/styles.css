@@ -973,6 +973,34 @@ blockquote {
   border-top: 1px solid rgba(160, 180, 255, 0.12);
 }
 
+.palette-help {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(160, 180, 255, 0.12);
+}
+
+.palette-chips {
+  margin-top: 10px;
+}
+
+.palette-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.palette-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.palette-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
 .director-control-disabled {
   opacity: 0.42;
 }
