@@ -3,11 +3,13 @@ export const EXPORT_END_CARD_DURATION = 3;
 export type EndCardCredits = {
   appName: string;
   artistName: string;
+  trackTitle: string;
 };
 
 export const DEFAULT_END_CARD_CREDITS: EndCardCredits = {
   appName: 'AiXel Visual Melody',
   artistName: 'Axel Fisch',
+  trackTitle: 'Untitled Visual Melody',
 };
 
 type RenderEndCardOptions = EndCardCredits & {
@@ -28,6 +30,7 @@ export function renderEndCard({
   duration,
   appName,
   artistName,
+  trackTitle,
 }: RenderEndCardOptions) {
   const fadeIn = clamp01(elapsed / 0.55);
   const fadeOut = clamp01((duration - elapsed) / 0.55);
@@ -88,8 +91,12 @@ export function renderEndCard({
   context.stroke();
 
   context.fillStyle = '#f5f1e7';
-  context.font = `400 ${24 * unit}px Georgia, 'Times New Roman', serif`;
-  context.fillText(`Music by ${artistName}`, width / 2, height / 2 + 83 * unit);
+  context.font = `400 ${22 * unit}px Georgia, 'Times New Roman', serif`;
+  context.fillText(trackTitle, width / 2, height / 2 + 75 * unit);
+
+  context.fillStyle = '#cbd3ed';
+  context.font = `400 ${15 * unit}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
+  context.fillText(`Music by ${artistName}`, width / 2, height / 2 + 108 * unit);
 
   context.globalAlpha = 0.68 * opacity;
   context.fillStyle = '#cbd3ed';

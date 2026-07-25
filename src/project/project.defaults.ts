@@ -1,8 +1,17 @@
 import { DEFAULT_ENGINE_ID } from '../engines/engine.defaults';
 import { directorDefaultState } from '../director/director.profiles';
-import type { ExportSettings, VisualMelodyProject } from './project.types';
+import type { ExportSettings, ProjectIdentity, VisualMelodyProject } from './project.types';
 
-export const PROJECT_SCHEMA_VERSION = 1 as const;
+export const PROJECT_SCHEMA_VERSION = 2 as const;
+
+export const DEFAULT_ARTIST_NAME = 'Axel Fisch';
+
+export function createProjectIdentity(title: string): ProjectIdentity {
+  return {
+    title: title.trim() || 'Untitled Visual Melody',
+    artist: DEFAULT_ARTIST_NAME,
+  };
+}
 
 export const DEFAULT_EXPORT_SETTINGS: ExportSettings = {
   format: 'mp4',
@@ -23,6 +32,7 @@ export function createProject(name = 'Untitled Visual Melody'): VisualMelodyProj
     schemaVersion: PROJECT_SCHEMA_VERSION,
     id: createId(),
     name,
+    identity: createProjectIdentity(name),
     createdAt: now,
     updatedAt: now,
     audio: null,

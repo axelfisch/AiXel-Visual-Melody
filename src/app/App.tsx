@@ -40,6 +40,7 @@ import {
   type DirectorState,
 } from '../director';
 import { useProject } from '../project/project.context';
+import type { ProjectIdentity } from '../project/project.types';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { screens, useHashNavigation, type Screen } from './navigation';
@@ -186,13 +187,13 @@ export function App() {
     if (!project.analysis || !project.audio || !runtime.decodedAudio) return null;
     return {
       ...project.analysis,
-      name: project.name,
+      name: project.identity.title.trim() || project.name,
       duration: project.audio.duration,
       buffer: runtime.decodedAudio,
     };
-  }, [project.analysis, project.audio, project.name, runtime.decodedAudio]);
+  }, [project.analysis, project.audio, project.identity.title, project.name, runtime.decodedAudio]);
   const openGoldenReference = async () => {
-    if (analysis && project.name === 'In the Spirit of Naomi') {
+    if (analysis && project.audio?.fileName === 'In the Spirit of Naomi.m4a') {
       setAutoPlayPreview(true);
       navigate('preview');
       return;
@@ -254,9 +255,10 @@ export function App() {
             directorValues={directorValues}
             supportedDirectorDimensions={supportedDirectorDimensions}
             engine={engine}
-            projectName={project.name}
+            projectIdentity={project.identity}
             onEngine={selectEngine}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
+            onIdentityChange={(identity) => dispatch({ type: 'UPDATE_PROJECT_IDENTITY', identity })}
             onMood={(mood) => applyDirector(directorMoodProfiles[mood], mood)}
             onDirectorChange={(dimension, value) => applyDirector({ ...directorValues, [dimension]: value }, null)}
             onNavigate={navigate}
@@ -276,6 +278,7 @@ export function App() {
             engineConfig={project.engine.parameters}
             previewBackground={engine.preview}
             settings={project.export}
+            identity={project.identity}
           />
         )}
         {screen === 'settings' && <SettingsScreen onNavigate={navigate} />}
@@ -532,9 +535,10 @@ function CreateScreen({
   directorValues,
   supportedDirectorDimensions,
   engine,
-  projectName,
+  projectIdentity,
   onEngine,
   onPreset,
+  onIdentityChange,
   onMood,
   onDirectorChange,
   onNavigate,
@@ -545,9 +549,10 @@ function CreateScreen({
   directorValues: DirectorState;
   supportedDirectorDimensions: DirectorDimension[];
   engine: Engine;
-  projectName: string;
+  projectIdentity: ProjectIdentity;
   onEngine: (engine: EngineKey) => void;
   onPreset: (preset: string) => void;
+  onIdentityChange: (identity: Partial<ProjectIdentity>) => void;
   onMood: (mood: DirectorMood) => void;
   onDirectorChange: (dimension: DirectorDimension, value: number) => void;
   onNavigate: (screen: Screen) => void;
@@ -576,7 +581,7 @@ function CreateScreen({
 
   return (
     <section className="screen create-layout">
-      <ScreenTitle eyebrow={t('creativeStudio')} title={projectName} note={t(`${engine.key}Mood`)} />
+      <ScreenTitle eyebrow={t('creativeStudio')} title={projectIdentity.title || t('untitledTrack')} note={t(`${engine.key}Mood`)} />
       <div className="engine-tabs">
         {engines.map((item) => (
           <button
@@ -591,6 +596,33 @@ function CreateScreen({
       <div className="studio-grid">
         <div className="studio-main">
           <PreviewCanvas engine={engine} />
+          <GlassPanel>
+            <PanelHeading icon={<FileAudio size={18} />} label={t('projectIdentity')} />
+            <div className="project-identity-fields">
+              <label>
+                <span>{t('trackTitle')}</span>
+                <input
+                  aria-label={t('trackTitle')}
+                  maxLength={120}
+                  onChange={(event) => onIdentityChange({ title: event.target.value })}
+                  placeholder={t('trackTitlePlaceholder')}
+                  type="text"
+                  value={projectIdentity.title}
+                />
+              </label>
+              <label>
+                <span>{t('artistName')}</span>
+                <input
+                  aria-label={t('artistName')}
+                  maxLength={80}
+                  onChange={(event) => onIdentityChange({ artist: event.target.value })}
+                  placeholder={t('artistNamePlaceholder')}
+                  type="text"
+                  value={projectIdentity.artist}
+                />
+              </label>
+            </div>
+          </GlassPanel>
           <GlassPanel>
             <PanelHeading icon={<Palette size={18} />} label={t('visualPresets')} />
             <div className="chips wrap">

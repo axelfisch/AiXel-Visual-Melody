@@ -1,7 +1,12 @@
 import type { DirectorMood, DirectorState } from '../director/director.types';
 
 export type ProjectId = string;
-export type ProjectSchemaVersion = 1;
+export type ProjectSchemaVersion = 2;
+
+export type ProjectIdentity = {
+  title: string;
+  artist: string;
+};
 
 export type ProjectAudio = {
   fileName: string;
@@ -44,6 +49,7 @@ export type VisualMelodyProject = {
   schemaVersion: ProjectSchemaVersion;
   id: ProjectId;
   name: string;
+  identity: ProjectIdentity;
   createdAt: string;
   updatedAt: string;
   audio: ProjectAudio | null;

@@ -23,6 +23,7 @@ export type RenderMp4Options = {
   mimeType: string;
   canvas?: HTMLCanvasElement;
   signal?: AbortSignal;
+  title?: string;
   endCardCredits?: Partial<EndCardCredits>;
   onProgress?: (progress: RenderMp4Progress) => void;
 };
@@ -43,6 +44,7 @@ export async function renderMp4({
   mimeType,
   canvas = document.createElement('canvas'),
   signal,
+  title,
   endCardCredits,
   onProgress,
 }: RenderMp4Options): Promise<Blob> {
@@ -53,7 +55,8 @@ export async function renderMp4({
   const context = canvas.getContext('2d');
   if (!context) throw new Error("Le canevas d’export n’est pas disponible.");
 
-  const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
+  const renderTitle = title?.trim() || analysis.name;
+  const credits = { ...DEFAULT_END_CARD_CREDITS, trackTitle: renderTitle, ...endCardCredits };
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
   const renderInitialFrame = () => engine.render(
@@ -64,7 +67,7 @@ export async function renderMp4({
       progress: 0,
       energy: energyAt(analysis, 0),
       bpm: analysis.bpm,
-      title: analysis.name,
+      title: renderTitle,
     },
     config,
   );
@@ -142,7 +145,7 @@ export async function renderMp4({
                 progress: trackProgress,
                 energy: energyAt(analysis, renderedTime),
                 bpm: analysis.bpm,
-                title: analysis.name,
+                title: renderTitle,
               },
               config,
             );

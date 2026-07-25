@@ -3,6 +3,7 @@ import type { DirectorMood, DirectorState } from '../director/director.types';
 import type {
   EngineParameterValue,
   ExportSettings,
+  ProjectIdentity,
   ProjectAnalysis,
   ProjectAudio,
   VisualMelodyProject,
@@ -11,6 +12,7 @@ import type {
 export type ProjectAction =
   | { type: 'CREATE_PROJECT'; name?: string }
   | { type: 'RENAME_PROJECT'; name: string }
+  | { type: 'UPDATE_PROJECT_IDENTITY'; identity: Partial<ProjectIdentity> }
   | { type: 'SET_AUDIO_SOURCE'; audio: ProjectAudio }
   | { type: 'ANALYSIS_STARTED' }
   | { type: 'ANALYSIS_COMPLETED'; analysis: ProjectAnalysis }
@@ -34,9 +36,29 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
     case 'CREATE_PROJECT':
       return createProject(action.name);
     case 'RENAME_PROJECT':
-      return touched({ ...project, name: action.name.trim() || project.name });
-    case 'SET_AUDIO_SOURCE':
-      return touched({ ...project, name: action.audio.fileName.replace(/\.[^.]+$/, ''), audio: action.audio, analysis: null });
+      return touched({
+        ...project,
+        name: action.name.trim() || project.name,
+        identity: { ...project.identity, title: action.name.trim() || project.identity.title },
+      });
+    case 'UPDATE_PROJECT_IDENTITY':
+      return touched({
+        ...project,
+        identity: {
+          title: action.identity.title ?? project.identity.title,
+          artist: action.identity.artist ?? project.identity.artist,
+        },
+      });
+    case 'SET_AUDIO_SOURCE': {
+      const title = action.audio.fileName.replace(/\.[^.]+$/, '');
+      return touched({
+        ...project,
+        name: title,
+        identity: { ...project.identity, title },
+        audio: action.audio,
+        analysis: null,
+      });
+    }
     case 'ANALYSIS_STARTED':
     case 'ANALYSIS_FAILED':
       return project;

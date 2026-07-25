@@ -1,5 +1,12 @@
 # Changelog
 
+## Project Identity V1
+
+- Added a migration-safe project identity containing an editable track title and artist name.
+- Added compact bilingual identity fields to Create without changing the approved Claude Design structure.
+- Connected the same title and artist to Create, Preview, renderer titles, MP4 filenames, and the Export End Card.
+- Migrated schema V1 projects to schema V2 with safe title and `Axel Fisch` artist defaults.
+
 ## AiXel Director V1 — Functional Create Integration
 
 - Persisted Director mood and normalized values in the project model with backward-compatible migration of the legacy mood parameter.
