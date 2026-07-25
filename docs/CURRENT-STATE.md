@@ -1,6 +1,6 @@
 # AiXel Visual Melody — Current State and Next Handoff
 
-**Checkpoint:** Six-engine MVP accepted — Particle Orb WebGL technical prototype added
+**Checkpoint:** Six-engine MVP accepted — standalone Particle Orb WebGL sketch added
 
 **Date:** 2026-07-25
 
@@ -83,7 +83,7 @@
 - Audio import uses explicit supported filename extensions instead of `accept="audio/*"`, working around WebKit bug 242110 where iPhone and iPad incorrectly filter the Files picker to video content.
 - The Netlify site now has a branded favicon, Apple touch icon, canonical URL, and a 1200 × 630 Open Graph/Twitter sharing card for professional private-test links in Messenger, WhatsApp, and other compatible services.
 - The owner accepted the local and Netlify versions with all six hybrid Create previews, all Director faders and palettes, first-attempt MP4 export, and palette-aware export backgrounds working.
-- A seventh `Particle Orb Special` is registered as an explicitly labeled Three.js/WebGL prototype, with 12,000 adaptive particles, a translucent shell, palette support, audio-energy deformation, and full Director mapping.
+- A standalone `Particle Orb Special` laboratory sketch is available at `/particle-orb-lab.html`, with 12,000 adaptive particles, a translucent shell, three orbital ribbons, and a simulated nine-second pulse. It is not registered in the six-engine product catalog.
 
 ## Verification at checkpoint
 
@@ -102,7 +102,7 @@
 
 ## Exact next recommended step
 
-Validate a first-attempt short Particle Orb MP4 on desktop Safari and check sustained frame rate before promoting it from `prototype` to `implemented`.
+Review the standalone Particle Orb loop visually. If accepted, connect real audio and Director controls, then validate a first-attempt short MP4 on desktop Safari before production integration.
 
 ## Claude Design timing
 
@@ -110,7 +110,7 @@ Neon Velvet reuses the approved Preview and Export composition without structura
 
 ## Known limitations to preserve honestly
 
-- All six approved visual engines are functional. Particle Orb remains an explicit technical prototype. All eight Director dimensions map to validated renderer parameters on every engine and the prototype.
+- All six approved visual engines are functional. Particle Orb remains an isolated laboratory sketch and does not alter the production engine registry.
 - Project persistence is session-only. Refreshing the page loses imported runtime objects and decoded buffers.
 - Golden Reference can be loaded again from Home after a refresh.
 - Direct import currently targets browser-decodable WAV, MP3, M4A/AAC, OGG, and FLAC files.

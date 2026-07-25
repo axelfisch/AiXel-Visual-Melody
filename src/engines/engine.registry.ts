@@ -5,7 +5,6 @@ import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { LiquidColorsEngine } from './liquid-colors/LiquidColorsEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
 import { NeonVelvetEngine } from './neon-velvet/NeonVelvetEngine';
-import { ParticleOrbEngine } from './particle-orb/ParticleOrbEngine';
 
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
@@ -14,7 +13,6 @@ const engines = new Map<string, VisualEngine>([
   [JazzGeometryEngine.id, JazzGeometryEngine as VisualEngine],
   [LiquidColorsEngine.id, LiquidColorsEngine as VisualEngine],
   [NeonVelvetEngine.id, NeonVelvetEngine as VisualEngine],
-  [ParticleOrbEngine.id, ParticleOrbEngine as VisualEngine],
 ]);
 
 export function getEngine(id: string): VisualEngine {

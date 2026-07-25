@@ -2,15 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { getEngine, getEngineOrDefault, listEngines } from './engine.registry';
 
 describe('engine registry', () => {
-  it('exposes six implemented engines and the Particle Orb prototype', () => {
+  it('exposes all six implemented engines', () => {
     expect(getEngine('minimal-album-art').availability).toBe('implemented');
     expect(getEngine('cosmic-waves').availability).toBe('implemented');
     expect(getEngine('jazz-geometry').availability).toBe('implemented');
     expect(getEngine('liquid-colors').availability).toBe('implemented');
     expect(getEngine('frequency-city').availability).toBe('implemented');
     expect(getEngine('neon-velvet').availability).toBe('implemented');
-    expect(getEngine('particle-orb').availability).toBe('prototype');
-    expect(listEngines()).toHaveLength(7);
+    expect(listEngines()).toHaveLength(6);
   });
 
   it('rejects unknown engine identifiers', () => {

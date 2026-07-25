@@ -14,6 +14,7 @@ type OrbScene = {
   points: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>;
   shell: THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>;
   halo: THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>;
+  ribbons: THREE.Group;
   basePositions: Float32Array;
 };
 
@@ -88,7 +89,35 @@ function createOrbScene(target: HTMLCanvasElement): OrbScene {
   );
   scene.add(halo);
 
-  const state = { canvas, renderer, scene, camera, points, shell, halo, basePositions };
+  const ribbons = new THREE.Group();
+  const ribbonMaterial = new THREE.LineBasicMaterial({
+    color: '#9eeaff',
+    transparent: true,
+    opacity: 0.24,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+  [
+    { scaleY: 0.42, tiltX: 0.82, tiltY: 0.18 },
+    { scaleY: 0.7, tiltX: -0.48, tiltY: 0.68 },
+    { scaleY: 0.9, tiltX: 0.25, tiltY: -0.74 },
+  ].forEach(({ scaleY, tiltX, tiltY }, ribbonIndex) => {
+    const vertices: THREE.Vector3[] = [];
+    for (let index = 0; index < 180; index += 1) {
+      const angle = (index / 180) * Math.PI * 2;
+      const ripple = 1.12 + Math.sin(angle * (3 + ribbonIndex) + ribbonIndex) * 0.035;
+      vertices.push(new THREE.Vector3(Math.cos(angle) * ripple, Math.sin(angle) * ripple * scaleY, 0));
+    }
+    const line = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(vertices),
+      ribbonMaterial.clone(),
+    );
+    line.rotation.set(tiltX, tiltY, ribbonIndex * 0.42);
+    ribbons.add(line);
+  });
+  scene.add(ribbons);
+
+  const state = { canvas, renderer, scene, camera, points, shell, halo, ribbons, basePositions };
   scenes.set(target, state);
   return state;
 }
@@ -143,6 +172,11 @@ export function renderParticleOrb(surface: RenderSurface, frame: EngineFrame, co
   state.points.material.color.set(primary);
   state.shell.material.color.set(secondary);
   state.halo.material.color.set(primary);
+  state.ribbons.children.forEach((ribbon) => {
+    const material = (ribbon as THREE.Line).material as THREE.LineBasicMaterial;
+    material.color.set(primary);
+    material.opacity = 0.12 + config.glowIntensity * 0.08 + energy * 0.08;
+  });
   state.points.material.size = (0.014 + config.sparkleDensity * 0.006) * (1 + energy * 0.34);
   state.points.material.opacity = 0.64 + config.glowIntensity * 0.16;
   state.shell.material.opacity = 0.055 + config.glowIntensity * 0.055 + energy * 0.05;
@@ -171,9 +205,11 @@ export function renderParticleOrb(surface: RenderSurface, frame: EngineFrame, co
   state.points.rotation.set(rotation * 0.23, rotation, Math.sin(rotation * 0.45) * 0.12);
   state.shell.rotation.set(-rotation * 0.31, rotation * 0.62, rotation * 0.18);
   state.halo.rotation.copy(state.shell.rotation);
+  state.ribbons.rotation.set(rotation * 0.13, -rotation * 0.44, rotation * 0.22);
   state.points.scale.setScalar(scale);
   state.shell.scale.set(1.08 * scale, (0.94 + Math.sin(frame.time * 0.7) * 0.035) * scale, 1.06 * scale);
   state.halo.scale.setScalar(scale);
+  state.ribbons.scale.setScalar(scale);
   state.camera.position.x = Math.sin(rotation * 0.24) * 0.18;
   state.camera.position.y = Math.cos(rotation * 0.19) * 0.08;
   state.camera.lookAt(0, 0, 0);

@@ -1,6 +1,6 @@
 # Particle Orb Special — Reference Concept
 
-**Status:** WebGL technical prototype in progress on 2026-07-25; not yet promoted to a production engine.
+**Status:** Standalone WebGL sketch available on 2026-07-25; deliberately not integrated into the engine catalog.
 
 **Product intent:** Add a seventh, clearly identified special visual engine after the existing six-engine family. The target is a luminous, music-reactive 3D particle sphere rather than a replacement for Cosmic Waves or Jazz Geometry.
 
@@ -66,6 +66,6 @@ Proceed to full engine integration only if the spike holds frame rate and produc
 
 ## Prototype implementation
 
-The technical spike uses Three.js to render a deterministic 12,000-point Fibonacci sphere, an additive translucent wire shell, a soft halo, organic vertex displacement, Director palette colors, and audio-energy deformation. Each WebGL frame is copied into the existing 2D engine canvas so Preview, Render Progress, palette framing, end card, and MP4 capture continue to share the validated export pipeline.
+The standalone technical sketch at `/particle-orb-lab.html` uses Three.js to render a deterministic 12,000-point Fibonacci sphere, an additive translucent wire shell, three inclined orbital ribbons, a soft halo, organic vertex displacement, and a simulated musical pulse in a nine-second loop.
 
-The engine is registered as `prototype`, visibly labeled as the special seventh choice, and must remain a prototype until a real-track Safari export and sustained performance check are accepted.
+Reusable engine configuration and rendering modules are retained, but Particle Orb is not registered and does not appear in Home or Create. Integration into Director, Preview, Render Progress, and MP4 remains a later product decision after the standalone visual direction is accepted.

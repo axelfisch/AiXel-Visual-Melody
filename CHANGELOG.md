@@ -1,11 +1,12 @@
 # Changelog
 
-## Particle Orb Special — Three.js Prototype
+## Particle Orb Special — Standalone Three.js Sketch
 
-- Added a special seventh visual choice built with Three.js/WebGL and kept it explicitly marked as a prototype.
+- Added `particle-orb-lab.html`, a standalone nine-second looping sketch built with Three.js/WebGL.
 - Added a deterministic 12,000-point Fibonacci sphere, translucent shell, halo, organic audio-energy deformation, and adaptive point density.
-- Connected all eight AiXel Director dimensions and the existing color palettes.
-- Preserved Preview, Render Progress, end-card, and MP4 compatibility by copying each WebGL frame into the validated 2D export canvas.
+- Added three inclined orbital ribbons so the planetary rotation and depth read clearly.
+- Kept the sketch outside the six-engine registry and production Create workflow until it is visually accepted.
+- Preserved reusable configuration and rendering code for a later Director/Preview/Export integration.
 - Recorded the future public contact footer in the product backlog without implementing it prematurely.
 
 ## Particle Orb Special — Reference and Feasibility
