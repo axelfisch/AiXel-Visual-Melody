@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030713" />
+    <title>AiXel Particle Orb — Esquisse 01</title>
+  </head>
+  <body>
+    <main class="orb-lab">
+      <header class="orb-header">
+        <div>
+          <p class="orb-kicker"><span></span> AiXel Visual Melody · laboratoire</p>
+          <h1>Particle Orb <em>Esquisse 01</em></h1>
+        </div>
+        <a href="/#create">Retour à AiXel</a>
+      </header>
+
+      <section class="orb-stage" aria-label="Prototype animé de planète de particules">
+        <canvas id="particle-orb-canvas"></canvas>
+        <div class="orb-vignette"></div>
+        <div class="orb-caption">
+          <span>WebGL · 12 000 particules</span>
+          <strong>Une planète faite de lumière.</strong>
+        </div>
+        <button id="orb-toggle" type="button" aria-label="Mettre la boucle en pause">Pause</button>
+      </section>
+
+      <footer class="orb-footer">
+        <p>Rotation 3D · profondeur · voiles orbitaux · respiration simulée</p>
+        <div class="orb-progress"><i id="orb-progress"></i></div>
+        <span>boucle 9 s</span>
+      </footer>
+    </main>
+    <script type="module" src="/src/prototypes/particleOrbLab.ts"></script>
+  </body>
+</html>

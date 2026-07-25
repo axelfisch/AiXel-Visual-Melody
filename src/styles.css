@@ -563,7 +563,7 @@ button:disabled {
 
 .engine-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
   gap: 16px;
 }
 
@@ -804,6 +804,51 @@ blockquote {
   border-radius: 22px;
 }
 
+.preview-reference-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.46;
+  transform: scale(1.015);
+  transition: opacity 0.5s ease, transform 8s ease;
+}
+
+.preview-canvas:hover .preview-reference-art {
+  transform: scale(1.035);
+}
+
+.preview-cosmic .preview-reference-art {
+  opacity: 0.5;
+  filter: saturate(0.94) contrast(1.06);
+}
+
+.preview-geometry .preview-reference-art {
+  opacity: 0.5;
+  filter: saturate(0.9) contrast(1.08);
+}
+
+.preview-liquid .preview-reference-art {
+  opacity: 0.56;
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.preview-album .preview-reference-art {
+  opacity: 0.68;
+  filter: saturate(0.82) contrast(1.12);
+}
+
+.preview-city .preview-reference-art {
+  opacity: 0.56;
+  filter: saturate(0.92) contrast(1.12) brightness(0.86);
+}
+
+.preview-neon .preview-reference-art {
+  opacity: 0.54;
+  filter: saturate(0.96) contrast(1.08);
+}
+
 .live-badge {
   position: absolute;
   left: 18px;
@@ -822,6 +867,7 @@ blockquote {
 
 .nebula {
   position: absolute;
+  z-index: 1;
   border-radius: 50%;
   filter: blur(8px);
 }
@@ -846,6 +892,7 @@ blockquote {
 
 .particle {
   position: absolute;
+  z-index: 1;
   bottom: -12px;
   width: 4px;
   height: 4px;
@@ -858,44 +905,66 @@ blockquote {
 .geometry-visual {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: grid;
   place-items: center;
+  background: radial-gradient(circle at center, rgba(7, 9, 16, 0.06) 0 24%, rgba(3, 5, 10, 0.48) 76%, rgba(3, 5, 10, 0.7) 100%);
 }
 
 .geometry-visual span {
   position: absolute;
-  border: 1px solid rgba(231, 201, 119, 0.62);
+  border: 1px solid color-mix(in srgb, var(--accent-from) 72%, transparent);
   border-radius: 50%;
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent-from) 18%, transparent);
 }
 
 .geometry-visual span:nth-child(1) {
-  width: 52%;
+  width: 62%;
   aspect-ratio: 1;
   animation: rotate-a 18s linear infinite;
 }
 
 .geometry-visual span:nth-child(2) {
-  width: 35%;
+  width: 47%;
   aspect-ratio: 1;
   animation: rotate-b 13s linear infinite;
 }
 
 .geometry-visual span:nth-child(3) {
-  width: 18%;
+  width: 32%;
   aspect-ratio: 1;
+  animation: rotate-a 10s linear infinite reverse;
+}
+
+.geometry-visual span:nth-child(4) {
+  width: 19%;
+  aspect-ratio: 1;
+  border-color: color-mix(in srgb, var(--accent-to) 68%, transparent);
+  animation: rotate-b 8s linear infinite;
+}
+
+.geometry-visual span:nth-child(5) {
+  width: 7%;
+  aspect-ratio: 1;
+  border-width: 2px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-from) 46%, transparent), transparent 68%);
 }
 
 .liquid-visual {
   position: absolute;
   inset: -24%;
-  background: linear-gradient(120deg, #c9682f, #7a2f8a, #1a2a66, #c9682f);
+  z-index: 1;
+  background: linear-gradient(120deg, var(--accent-from), #7a2f8a, var(--accent-to), var(--accent-from));
   background-size: 260% 260%;
-  filter: blur(12px);
+  filter: blur(18px) saturate(1.08);
+  mix-blend-mode: screen;
+  opacity: 0.58;
   animation: liquid-shift 10s ease-in-out infinite;
 }
 
 .city-visual {
   position: absolute;
+  z-index: 1;
   left: 32px;
   right: 32px;
   bottom: 0;
@@ -916,30 +985,40 @@ blockquote {
 .album-visual {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: grid;
   place-items: center;
+  background: radial-gradient(circle at 50% 48%, transparent 0 28%, rgba(2, 4, 10, 0.1) 48%, rgba(2, 4, 10, 0.72) 100%);
 }
 
 .album-visual::before {
   content: "";
-  width: min(280px, 38%);
+  width: min(390px, 52%);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: repeating-radial-gradient(circle, #1a1a1a 0 4px, #060606 4px 8px);
+  background:
+    radial-gradient(circle, transparent 0 9%, color-mix(in srgb, var(--accent-from) 38%, #111) 9% 17%, transparent 17%),
+    repeating-radial-gradient(circle, rgba(42, 44, 52, 0.88) 0 3px, rgba(4, 5, 8, 0.92) 3px 7px);
+  box-shadow:
+    -10px 0 28px color-mix(in srgb, var(--accent-to) 22%, transparent),
+    12px 0 32px color-mix(in srgb, var(--accent-from) 25%, transparent);
+  opacity: 0.78;
   animation: rotate-a 9s linear infinite;
 }
 
 .album-visual span {
   position: absolute;
-  width: 54px;
-  height: 54px;
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
-  background: var(--gold);
+  background: radial-gradient(circle, #05060b 0 10%, var(--accent-from) 12% 62%, var(--accent-to) 100%);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent-from) 38%, transparent);
 }
 
 .neon-visual {
   position: absolute;
   inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
 }

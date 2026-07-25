@@ -4,7 +4,10 @@ import type { VisualEngine } from '../engines/engine.types';
 import { DEFAULT_EXPORT_SETTINGS } from '../project/project.defaults';
 import { renderMp4 } from './renderMp4';
 
-const tracks = () => [{ stop: vi.fn() } as unknown as MediaStreamTrack];
+const tracks = () => [{
+  requestFrame: vi.fn(),
+  stop: vi.fn(),
+} as unknown as CanvasCaptureMediaStreamTrack];
 
 class FakeMediaStream {
   constructor(private readonly items: MediaStreamTrack[] = []) {}
@@ -18,9 +21,13 @@ class FakeMediaRecorder {
   state: RecordingState = 'inactive';
   ondataavailable: ((event: BlobEvent) => void) | null = null;
   onerror: ((event: Event) => void) | null = null;
+  onstart: ((event: Event) => void) | null = null;
   onstop: ((event: Event) => void) | null = null;
   constructor(_stream: MediaStream, _options?: MediaRecorderOptions) {}
-  start() { this.state = 'recording'; }
+  start() {
+    this.state = 'recording';
+    this.onstart?.(new Event('start'));
+  }
   stop() {
     this.state = 'inactive';
     this.ondataavailable?.({ data: new Blob(['mp4']) } as BlobEvent);
@@ -134,7 +141,7 @@ describe('renderMp4', () => {
     expect(result.type).toBe('video/mp4');
     expect(canvas.width).toBe(1280);
     expect(canvas.height).toBe(720);
-    expect(engine.render).toHaveBeenCalledTimes(3);
+    expect(engine.render).toHaveBeenCalledTimes(4);
     expect(context.fillText).toHaveBeenCalledWith('AiXel Visual Melody', 640, expect.any(Number));
     expect(context.fillText).toHaveBeenCalledWith('Music by Axel Fisch', 640, expect.any(Number));
     expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({
@@ -176,6 +183,7 @@ describe('renderMp4', () => {
       canvas: fakeCanvas(),
       signal: controller.signal,
     });
+    await Promise.resolve();
     controller.abort();
 
     await expect(rendering).rejects.toMatchObject({ name: 'AbortError' });

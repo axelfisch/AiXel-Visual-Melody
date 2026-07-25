@@ -16,9 +16,18 @@ type RenderEndCardOptions = EndCardCredits & {
   height: number;
   elapsed: number;
   duration: number;
+  paletteColors?: string[];
 };
 
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+const validHex = (value: string | undefined): value is string => Boolean(value && /^#[0-9a-f]{6}$/i.test(value));
+
+function darkenHex(hex: string, amount: number) {
+  const value = Number.parseInt(hex.slice(1), 16);
+  const scale = Math.max(0, Math.min(1, amount));
+  const channel = (shift: number) => Math.round(((value >> shift) & 255) * scale).toString(16).padStart(2, '0');
+  return `#${channel(16)}${channel(8)}${channel(0)}`;
+}
 
 export function renderEndCard({
   context,
@@ -28,6 +37,7 @@ export function renderEndCard({
   duration,
   appName,
   artistName,
+  paletteColors = [],
 }: RenderEndCardOptions) {
   const fadeIn = clamp01(elapsed / 0.55);
   const fadeOut = clamp01((duration - elapsed) / 0.55);
@@ -37,15 +47,17 @@ export function renderEndCard({
   context.save();
   context.globalAlpha = 1;
 
+  const primary = validHex(paletteColors[0]) ? paletteColors[0] : '#7fe0ff';
+  const secondary = validHex(paletteColors[1]) ? paletteColors[1] : primary;
   const background = context.createLinearGradient(0, 0, width, height);
-  background.addColorStop(0, '#030712');
-  background.addColorStop(0.55, '#080b19');
-  background.addColorStop(1, '#120b24');
+  background.addColorStop(0, darkenHex(primary, 0.14));
+  background.addColorStop(0.55, '#05060b');
+  background.addColorStop(1, darkenHex(secondary, 0.18));
   context.fillStyle = background;
   context.fillRect(0, 0, width, height);
 
   context.globalAlpha = 0.16 * opacity;
-  context.strokeStyle = '#7fe0ff';
+  context.strokeStyle = primary;
   context.lineWidth = 1.2 * unit;
   for (let ring = 0; ring < 4; ring += 1) {
     context.beginPath();
@@ -54,7 +66,7 @@ export function renderEndCard({
   }
 
   context.globalAlpha = 0.42 * opacity;
-  context.fillStyle = '#e7c977';
+  context.fillStyle = secondary;
   for (let index = 0; index < 26; index += 1) {
     const x = ((index * 193) % 997) / 997 * width;
     const y = ((index * 317) % 719) / 719 * height;
@@ -74,8 +86,8 @@ export function renderEndCard({
 
   const brandGradient = context.createLinearGradient(width * 0.34, 0, width * 0.66, 0);
   brandGradient.addColorStop(0, '#f5f1e7');
-  brandGradient.addColorStop(0.55, '#7fe0ff');
-  brandGradient.addColorStop(1, '#b18aff');
+  brandGradient.addColorStop(0.55, primary);
+  brandGradient.addColorStop(1, secondary);
   context.fillStyle = brandGradient;
   context.font = `500 ${56 * unit}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
   context.fillText(appName, width / 2, height / 2 - 20 * unit);

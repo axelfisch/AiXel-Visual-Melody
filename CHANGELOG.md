@@ -1,5 +1,28 @@
 # Changelog
 
+## Particle Orb Special — Standalone Three.js Sketch
+
+- Recorded product-owner acceptance of Sketch 01 as the preserved baseline for future Particle Orb work.
+- Added `particle-orb-lab.html`, a standalone nine-second looping sketch built with Three.js/WebGL.
+- Added a deterministic 12,000-point Fibonacci sphere, translucent shell, halo, organic audio-energy deformation, and adaptive point density.
+- Added three inclined orbital ribbons so the planetary rotation and depth read clearly.
+- Kept the sketch outside the six-engine registry and production Create workflow until it is visually accepted.
+- Preserved reusable configuration and rendering code for a later Director/Preview/Export integration.
+- Recorded the future public contact footer in the product backlog without implementing it prematurely.
+
+## Particle Orb Special — Reference and Feasibility
+
+- Captured a repository-safe still from the owner-supplied particle-sphere MP4 reference without committing the 30 MB screen recording or its unrelated application UI.
+- Documented the seventh special-engine intent, visual characteristics, proposed Director mapping, WebGL rendering approach, technical risks, and decision gate.
+- Kept the concept explicitly reference-only; no seventh engine implementation or registry change is included in this checkpoint.
+
+## Create Preview + First-Export Reliability
+
+- Blended the approved Home artwork into all six animated Create previews so every composition remains complete at the studio aspect ratio while preserving its existing motion layer.
+- Strengthened first-run MP4 capture by using an explicitly driven canvas video track, waiting for `MediaRecorder` to start, and submitting two painted video frames before starting audio.
+- Applied the active engine accent colors to the left and right export background and to the AiXel end card, keeping the encoded MP4 visually consistent with the selected Director palette.
+- Added explicit Netlify Vite build and `dist` publish settings for reproducible production deploys.
+
 ## AiXel Director V2 — Every Fader Functional + Color Palette
 
 - Rewired the Director mapping contract so all eight dimensions (Emotion, Space, Fluidity, Light, Dynamics, Particles, Color Energy, Motion Complexity) drive real, validated parameters on every one of the six engines — no fader is disabled anymore.
