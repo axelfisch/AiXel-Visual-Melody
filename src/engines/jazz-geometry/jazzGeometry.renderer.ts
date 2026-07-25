@@ -1,4 +1,5 @@
 import type { EngineFrame, RenderSurface } from '../engine.types';
+import { adjustSaturation, applyWarmthOverlay, drawAmbientSparkles } from '../engine.directorFx';
 import type { JazzGeometryConfig } from './jazzGeometry.types';
 
 const TAU = Math.PI * 2;
@@ -26,7 +27,9 @@ export function renderJazzGeometry(surface: RenderSurface, frame: EngineFrame, c
   const pulse = 0.5 + 0.5 * Math.sin(frame.time * Math.max(0.7, frame.bpm / 60) * Math.PI);
   const centerX = width * 0.5;
   const centerY = height * 0.47;
-  const minDimension = Math.min(width, height);
+  const minDimension = Math.min(width, height) * config.spaceScale;
+  const gold = adjustSaturation(config.goldAccent, config.colorSaturation);
+  const ice = adjustSaturation(config.iceAccent, config.colorSaturation);
 
   const background = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, width * 0.72);
   background.addColorStop(0, `hsl(226 26% ${15 + energy * 6}%)`);
@@ -58,9 +61,9 @@ export function renderJazzGeometry(surface: RenderSurface, frame: EngineFrame, c
     context.save();
     context.rotate(rotation);
     context.globalAlpha = 0.18 + normalized * 0.28 + energy * 0.22;
-    context.strokeStyle = ring % 3 === 0 ? config.iceAccent : config.goldAccent;
+    context.strokeStyle = ring % 3 === 0 ? ice : gold;
     context.lineWidth = 1 + (1 - normalized) * 1.6 + energy * 1.8;
-    context.shadowBlur = ring % 3 === 0 ? 10 + energy * 16 : 5 + energy * 10;
+    context.shadowBlur = (ring % 3 === 0 ? 10 + energy * 16 : 5 + energy * 10) * config.glowIntensity;
     context.shadowColor = context.strokeStyle as string;
     context.beginPath();
     context.arc(0, 0, radius, -arcLength * 0.5, arcLength * 0.5);
@@ -71,7 +74,7 @@ export function renderJazzGeometry(surface: RenderSurface, frame: EngineFrame, c
 
     const orbitalAngle = rotation * 1.7 + ring * 0.9;
     context.globalAlpha = 0.4 + energy * 0.45;
-    context.fillStyle = ring % 3 === 0 ? config.iceAccent : config.goldAccent;
+    context.fillStyle = ring % 3 === 0 ? ice : gold;
     context.beginPath();
     context.arc(Math.cos(orbitalAngle) * radius, Math.sin(orbitalAngle) * radius, 1.8 + energy * 2.6, 0, TAU);
     context.fill();
@@ -80,12 +83,12 @@ export function renderJazzGeometry(surface: RenderSurface, frame: EngineFrame, c
 
   const polygonRotation = frame.time * config.rotationSpeed * 0.7;
   context.globalAlpha = 0.28 + energy * 0.34;
-  context.strokeStyle = config.iceAccent;
+  context.strokeStyle = ice;
   context.lineWidth = 1.2 + energy * 1.4;
   polygon(context, 6, minDimension * (0.12 + energy * 0.018), polygonRotation);
   context.stroke();
   context.globalAlpha = 0.2 + energy * 0.4;
-  context.strokeStyle = config.goldAccent;
+  context.strokeStyle = gold;
   polygon(context, 3, minDimension * (0.082 + pulse * 0.012 + energy * 0.012), -polygonRotation * 1.4 + Math.PI / 2);
   context.stroke();
 
@@ -104,11 +107,15 @@ export function renderJazzGeometry(surface: RenderSurface, frame: EngineFrame, c
   context.fill();
   context.restore();
 
+  drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity, ice);
+
   const vignette = context.createRadialGradient(centerX, centerY, minDimension * 0.2, centerX, centerY, width * 0.68);
   vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
   vignette.addColorStop(1, 'rgba(0, 0, 0, 0.52)');
   context.fillStyle = vignette;
   context.fillRect(0, 0, width, height);
+
+  applyWarmthOverlay(context, width, height, config.warmth);
 
   if (config.showTitle && frame.title) {
     context.globalAlpha = 1;

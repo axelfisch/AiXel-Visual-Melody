@@ -1,4 +1,5 @@
 import type { EngineFrame, RenderSurface } from '../engine.types';
+import { adjustSaturation, applyWarmthOverlay, drawAmbientSparkles } from '../engine.directorFx';
 import type { NeonVelvetConfig } from './neonVelvet.types';
 
 const TAU = Math.PI * 2;
@@ -58,7 +59,11 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
   const energy = clamp(frame.energy * config.energyResponse);
   const tempo = Math.max(0.7, frame.bpm / 60);
   const phase = frame.time * config.trailSpeed * tempo * TAU;
-  const colors = [config.cyanAccent, config.violetAccent, config.magentaAccent];
+  const colors = [config.cyanAccent, config.violetAccent, config.magentaAccent].map((accent) =>
+    adjustSaturation(accent, config.colorSaturation),
+  );
+  const [cyan, violet, magenta] = colors;
+  const reach = config.spaceScale;
 
   const background = context.createLinearGradient(0, 0, width, height);
   background.addColorStop(0, '#070713');
@@ -70,10 +75,10 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
   context.fillStyle = background;
   context.fillRect(0, 0, width, height);
 
-  drawVelvetFold(context, width, height, width * 0.28, config.violetAccent, 0.72 + energy * 0.2);
-  drawVelvetFold(context, width, height, width * 0.68, config.magentaAccent, 0.62 + energy * 0.22);
+  drawVelvetFold(context, width, height, width * 0.28, violet, 0.72 + energy * 0.2);
+  drawVelvetFold(context, width, height, width * 0.68, magenta, 0.62 + energy * 0.22);
 
-  const centralGlow = context.createRadialGradient(width * 0.52, height * 0.48, 0, width * 0.52, height * 0.48, width * 0.56);
+  const centralGlow = context.createRadialGradient(width * 0.52, height * 0.48, 0, width * 0.52, height * 0.48, width * 0.56 * reach);
   centralGlow.addColorStop(0, `rgba(138, 107, 255, ${0.11 + energy * 0.12})`);
   centralGlow.addColorStop(0.46, `rgba(231, 80, 180, ${0.055 + energy * 0.08})`);
   centralGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -92,7 +97,7 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
     context.globalAlpha = 0.08 + energy * 0.11;
     context.strokeStyle = color;
     context.lineWidth = 16 + energy * 18;
-    context.shadowBlur = 30 + energy * 36;
+    context.shadowBlur = (30 + energy * 36) * config.glowIntensity;
     context.shadowColor = color;
     context.stroke();
 
@@ -102,7 +107,7 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
     context.lineWidth = 1.4 + energy * 2.4;
     context.setLineDash([42 + lane * 3, 28 + (lane % 3) * 9]);
     context.lineDashOffset = -frame.time * (54 + lane * 8) * config.trailSpeed - lane * 31;
-    context.shadowBlur = 10 + energy * 20;
+    context.shadowBlur = (10 + energy * 20) * config.glowIntensity;
     context.stroke();
 
     drawTrailPath(context, width, height, lane, lanePhase, energy);
@@ -111,7 +116,7 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
     context.lineWidth = 0.8 + energy * 1.1;
     context.setLineDash([3, 92 + lane * 5]);
     context.lineDashOffset = -frame.time * (96 + lane * 11) * config.trailSpeed;
-    context.shadowBlur = 16 + energy * 24;
+    context.shadowBlur = (16 + energy * 24) * config.glowIntensity;
     context.shadowColor = color;
     context.stroke();
   }
@@ -136,6 +141,9 @@ export function renderNeonVelvet(surface: RenderSurface, frame: EngineFrame, con
   context.globalAlpha = 1;
   context.fillStyle = vignette;
   context.fillRect(0, 0, width, height);
+
+  drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity, cyan);
+  applyWarmthOverlay(context, width, height, config.warmth);
 
   if (config.showTitle && frame.title) {
     context.fillStyle = '#f8f2ff';

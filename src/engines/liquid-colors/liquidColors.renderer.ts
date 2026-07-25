@@ -1,4 +1,5 @@
 import type { EngineFrame, RenderSurface } from '../engine.types';
+import { adjustSaturation, applyWarmthOverlay, drawAmbientSparkles } from '../engine.directorFx';
 import type { LiquidColorsConfig } from './liquidColors.types';
 
 const TAU = Math.PI * 2;
@@ -136,7 +137,7 @@ export function renderLiquidColors(surface: RenderSurface, frame: EngineFrame, c
   const energy = clamp(frame.energy * config.energyResponse);
   const beat = 0.5 + 0.5 * Math.sin(frame.time * Math.max(0.7, frame.bpm / 60) * Math.PI);
   const phase = frame.time * config.flowSpeed * TAU;
-  const minDimension = Math.min(width, height);
+  const minDimension = Math.min(width, height) * config.spaceScale;
 
   const background = context.createLinearGradient(0, 0, width, height);
   background.addColorStop(0, '#100b19');
@@ -147,7 +148,9 @@ export function renderLiquidColors(surface: RenderSurface, frame: EngineFrame, c
   context.fillStyle = background;
   context.fillRect(0, 0, width, height);
 
-  const colors = [config.orangeAccent, config.magentaAccent, config.indigoAccent];
+  const colors = [config.orangeAccent, config.magentaAccent, config.indigoAccent].map((accent) =>
+    adjustSaturation(accent, config.colorSaturation),
+  );
   context.save();
   context.globalCompositeOperation = 'screen';
   for (let band = 0; band < 6; band += 1) {
@@ -183,12 +186,14 @@ export function renderLiquidColors(surface: RenderSurface, frame: EngineFrame, c
     );
   }
 
-  context.shadowBlur = 28 + energy * 34;
-  context.shadowColor = config.magentaAccent;
-  drawLiquidRibbon(context, width, height, phase * 0.62, 48 + energy * 62, config.magentaAccent, 0.18 + energy * 0.16);
-  context.shadowColor = config.orangeAccent;
-  drawLiquidRibbon(context, width, height, -phase * 0.48 + 2.1, 34 + energy * 46, config.orangeAccent, 0.14 + energy * 0.14);
+  context.shadowBlur = (28 + energy * 34) * config.glowIntensity;
+  context.shadowColor = colors[1];
+  drawLiquidRibbon(context, width, height, phase * 0.62, 48 + energy * 62, colors[1], 0.18 + energy * 0.16);
+  context.shadowColor = colors[0];
+  drawLiquidRibbon(context, width, height, -phase * 0.48 + 2.1, 34 + energy * 46, colors[0], 0.14 + energy * 0.14);
   context.restore();
+
+  drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity, colors[2]);
 
   for (let index = 0; index < 28; index += 1) {
     const seedX = (index * 89 + 23) % 997;
@@ -209,6 +214,8 @@ export function renderLiquidColors(surface: RenderSurface, frame: EngineFrame, c
   context.globalAlpha = 1;
   context.fillStyle = vignette;
   context.fillRect(0, 0, width, height);
+
+  applyWarmthOverlay(context, width, height, config.warmth);
 
   if (config.showTitle && frame.title) {
     context.fillStyle = '#fff4ee';

@@ -1,4 +1,5 @@
 import type { EngineFrame, RenderSurface } from '../engine.types';
+import { adjustSaturation, applyWarmthOverlay, drawAmbientSparkles } from '../engine.directorFx';
 import type { FrequencyCityConfig } from './frequencyCity.types';
 
 const TAU = Math.PI * 2;
@@ -13,7 +14,10 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
   const energy = clamp(frame.energy * config.energyResponse);
   const tempo = Math.max(0.72, frame.bpm / 60);
   const horizonY = height * 0.72;
-  const colors = [config.magentaAccent, config.cyanAccent, config.violetAccent];
+  const colors = [config.magentaAccent, config.cyanAccent, config.violetAccent].map((accent) =>
+    adjustSaturation(accent, config.colorSaturation),
+  );
+  const cyan = colors[1];
 
   const sky = context.createLinearGradient(0, 0, 0, height);
   sky.addColorStop(0, '#050710');
@@ -25,7 +29,7 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
   context.fillStyle = sky;
   context.fillRect(0, 0, width, height);
 
-  const cityGlow = context.createRadialGradient(width * 0.5, horizonY, 0, width * 0.5, horizonY, width * 0.54);
+  const cityGlow = context.createRadialGradient(width * 0.5, horizonY, 0, width * 0.5, horizonY, width * 0.54 * config.spaceScale);
   cityGlow.addColorStop(0, `rgba(231, 80, 180, ${0.12 + energy * 0.13})`);
   cityGlow.addColorStop(0.42, `rgba(95, 208, 255, ${0.05 + energy * 0.07})`);
   cityGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -37,7 +41,7 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
     const y = seeded(index, 149, 43) * height * 0.54;
     const shimmer = 0.5 + 0.5 * Math.sin(frame.time * (0.32 + (index % 5) * 0.06) + index * 1.71);
     context.globalAlpha = 0.08 + shimmer * 0.28 + energy * 0.14;
-    context.fillStyle = index % 8 === 0 ? config.cyanAccent : '#edf4ff';
+    context.fillStyle = index % 8 === 0 ? cyan : '#edf4ff';
     context.fillRect(x, y, 1 + (index % 3) * 0.45, 1 + (index % 3) * 0.45);
   }
 
@@ -64,7 +68,7 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
     facade.addColorStop(1, '#080914');
     context.globalAlpha = 0.58 + energy * 0.28;
     context.fillStyle = facade;
-    context.shadowBlur = 8 + energy * 18;
+    context.shadowBlur = (8 + energy * 18) * config.glowIntensity;
     context.shadowColor = accent;
     context.fillRect(x, y, actualWidth, buildingHeight);
 
@@ -110,7 +114,7 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
   context.fillStyle = floor;
   context.fillRect(0, horizonY, width, height - horizonY);
 
-  context.strokeStyle = config.cyanAccent;
+  context.strokeStyle = cyan;
   context.lineWidth = 1;
   for (let line = 0; line < 7; line += 1) {
     const y = horizonY + 18 + line * 22;
@@ -120,6 +124,9 @@ export function renderFrequencyCity(surface: RenderSurface, frame: EngineFrame, 
     context.lineTo(width * (0.96 - line * 0.025), y);
     context.stroke();
   }
+
+  drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity, cyan);
+  applyWarmthOverlay(context, width, height, config.warmth);
 
   if (config.showTitle && frame.title) {
     context.fillStyle = '#f4efff';
