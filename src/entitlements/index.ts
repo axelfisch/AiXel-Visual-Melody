@@ -20,3 +20,5 @@ export type {
   EntitlementState,
   PlanCode,
 } from './entitlements.types';
+export { mapPlanStatus, planStatusSnapshot, PLAN_STATUS_MAX_AGE_MS } from './planStatus';
+export type { MyPlanStatusV1 } from './planStatus';
