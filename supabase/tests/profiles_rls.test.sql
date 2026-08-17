@@ -20,7 +20,12 @@ select results_eq(
 );
 
 set local role anon;
-select is_empty($$ select * from public.profiles $$, 'anonymous users cannot read profiles');
+select throws_ok(
+  $$ select * from public.profiles $$,
+  '42501',
+  'permission denied for table profiles',
+  'anonymous users cannot read profiles'
+);
 reset role;
 
 set local role authenticated;
