@@ -1,13 +1,19 @@
+import type { ProjectEndCardMode } from '../project/project.types';
+
 export const EXPORT_END_CARD_DURATION = 3;
+
+export const endCardDuration = (mode: ProjectEndCardMode) => mode === 'clean' ? 0 : EXPORT_END_CARD_DURATION;
 
 export type EndCardCredits = {
   appName: string;
   artistName: string;
+  trackName: string;
 };
 
 export const DEFAULT_END_CARD_CREDITS: EndCardCredits = {
   appName: 'AiXel Visual Melody',
-  artistName: 'Axel Fisch',
+  artistName: 'Independent Artist',
+  trackName: 'Visual Melody',
 };
 
 type RenderEndCardOptions = EndCardCredits & {
@@ -16,6 +22,7 @@ type RenderEndCardOptions = EndCardCredits & {
   height: number;
   elapsed: number;
   duration: number;
+  mode?: Exclude<ProjectEndCardMode, 'clean'>;
 };
 
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
@@ -28,6 +35,8 @@ export function renderEndCard({
   duration,
   appName,
   artistName,
+  trackName,
+  mode = 'aixel',
 }: RenderEndCardOptions) {
   const fadeIn = clamp01(elapsed / 0.55);
   const fadeOut = clamp01((duration - elapsed) / 0.55);
@@ -70,7 +79,7 @@ export function renderEndCard({
 
   context.fillStyle = '#e7c977';
   context.font = `700 ${15 * unit}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
-  context.fillText('VISUAL CREATED WITH', width / 2, height / 2 - 92 * unit);
+  context.fillText(mode === 'artist' ? 'A VISUAL RELEASE BY' : 'VISUAL CREATED WITH', width / 2, height / 2 - 92 * unit);
 
   const brandGradient = context.createLinearGradient(width * 0.34, 0, width * 0.66, 0);
   brandGradient.addColorStop(0, '#f5f1e7');
@@ -78,7 +87,7 @@ export function renderEndCard({
   brandGradient.addColorStop(1, '#b18aff');
   context.fillStyle = brandGradient;
   context.font = `500 ${56 * unit}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
-  context.fillText(appName, width / 2, height / 2 - 20 * unit);
+  context.fillText(mode === 'artist' ? artistName : appName, width / 2, height / 2 - 20 * unit);
 
   context.strokeStyle = 'rgba(231, 201, 119, 0.7)';
   context.lineWidth = 1 * unit;
@@ -89,12 +98,12 @@ export function renderEndCard({
 
   context.fillStyle = '#f5f1e7';
   context.font = `400 ${24 * unit}px Georgia, 'Times New Roman', serif`;
-  context.fillText(`Music by ${artistName}`, width / 2, height / 2 + 83 * unit);
+  context.fillText(mode === 'artist' ? trackName : `Music by ${artistName}`, width / 2, height / 2 + 83 * unit);
 
   context.globalAlpha = 0.68 * opacity;
   context.fillStyle = '#cbd3ed';
   context.font = `400 ${13 * unit}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
-  context.fillText('Every Note Becomes Light.', width / 2, height - 54 * unit);
+  context.fillText(mode === 'artist' ? 'Artist release visual' : 'Every Note Becomes Light.', width / 2, height - 54 * unit);
 
   context.restore();
 }

@@ -2,7 +2,7 @@ import { Download, FileAudio, Pause, Play, Volume2, VolumeX } from 'lucide-react
 import { formatTime } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import { EngineCanvas, PREVIEW_FRAME } from '../engines/EngineCanvas';
+import { EngineCanvas } from '../engines/EngineCanvas';
 import { getEngineOrDefault } from '../engines/engine.registry';
 import { useCapabilities } from '../entitlements';
 import { EXPORT_RESOLUTIONS, frameLabel, isResolutionAllowed, resolutionOf } from '../export/exportFormats';
@@ -28,7 +28,7 @@ export function PreviewScreen({
   const audioUrl = runtime.objectUrl;
   const duration = project.sourceHint?.duration ?? 0;
   // The label must describe the canvas that is actually on screen.
-  const previewResolution = resolutionOf(PREVIEW_FRAME);
+  const previewResolution = resolutionOf(project.export);
   const playback = useSynchronizedPlayback({
     source: audioUrl,
     sourceDuration: duration,
@@ -81,6 +81,7 @@ export function PreviewScreen({
           engine={engine}
           time={playback.currentTime}
           title={project.name}
+          frame={project.export}
         />
         <div className="cinema-overlay">
           <div>
@@ -152,7 +153,7 @@ export function PreviewScreen({
                 className={active ? 'selected' : ''}
                 key={resolution}
                 disabled={!active}
-                title={active ? frameLabel(PREVIEW_FRAME) : allowed ? t('futureVersion') : t('creatorProOnly')}
+                title={active ? frameLabel(project.export) : allowed ? t('futureVersion') : t('creatorProOnly')}
               >
                 {resolution}
                 {!allowed && <em className="pro-tag">{t('proTag')}</em>}

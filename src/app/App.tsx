@@ -394,6 +394,9 @@ export function App() {
             engineConfig={project.engine.parameters}
             previewBackground={engine.preview}
             settings={project.export}
+            projectName={project.name}
+            artistName={project.artistName}
+            onSettingsChange={(settings) => dispatch({ type: 'UPDATE_EXPORT_SETTINGS', settings })}
           />
         )}
         {screen === 'settings' && <SettingsScreen onNavigate={navigate} />}
