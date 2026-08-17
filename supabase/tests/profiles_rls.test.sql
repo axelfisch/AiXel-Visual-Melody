@@ -2,7 +2,10 @@ begin;
 select plan(9);
 
 select has_table('public', 'profiles', 'profiles table exists');
-select row_security_active('public.profiles'::regclass, 'profiles has RLS enabled');
+select ok(
+  (select relrowsecurity from pg_catalog.pg_class where oid = 'public.profiles'::regclass),
+  'profiles has RLS enabled'
+);
 select has_function('public', 'handle_new_user', array[]::text[], 'trusted provisioning function exists');
 
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
