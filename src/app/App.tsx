@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AudioLines,
   ChevronRight,
@@ -29,6 +29,7 @@ import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
 import { AUDIO_FILE_ACCEPT, analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
+import { continuationDraftId, ContinuationRepository } from '../continuation';
 import { getEngineOrDefault } from '../engines/engine.registry';
 import { useLocale } from '../i18n/LocaleContext';
 import {
@@ -155,11 +156,41 @@ const waveform = Array.from({ length: 72 }, (_, i) => 18 + Math.abs(Math.sin(i *
 const spectrum = Array.from({ length: 44 }, (_, i) => 16 + Math.abs(Math.sin(i * 0.55)) * 68 + (i % 5) * 4);
 
 export function App() {
+  const { t } = useLocale();
   const { screen, navigate } = useHashNavigation();
-  const { project, runtime, dispatch, setAnalyzedAudio } = useProject();
+  const { project, runtime, dispatch, setAnalyzedAudio, restoreProject } = useProject();
   const [goldenBusy, setGoldenBusy] = useState(false);
   const [goldenError, setGoldenError] = useState('');
   const [autoPlayPreview, setAutoPlayPreview] = useState(false);
+  const [continuationNotice, setContinuationNotice] = useState<'restored' | 'source_required' | ''>('');
+
+  useEffect(() => {
+    const draftId = continuationDraftId(window.location.href);
+    if (!draftId || !globalThis.indexedDB) return;
+    let cancelled = false;
+    const restore = async () => {
+      try {
+        const repository = new ContinuationRepository();
+        const resolution = await repository.resolveDraft(draftId, {
+          origin: window.location.origin,
+          userId: null,
+        });
+        if (cancelled || resolution.status !== 'ready') return;
+        const restoredAudio = await restoreProject(resolution.draft.project, resolution.draft.sourceFile);
+        if (cancelled) return;
+        setContinuationNotice(restoredAudio ? 'restored' : 'source_required');
+        navigate(restoredAudio ? resolution.draft.returnIntent.screen : 'analyze');
+      } catch {
+        // Storage may be unavailable or the draft may be corrupt; Free remains usable.
+      } finally {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('continuation');
+        window.history.replaceState(null, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+      }
+    };
+    void restore();
+    return () => { cancelled = true; };
+  }, [navigate, restoreProject]);
 
   const engine = useMemo(
     () => engines.find((item) => item.id === project.engine.engineId) ?? engines[4],
@@ -240,6 +271,12 @@ export function App() {
     >
       <CosmicBackground />
       <TopNavigation current={screen} onNavigate={navigate} />
+      {continuationNotice && (
+        <div className="continuation-notice" role="status">
+          {t(continuationNotice === 'restored' ? 'continuationRestored' : 'continuationSourceRequired')}
+          <button aria-label={t('dismiss')} onClick={() => setContinuationNotice('')}>×</button>
+        </div>
+      )}
       <main>
         {screen === 'home' && (
           <HomeScreen

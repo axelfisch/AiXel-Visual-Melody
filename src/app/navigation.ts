@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type Screen = 'home' | 'analyze' | 'create' | 'preview' | 'export' | 'settings' | 'design-system';
 
@@ -25,10 +25,10 @@ export function useHashNavigation() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const navigate = (next: Screen) => {
+  const navigate = useCallback((next: Screen) => {
     window.location.hash = next;
     setScreen(next);
-  };
+  }, []);
 
   return { screen, navigate };
 }

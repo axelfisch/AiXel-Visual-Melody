@@ -10,6 +10,7 @@ import type {
 
 export type ProjectAction =
   | { type: 'CREATE_PROJECT'; name?: string }
+  | { type: 'LOAD_PROJECT'; project: VisualMelodyProject }
   | { type: 'RENAME_PROJECT'; name: string }
   | { type: 'SET_ARTIST_NAME'; artistName: string | null }
   | { type: 'SET_AUDIO_SOURCE'; sourceHint: ProjectSourceHint }
@@ -35,6 +36,8 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
   switch (action.type) {
     case 'CREATE_PROJECT':
       return createProject(action.name);
+    case 'LOAD_PROJECT':
+      return action.project;
     case 'RENAME_PROJECT':
       return touched({ ...project, name: action.name.trim() || project.name });
     case 'SET_ARTIST_NAME': {
