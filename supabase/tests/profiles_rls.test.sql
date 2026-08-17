@@ -1,5 +1,5 @@
 begin;
-select plan(9);
+select plan(10);
 
 select has_table('public', 'profiles', 'profiles table exists');
 select ok(
