@@ -194,14 +194,14 @@ export function App() {
     dispatch({ type: 'UPDATE_ENGINE_PARAMETERS', parameters });
   };
   const analysis = useMemo<AudioAnalysis | null>(() => {
-    if (!project.analysis || !project.audio || !runtime.decodedAudio) return null;
+    if (!project.analysis || !project.sourceHint || !runtime.decodedAudio) return null;
     return {
       ...project.analysis,
       name: project.name,
-      duration: project.audio.duration,
+      duration: project.sourceHint.duration,
       buffer: runtime.decodedAudio,
     };
-  }, [project.analysis, project.audio, project.name, runtime.decodedAudio]);
+  }, [project.analysis, project.sourceHint, project.name, runtime.decodedAudio]);
   const openGoldenReference = async () => {
     if (analysis && project.name === 'In the Spirit of Naomi') {
       setAutoPlayPreview(true);

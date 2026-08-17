@@ -1,14 +1,26 @@
 import { AlertTriangle, Download, Film, Gauge, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatTime, type AudioAnalysis } from '../audio';
 import { GlassPanel } from '../components/layout/GlassPanel';
+import { useCapabilities } from '../entitlements';
 import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
 import { EXPORT_END_CARD_DURATION } from '../export/endCard';
+import {
+  EXPORT_ASPECT_RATIOS,
+  EXPORT_END_CARD_MODES,
+  EXPORT_RESOLUTIONS,
+  exportGateReasons,
+  frameLabel,
+  isAspectRatioAllowed,
+  isEndCardModeAllowed,
+  isResolutionAllowed,
+  resolutionOf,
+} from '../export/exportFormats';
 import { useLocale } from '../i18n/LocaleContext';
 import { renderMp4 } from '../export/renderMp4';
-import type { ExportSettings } from '../project/project.types';
+import type { ExportSettings, ProjectEndCardMode } from '../project/project.types';
 
 type ExportState = 'idle' | 'rendering' | 'completed' | 'cancelled' | 'unsupported' | 'failed';
 
@@ -38,6 +50,7 @@ export function ExportScreen({
   settings: ExportSettings;
 }) {
   const { t } = useLocale();
+  const capabilities = useCapabilities();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [completedExport, setCompletedExport] = useState<CompletedExport | null>(null);
@@ -52,8 +65,19 @@ export function ExportScreen({
     if (completedExport) URL.revokeObjectURL(completedExport.url);
   }, [completedExport]);
 
+  // The single authority for "may this export run", shared with the button and
+  // the status line so they can never disagree.
+  const blockers = useMemo(() => exportGateReasons(settings, capabilities), [settings, capabilities]);
+  const gated = blockers.length > 0;
+  const endCardLabels: Record<ProjectEndCardMode, string> = {
+    aixel: t('endCardAixel'),
+    artist: t('endCardArtist'),
+    clean: t('endCardClean'),
+  };
+
   const status = (() => {
     if (!analysis) return t('noTrackExport');
+    if (gated && state === 'idle') return t('proExportBlocked');
     switch (state) {
       case 'rendering':
         return `Rendu ${formatTime(renderedTime)} / ${formatTime(renderDuration)} · ${Math.round(progress * 100)}%`;
@@ -71,7 +95,7 @@ export function ExportScreen({
   })();
 
   const exportMp4 = async () => {
-    if (!analysis || rendering) return;
+    if (!analysis || rendering || gated) return;
     const canvas = canvasRef.current;
     if (!canvas) {
       setErrorMessage("Le canevas d’export n’est pas disponible.");
@@ -143,8 +167,44 @@ export function ExportScreen({
         <GlassPanel className="span-2">
           <div className="panel-heading"><Film size={18} /><h2>{t('formatGrid')}</h2></div>
           <div className="format-grid">
-            <button className="selected">MP4 · 1280 × 720</button>
+            <button className="selected">
+              MP4 · {settings.width} × {settings.height} · {settings.frameRate} fps
+            </button>
           </div>
+          <OutputOptions
+            label={t('outputResolution')}
+            options={EXPORT_RESOLUTIONS.map((resolution) => ({
+              id: resolution,
+              label: resolution,
+              selected: resolution === resolutionOf(settings),
+              allowed: isResolutionAllowed(resolution, capabilities),
+            }))}
+            proLabel={t('proTag')}
+            proTitle={t('creatorProOnly')}
+          />
+          <OutputOptions
+            label={t('outputAspectRatio')}
+            options={EXPORT_ASPECT_RATIOS.map((aspectRatio) => ({
+              id: aspectRatio,
+              label: aspectRatio,
+              selected: aspectRatio === settings.aspectRatio,
+              allowed: isAspectRatioAllowed(aspectRatio, capabilities),
+            }))}
+            proLabel={t('proTag')}
+            proTitle={t('creatorProOnly')}
+          />
+          <OutputOptions
+            label={t('outputEndCard')}
+            options={EXPORT_END_CARD_MODES.map((mode) => ({
+              id: mode,
+              label: endCardLabels[mode],
+              selected: mode === settings.endCardMode,
+              allowed: isEndCardModeAllowed(mode, capabilities),
+            }))}
+            proLabel={t('proTag')}
+            proTitle={t('creatorProOnly')}
+          />
+          <p className="muted">{t('currentOutput')} {frameLabel(settings)} · {settings.aspectRatio} · {endCardLabels[settings.endCardMode]}</p>
         </GlassPanel>
         <GlassPanel>
           <div className="panel-heading"><Gauge size={18} /><h2>{t('renderProgress')}</h2></div>
@@ -175,7 +235,7 @@ export function ExportScreen({
           ) : (
             <button
               className={`${rendering ? 'secondary-action' : 'primary-action'} full`}
-              disabled={!analysis}
+              disabled={!analysis || (gated && !rendering)}
               onClick={rendering ? cancelExport : () => void exportMp4()}
             >
               {rendering ? <><X size={17} /> {t('cancelRender')}</> : <><Download size={17} /> {t('exportMp4')}</>}
@@ -184,5 +244,49 @@ export function ExportScreen({
         </GlassPanel>
       </div>
     </section>
+  );
+}
+
+type OutputOption = {
+  id: string;
+  label: string;
+  selected: boolean;
+  allowed: boolean;
+};
+
+/**
+ * Renders one row of output choices. Creator Pro options stay visible and
+ * labelled — the user must be able to see what the paid plan offers — but they
+ * are not selectable until the capability grants them.
+ */
+function OutputOptions({
+  label,
+  options,
+  proLabel,
+  proTitle,
+}: {
+  label: string;
+  options: OutputOption[];
+  proLabel: string;
+  proTitle: string;
+}) {
+  return (
+    <div className="output-options" role="group" aria-label={label}>
+      <span className="tiny-label">{label}</span>
+      <div className="chips wrap">
+        {options.map((option) => (
+          <button
+            aria-pressed={option.selected}
+            className={option.selected ? 'selected' : ''}
+            disabled={!option.allowed}
+            key={option.id}
+            title={option.allowed ? option.label : proTitle}
+          >
+            {option.label}
+            {option.allowed ? null : <em className="pro-tag">{proLabel}</em>}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

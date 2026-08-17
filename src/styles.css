@@ -1151,6 +1151,32 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 12px;
 }
 
+.output-options {
+  margin-top: 18px;
+}
+
+.output-options .tiny-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.output-options button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pro-tag {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font: 600 10px/1.4 Inter, sans-serif;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #04070f;
+  background: linear-gradient(120deg, #e7c977, #f4e3b0);
+}
+
 .render-preview {
   display: block;
   width: 100%;

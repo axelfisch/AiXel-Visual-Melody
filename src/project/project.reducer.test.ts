@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { createProject } from './project.defaults';
+import { PROJECT_SCHEMA_VERSION, createProject } from './project.defaults';
 import { projectReducer } from './project.reducer';
+import type { ProjectSourceHint } from './project.types';
 
-const audio = {
+const sourceHint: ProjectSourceHint = {
   fileName: 'Naomi.wav',
   mimeType: 'audio/wav',
   size: 1024,
   duration: 42,
-  objectUrl: 'blob:naomi',
+  sha256: null,
 };
 
 describe('projectReducer', () => {
@@ -17,7 +18,16 @@ describe('projectReducer', () => {
     expect(project.engine.engineId).toBe('minimal-album-art');
     expect(project.engine.director.mood).toBe('More Emotional');
     expect(project.engine.director.values.fluidity).toBe(64);
-    expect(project.schemaVersion).toBe(1);
+    expect(project.schemaVersion).toBe(PROJECT_SCHEMA_VERSION);
+    expect(project.artistName).toBeNull();
+    expect(project.export.aspectRatio).toBe('16:9');
+    expect(project.export.endCardMode).toBe('aixel');
+  });
+
+  it('normalizes a blank artist name back to null', () => {
+    const named = projectReducer(createProject(), { type: 'SET_ARTIST_NAME', artistName: '  Axel Fisch ' });
+    expect(named.artistName).toBe('Axel Fisch');
+    expect(projectReducer(named, { type: 'SET_ARTIST_NAME', artistName: '   ' }).artistName).toBeNull();
   });
 
   it('applies Director state and engine parameters atomically', () => {
@@ -40,9 +50,10 @@ describe('projectReducer', () => {
       type: 'ANALYSIS_COMPLETED',
       analysis: { sampleRate: 48_000, bpm: 72, peak: 0.9, averageEnergy: 0.5, waveform: [50], energy: [0.5] },
     });
-    const next = projectReducer(analyzed, { type: 'SET_AUDIO_SOURCE', audio });
+    const next = projectReducer(analyzed, { type: 'SET_AUDIO_SOURCE', sourceHint });
     expect(next.analysis).toBeNull();
     expect(next.name).toBe('Naomi');
+    expect(next.sourceHint).toEqual(sourceHint);
   });
 
   it('updates engine parameters without mutating the prior project', () => {
