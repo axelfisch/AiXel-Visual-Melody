@@ -40,6 +40,10 @@ export type Database = {
       create_brand_preset: { Args: { payload: Json }; Returns: Omit<BrandPresetRow, 'user_id'>[] };
       update_brand_preset: { Args: { preset_id: string; expected_revision: number; payload: Json }; Returns: Omit<BrandPresetRow, 'user_id'>[] };
       delete_brand_preset: { Args: { preset_id: string; expected_revision: number }; Returns: undefined };
+      reserve_checkout_attempt: { Args: { requested_catalog_key: string }; Returns: { attempt_id: string | null; action: string; checkout_url: string | null; stripe_session_id: string | null; stripe_customer_id: string | null; replaces_session_id: string | null }[] };
+      attach_checkout_customer: { Args: { attempt_id: string; customer_id: string }; Returns: undefined };
+      finalize_checkout_attempt: { Args: { attempt_id: string; session_id: string; session_url: string; expires_at: string }; Returns: undefined };
+      fail_checkout_attempt: { Args: { attempt_id: string }; Returns: undefined };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;
