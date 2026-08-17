@@ -4,14 +4,15 @@ import type {
   EngineParameterValue,
   ExportSettings,
   ProjectAnalysis,
-  ProjectAudio,
+  ProjectSourceHint,
   VisualMelodyProject,
 } from './project.types';
 
 export type ProjectAction =
   | { type: 'CREATE_PROJECT'; name?: string }
   | { type: 'RENAME_PROJECT'; name: string }
-  | { type: 'SET_AUDIO_SOURCE'; audio: ProjectAudio }
+  | { type: 'SET_ARTIST_NAME'; artistName: string | null }
+  | { type: 'SET_AUDIO_SOURCE'; sourceHint: ProjectSourceHint }
   | { type: 'ANALYSIS_STARTED' }
   | { type: 'ANALYSIS_COMPLETED'; analysis: ProjectAnalysis }
   | { type: 'ANALYSIS_FAILED' }
@@ -36,8 +37,17 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
       return createProject(action.name);
     case 'RENAME_PROJECT':
       return touched({ ...project, name: action.name.trim() || project.name });
+    case 'SET_ARTIST_NAME': {
+      const artistName = action.artistName?.trim() ?? '';
+      return touched({ ...project, artistName: artistName || null });
+    }
     case 'SET_AUDIO_SOURCE':
-      return touched({ ...project, name: action.audio.fileName.replace(/\.[^.]+$/, ''), audio: action.audio, analysis: null });
+      return touched({
+        ...project,
+        name: action.sourceHint.fileName.replace(/\.[^.]+$/, ''),
+        sourceHint: action.sourceHint,
+        analysis: null,
+      });
     case 'ANALYSIS_STARTED':
     case 'ANALYSIS_FAILED':
       return project;

@@ -2,8 +2,10 @@ import { Download, FileAudio, Pause, Play, Volume2, VolumeX } from 'lucide-react
 import { formatTime } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import { EngineCanvas } from '../engines/EngineCanvas';
+import { EngineCanvas, PREVIEW_FRAME } from '../engines/EngineCanvas';
 import { getEngineOrDefault } from '../engines/engine.registry';
+import { useCapabilities } from '../entitlements';
+import { EXPORT_RESOLUTIONS, frameLabel, isResolutionAllowed, resolutionOf } from '../export/exportFormats';
 import { useLocale } from '../i18n/LocaleContext';
 import { useSynchronizedPlayback } from '../preview/useSynchronizedPlayback';
 import { useProject } from '../project/project.context';
@@ -20,10 +22,13 @@ export function PreviewScreen({
   onAutoPlayHandled: () => void;
 }) {
   const { locale, t } = useLocale();
-  const { project } = useProject();
+  const { project, runtime } = useProject();
+  const capabilities = useCapabilities();
   const engine = getEngineOrDefault(project.engine.engineId);
-  const audioUrl = project.audio?.objectUrl ?? null;
-  const duration = project.audio?.duration ?? 0;
+  const audioUrl = runtime.objectUrl;
+  const duration = project.sourceHint?.duration ?? 0;
+  // The label must describe the canvas that is actually on screen.
+  const previewResolution = resolutionOf(PREVIEW_FRAME);
   const playback = useSynchronizedPlayback({
     source: audioUrl,
     sourceDuration: duration,
@@ -52,7 +57,7 @@ export function PreviewScreen({
             ? 'Light glides like electric velvet through the night.'
             : 'The record reacts to the real energy of the signal.');
 
-  if (!canPreview(project) || !project.analysis || !project.audio) {
+  if (!canPreview(project, runtime) || !project.analysis || !project.sourceHint) {
     return (
       <section className="screen preview-screen">
         <GlassPanel className="preview-empty">
@@ -139,7 +144,21 @@ export function PreviewScreen({
         </div>
 
         <div className="quality" aria-label={t('previewQuality')}>
-          <button className="selected">1080p</button>
+          {EXPORT_RESOLUTIONS.map((resolution) => {
+            const active = resolution === previewResolution;
+            const allowed = isResolutionAllowed(resolution, capabilities);
+            return (
+              <button
+                className={active ? 'selected' : ''}
+                key={resolution}
+                disabled={!active}
+                title={active ? frameLabel(PREVIEW_FRAME) : allowed ? t('futureVersion') : t('creatorProOnly')}
+              >
+                {resolution}
+                {!allowed && <em className="pro-tag">{t('proTag')}</em>}
+              </button>
+            );
+          })}
           <button disabled title={t('futureVersion')}>4K</button>
           <button disabled title={t('futureVersion')}>8K</button>
         </div>

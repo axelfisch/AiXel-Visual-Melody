@@ -1,7 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { energyAt } from '../audio';
+import { dimensionsFor, type FrameSize } from '../export/exportFormats';
 import type { ProjectAnalysis } from '../project/project.types';
 import type { VisualEngine } from './engine.types';
+
+/**
+ * The real size of the live preview surface. Anything that labels the preview
+ * derives from this value so the label can never drift from the pixels.
+ */
+export const PREVIEW_FRAME: FrameSize = dimensionsFor('720p', '16:9');
 
 export function EngineCanvas({
   analysis,
@@ -39,5 +46,12 @@ export function EngineCanvas({
     );
   }, [analysis, config, duration, engine, time, title]);
 
-  return <canvas className="real-preview-canvas" ref={canvasRef} width={1280} height={720} />;
+  return (
+    <canvas
+      className="real-preview-canvas"
+      ref={canvasRef}
+      width={PREVIEW_FRAME.width}
+      height={PREVIEW_FRAME.height}
+    />
+  );
 }

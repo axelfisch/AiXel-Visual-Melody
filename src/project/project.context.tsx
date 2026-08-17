@@ -15,7 +15,11 @@ const ProjectContext = createContext<ProjectContextValue | null>(null);
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
   const [project, dispatch] = useReducer(projectReducer, undefined, () => createProject());
-  const [runtime, setRuntime] = useState<ProjectRuntime>({ sourceFile: null, decodedAudio: null });
+  const [runtime, setRuntime] = useState<ProjectRuntime>({
+    sourceFile: null,
+    decodedAudio: null,
+    objectUrl: null,
+  });
   const objectUrlRef = useRef<string | null>(null);
 
   const revokeCurrentUrl = useCallback(() => {
@@ -29,10 +33,17 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     revokeCurrentUrl();
     const objectUrl = URL.createObjectURL(file);
     objectUrlRef.current = objectUrl;
-    setRuntime({ sourceFile: file, decodedAudio: result.decodedAudio });
+    // The `File`, the decoded buffer, and the object URL live only here.
+    setRuntime({ sourceFile: file, decodedAudio: result.decodedAudio, objectUrl });
     dispatch({
       type: 'SET_AUDIO_SOURCE',
-      audio: { fileName: file.name, mimeType: file.type, size: file.size, duration: result.duration, objectUrl },
+      sourceHint: {
+        fileName: file.name,
+        mimeType: file.type,
+        size: file.size,
+        duration: result.duration,
+        sha256: null,
+      },
     });
     dispatch({ type: 'ANALYSIS_COMPLETED', analysis: result.analysis });
     return objectUrl;
