@@ -10,4 +10,6 @@ const localStorageMock: Storage = {
   setItem: (key, value) => { values.set(key, String(value)); },
 };
 
-Object.defineProperty(window, 'localStorage', { configurable: true, value: localStorageMock });
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'localStorage', { configurable: true, value: localStorageMock });
+}

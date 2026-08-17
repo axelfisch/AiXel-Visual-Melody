@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import type { AnalyzeAudioResult } from '../audio';
+import { analyzeAudioFile, type AnalyzeAudioResult } from '../audio';
+import { verifyContinuationSource } from '../continuation';
 import { createProject } from './project.defaults';
 import { projectReducer, type ProjectAction } from './project.reducer';
 import type { ProjectRuntime, VisualMelodyProject } from './project.types';
@@ -9,6 +10,8 @@ type ProjectContextValue = {
   runtime: ProjectRuntime;
   dispatch: React.Dispatch<ProjectAction>;
   setAnalyzedAudio: (file: File, result: AnalyzeAudioResult) => string;
+  loadProject: (project: VisualMelodyProject) => void;
+  restoreProject: (project: VisualMelodyProject, sourceFile: File | null) => Promise<boolean>;
 };
 
 const ProjectContext = createContext<ProjectContextValue | null>(null);
@@ -49,7 +52,31 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
     return objectUrl;
   }, [revokeCurrentUrl]);
 
-  const value = useMemo(() => ({ project, runtime, dispatch, setAnalyzedAudio }), [project, runtime, setAnalyzedAudio]);
+  const loadProject = useCallback((nextProject: VisualMelodyProject) => {
+    revokeCurrentUrl();
+    setRuntime({ sourceFile: null, decodedAudio: null, objectUrl: null });
+    dispatch({ type: 'LOAD_PROJECT', project: nextProject });
+  }, [revokeCurrentUrl]);
+
+  const restoreProject = useCallback(async (nextProject: VisualMelodyProject, sourceFile: File | null) => {
+    loadProject(nextProject);
+    if (!sourceFile || !nextProject.sourceHint) return false;
+    try {
+      const result = await analyzeAudioFile(sourceFile);
+      if (!(await verifyContinuationSource(sourceFile, nextProject.sourceHint, result.duration))) return false;
+      const objectUrl = URL.createObjectURL(sourceFile);
+      objectUrlRef.current = objectUrl;
+      setRuntime({ sourceFile, decodedAudio: result.decodedAudio, objectUrl });
+      return true;
+    } catch {
+      return false;
+    }
+  }, [loadProject]);
+
+  const value = useMemo(
+    () => ({ project, runtime, dispatch, setAnalyzedAudio, loadProject, restoreProject }),
+    [project, runtime, setAnalyzedAudio, loadProject, restoreProject],
+  );
   return <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>;
 }
 

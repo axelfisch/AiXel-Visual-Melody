@@ -1177,6 +1177,66 @@ input[type="range"]::-webkit-slider-thumb {
   background: linear-gradient(120deg, #e7c977, #f4e3b0);
 }
 
+.continuation-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(2 5 12 / 78%);
+  backdrop-filter: blur(16px);
+}
+
+.continuation-dialog {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 32px;
+  border: 1px solid rgb(231 201 119 / 28%);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgb(19 25 46 / 98%), rgb(7 10 20 / 98%));
+  box-shadow: 0 28px 90px rgb(0 0 0 / 55%);
+}
+
+.continuation-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.continuation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.continuation-notice {
+  position: fixed;
+  z-index: 80;
+  top: 92px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: min(680px, calc(100% - 32px));
+  padding: 14px 18px;
+  border: 1px solid rgb(231 201 119 / 30%);
+  border-radius: 14px;
+  color: #f4e3b0;
+  background: rgb(12 17 31 / 96%);
+  box-shadow: 0 18px 55px rgb(0 0 0 / 40%);
+  transform: translateX(-50%);
+}
+
+.continuation-notice button {
+  margin-left: auto;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
 .render-preview {
   display: block;
   width: 100%;
