@@ -113,6 +113,28 @@ describe('ContinuationRepository', () => {
     })).status).toBe('account_mismatch');
   });
 
+  it('releases account-bound drafts on sign-out without deleting anonymous work', async () => {
+    const file = new File(['audio'], 'naomi.wav', { type: 'audio/wav' });
+    const saved = await repository().saveDraft({
+      project: projectWithSource(file),
+      sourceFile: null,
+      returnIntent: { screen: 'export', action: 'confirm_export' },
+      origin: 'https://visualmelody.example',
+    });
+    await repository().resolveDraft(saved.draftId, {
+      origin: 'https://visualmelody.example',
+      userId: 'user-a',
+      confirmAnonymousBinding: true,
+    });
+
+    expect(await repository().releaseUserBindings('user-b')).toBe(0);
+    expect(await repository().releaseUserBindings('user-a')).toBe(1);
+    expect((await repository().resolveDraft(saved.draftId, {
+      origin: 'https://visualmelody.example',
+      userId: null,
+    })).status).toBe('ready');
+  });
+
   it('logically rejects and physically purges expired drafts', async () => {
     const file = new File(['audio'], 'naomi.wav', { type: 'audio/wav' });
     const saved = await repository().saveDraft({

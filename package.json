@@ -8,9 +8,15 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "supabase:start": "supabase start",
+    "supabase:reset": "supabase db reset",
+    "supabase:test": "supabase test db",
+    "supabase:lint": "supabase db lint --local",
+    "supabase:types": "supabase gen types typescript --local > src/supabase/database.types.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "@vitejs/plugin-react": "^4.3.4",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
@@ -26,6 +32,7 @@
     "@types/react-dom": "^18.3.5",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.1.1",
+    "supabase": "^2.114.0",
     "vitest": "^4.1.10"
   }
 }

@@ -1237,6 +1237,42 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 
+.account-control {
+  position: relative;
+}
+
+.account-popover {
+  position: absolute;
+  z-index: 90;
+  top: calc(100% + 14px);
+  right: 0;
+  width: min(360px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 18px;
+  background: rgb(10 14 27 / 98%);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 52%);
+}
+
+.account-popover form {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 10px;
+}
+
+.account-popover input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 10px;
+  color: white;
+  background: rgb(255 255 255 / 6%);
+}
+
+.account-popover .full + .full {
+  margin-top: 10px;
+}
+
 .render-preview {
   display: block;
   width: 100%;

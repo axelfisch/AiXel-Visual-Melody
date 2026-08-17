@@ -29,7 +29,12 @@ import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
 import { AUDIO_FILE_ACCEPT, analyzeAudioFile, formatTime, type AnalyzeAudioResult, type AudioAnalysis } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import { continuationDraftId, ContinuationRepository } from '../continuation';
+import {
+  continuationDraftId,
+  ContinuationAccountConfirmation,
+  ContinuationRepository,
+  type ContinuationDraft,
+} from '../continuation';
 import { getEngineOrDefault } from '../engines/engine.registry';
 import { useLocale } from '../i18n/LocaleContext';
 import {
@@ -43,6 +48,7 @@ import {
   type DirectorState,
 } from '../director';
 import { useProject } from '../project/project.context';
+import { AccountControl, useSession } from '../session';
 import type { EngineParameterValue } from '../project/project.types';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
@@ -157,40 +163,83 @@ const spectrum = Array.from({ length: 44 }, (_, i) => 16 + Math.abs(Math.sin(i *
 
 export function App() {
   const { t } = useLocale();
+  const session = useSession();
   const { screen, navigate } = useHashNavigation();
   const { project, runtime, dispatch, setAnalyzedAudio, restoreProject } = useProject();
   const [goldenBusy, setGoldenBusy] = useState(false);
   const [goldenError, setGoldenError] = useState('');
   const [autoPlayPreview, setAutoPlayPreview] = useState(false);
-  const [continuationNotice, setContinuationNotice] = useState<'restored' | 'source_required' | ''>('');
+  const [continuationNotice, setContinuationNotice] = useState<'restored' | 'source_required' | 'account_mismatch' | ''>('');
+  const [pendingContinuationId, setPendingContinuationId] = useState<string | null>(null);
+  const [continuationBusy, setContinuationBusy] = useState(false);
+
+  const cleanContinuationUrl = () => {
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('continuation');
+    window.history.replaceState(null, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+  };
+
+  const applyContinuationDraft = async (draft: ContinuationDraft) => {
+    const restoredAudio = await restoreProject(draft.project, draft.sourceFile);
+    setContinuationNotice(restoredAudio ? 'restored' : 'source_required');
+    navigate(restoredAudio ? draft.returnIntent.screen : 'analyze');
+    cleanContinuationUrl();
+  };
 
   useEffect(() => {
     const draftId = continuationDraftId(window.location.href);
-    if (!draftId || !globalThis.indexedDB) return;
+    if (!draftId || !globalThis.indexedDB || session.status === 'loading') return;
     let cancelled = false;
     const restore = async () => {
       try {
         const repository = new ContinuationRepository();
         const resolution = await repository.resolveDraft(draftId, {
           origin: window.location.origin,
-          userId: null,
+          userId: session.user?.id ?? null,
         });
-        if (cancelled || resolution.status !== 'ready') return;
-        const restoredAudio = await restoreProject(resolution.draft.project, resolution.draft.sourceFile);
         if (cancelled) return;
-        setContinuationNotice(restoredAudio ? 'restored' : 'source_required');
-        navigate(restoredAudio ? resolution.draft.returnIntent.screen : 'analyze');
+        if (resolution.status === 'confirmation_required') {
+          setPendingContinuationId(draftId);
+          return;
+        }
+        if (resolution.status === 'account_mismatch') {
+          setContinuationNotice('account_mismatch');
+          cleanContinuationUrl();
+          return;
+        }
+        if (resolution.status === 'missing') {
+          cleanContinuationUrl();
+          return;
+        }
+        if (resolution.status === 'ready') await applyContinuationDraft(resolution.draft);
       } catch {
         // Storage may be unavailable or the draft may be corrupt; Free remains usable.
-      } finally {
-        const cleanUrl = new URL(window.location.href);
-        cleanUrl.searchParams.delete('continuation');
-        window.history.replaceState(null, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+        cleanContinuationUrl();
       }
     };
     void restore();
     return () => { cancelled = true; };
-  }, [navigate, restoreProject]);
+  }, [navigate, restoreProject, session.status, session.user?.id]);
+
+  const confirmContinuationAccount = async () => {
+    if (!pendingContinuationId || !session.user) return;
+    setContinuationBusy(true);
+    try {
+      const repository = new ContinuationRepository();
+      const resolution = await repository.resolveDraft(pendingContinuationId, {
+        origin: window.location.origin,
+        userId: session.user.id,
+        confirmAnonymousBinding: true,
+      });
+      if (resolution.status === 'ready') await applyContinuationDraft(resolution.draft);
+      setPendingContinuationId(null);
+    } catch {
+      setPendingContinuationId(null);
+      cleanContinuationUrl();
+    } finally {
+      setContinuationBusy(false);
+    }
+  };
 
   const engine = useMemo(
     () => engines.find((item) => item.id === project.engine.engineId) ?? engines[4],
@@ -271,9 +320,29 @@ export function App() {
     >
       <CosmicBackground />
       <TopNavigation current={screen} onNavigate={navigate} />
+      {pendingContinuationId && session.user && (
+        <ContinuationAccountConfirmation
+          accountLabel={session.user.email ?? t('authAccount')}
+          busy={continuationBusy}
+          onCancel={() => { setPendingContinuationId(null); cleanContinuationUrl(); }}
+          onClear={() => {
+            setContinuationBusy(true);
+            void Promise.resolve().then(() => new ContinuationRepository().clearDraft(pendingContinuationId)).finally(() => {
+              setPendingContinuationId(null);
+              setContinuationBusy(false);
+              cleanContinuationUrl();
+            });
+          }}
+          onConfirm={() => void confirmContinuationAccount()}
+        />
+      )}
       {continuationNotice && (
         <div className="continuation-notice" role="status">
-          {t(continuationNotice === 'restored' ? 'continuationRestored' : 'continuationSourceRequired')}
+          {t(continuationNotice === 'restored'
+            ? 'continuationRestored'
+            : continuationNotice === 'source_required'
+              ? 'continuationSourceRequired'
+              : 'continuationAccountMismatch')}
           <button aria-label={t('dismiss')} onClick={() => setContinuationNotice('')}>×</button>
         </div>
       )}
@@ -385,6 +454,7 @@ function TopNavigation({ current, onNavigate }: { current: Screen; onNavigate: (
       <button className="icon-button" onClick={() => onNavigate('settings')} aria-label={t('settings')}>
         <Settings size={17} />
       </button>
+      <AccountControl />
     </header>
   );
 }

@@ -1,0 +1,1 @@
+-- Intentionally empty. Auth identities for tests are created inside pgTAP transactions.
