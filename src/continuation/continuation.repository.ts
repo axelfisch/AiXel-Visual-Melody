@@ -320,4 +320,28 @@ export class ContinuationRepository {
       database.close();
     }
   }
+
+  async releaseUserBindings(userId: string): Promise<number> {
+    const database = await this.open();
+    try {
+      const transaction = database.transaction(DRAFT_STORE, 'readwrite');
+      const store = transaction.objectStore(DRAFT_STORE);
+      const drafts = await requestResult(store.getAll());
+      let released = 0;
+      for (const rawDraft of drafts) {
+        if (isDraftRecord(rawDraft) && rawDraft.binding.kind === 'user' && rawDraft.binding.userId === userId) {
+          store.put({
+            ...rawDraft,
+            binding: { kind: 'anonymous', nonce: opaqueId(this.randomBytes) },
+            lastAccessedAt: new Date(this.now()).toISOString(),
+          });
+          released += 1;
+        }
+      }
+      await transactionDone(transaction);
+      return released;
+    } finally {
+      database.close();
+    }
+  }
 }

@@ -4,16 +4,19 @@ import { purgeContinuationOnStartup } from './continuation';
 import { EntitlementProvider } from './entitlements';
 import { LocaleProvider } from './i18n/LocaleContext';
 import { ProjectProvider } from './project/project.context';
+import { SessionProvider } from './session';
 import './styles.css';
 
 void purgeContinuationOnStartup();
 
 createRoot(document.getElementById('root')!).render(
   <LocaleProvider>
-    <EntitlementProvider>
-      <ProjectProvider>
-        <App />
-      </ProjectProvider>
-    </EntitlementProvider>
+    <SessionProvider>
+      <EntitlementProvider>
+        <ProjectProvider>
+          <App />
+        </ProjectProvider>
+      </EntitlementProvider>
+    </SessionProvider>
   </LocaleProvider>,
 );
