@@ -44,6 +44,12 @@ export type Database = {
       attach_checkout_customer: { Args: { attempt_id: string; customer_id: string }; Returns: undefined };
       finalize_checkout_attempt: { Args: { attempt_id: string; session_id: string; session_url: string; expires_at: string }; Returns: undefined };
       fail_checkout_attempt: { Args: { attempt_id: string }; Returns: undefined };
+      claim_stripe_event: { Args: { event_id: string; event_type: string; event_created_at: string }; Returns: boolean };
+      finish_stripe_event: { Args: { event_id: string; error_code?: string | null }; Returns: undefined };
+      apply_billing_snapshot: { Args: { event_id: string; customer_id: string; subscription_snapshot: Json; invoice_snapshot: Json }; Returns: undefined };
+      list_duplicate_remediations: { Args: Record<never,never>; Returns: { stripe_customer_id: string; stripe_subscription_id: string }[] };
+      finish_duplicate_remediation: { Args: { subscription_id: string; outcome: string }; Returns: undefined };
+      list_billing_reconciliations: { Args: Record<never,never>; Returns: { stripe_customer_id: string; stripe_subscription_id: string }[] };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;
