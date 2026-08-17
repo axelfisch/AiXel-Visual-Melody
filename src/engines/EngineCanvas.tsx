@@ -17,6 +17,7 @@ export function EngineCanvas({
   engine,
   time,
   title,
+  frame = PREVIEW_FRAME,
 }: {
   analysis: ProjectAnalysis;
   config?: unknown;
@@ -24,6 +25,7 @@ export function EngineCanvas({
   engine: VisualEngine;
   time: number;
   title: string;
+  frame?: FrameSize;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -44,14 +46,14 @@ export function EngineCanvas({
       },
       engine.validateConfig(config ?? engine.defaultConfig),
     );
-  }, [analysis, config, duration, engine, time, title]);
+  }, [analysis, config, duration, engine, frame.height, frame.width, time, title]);
 
   return (
     <canvas
       className="real-preview-canvas"
       ref={canvasRef}
-      width={PREVIEW_FRAME.width}
-      height={PREVIEW_FRAME.height}
+      width={frame.width}
+      height={frame.height}
     />
   );
 }

@@ -6,7 +6,7 @@ import { useCapabilities } from '../entitlements';
 import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
-import { EXPORT_END_CARD_DURATION } from '../export/endCard';
+import { endCardDuration } from '../export/endCard';
 import {
   EXPORT_ASPECT_RATIOS,
   EXPORT_END_CARD_MODES,
@@ -18,6 +18,8 @@ import {
   isResolutionAllowed,
   resolutionOf,
 } from '../export/exportFormats';
+import { settingsForOutput } from '../export/outputProfiles';
+import { browserExportEnvironment, preflightExport } from '../export/preflight';
 import { useLocale } from '../i18n/LocaleContext';
 import { renderMp4 } from '../export/renderMp4';
 import type { ExportSettings, ProjectEndCardMode } from '../project/project.types';
@@ -42,12 +44,18 @@ export function ExportScreen({
   engineConfig,
   previewBackground,
   settings,
+  projectName,
+  artistName,
+  onSettingsChange,
 }: {
   analysis: AudioAnalysis | null;
   engine?: VisualEngine;
   engineConfig?: unknown;
   previewBackground: string;
   settings: ExportSettings;
+  projectName?: string;
+  artistName?: string | null;
+  onSettingsChange?: (settings: Partial<ExportSettings>) => void;
 }) {
   const { t } = useLocale();
   const capabilities = useCapabilities();
@@ -60,6 +68,7 @@ export function ExportScreen({
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
+  const cardDuration = endCardDuration(settings.endCardMode);
 
   useEffect(() => () => {
     if (completedExport) URL.revokeObjectURL(completedExport.url);
@@ -90,7 +99,9 @@ export function ExportScreen({
       case 'failed':
         return errorMessage || t('failedExport');
       default:
-        return `${formatTime(analysis.duration)} + ${t('aixelCredits')} ${EXPORT_END_CARD_DURATION} s`;
+        return cardDuration > 0
+          ? `${formatTime(analysis.duration)} + ${endCardLabels[settings.endCardMode]} ${cardDuration} s`
+          : `${formatTime(analysis.duration)} · ${t('endCardClean')}`;
     }
   })();
 
@@ -104,6 +115,12 @@ export function ExportScreen({
     }
 
     const mimeType = getSupportedMp4MimeType();
+    const preflight = preflightExport(settings, analysis.duration, browserExportEnvironment(canvas, mimeType));
+    if (!preflight.ok) {
+      setErrorMessage(preflight.message);
+      setState(preflight.code === 'unsupported_codec' ? 'unsupported' : 'failed');
+      return;
+    }
     if (!mimeType) {
       setState('unsupported');
       return;
@@ -113,7 +130,7 @@ export function ExportScreen({
     abortControllerRef.current = controller;
     setProgress(0);
     setRenderedTime(0);
-    setRenderDuration(analysis.duration + EXPORT_END_CARD_DURATION);
+    setRenderDuration(analysis.duration + cardDuration);
     setErrorMessage('');
     setState('rendering');
 
@@ -126,6 +143,10 @@ export function ExportScreen({
         mimeType,
         canvas,
         signal: controller.signal,
+        endCardCredits: {
+          artistName: artistName?.trim() || t('independentArtist'),
+          trackName: projectName?.trim() || analysis.name,
+        },
         onProgress: ({ progress: value, renderedTime: time, duration }) => {
           setProgress(value);
           setRenderedTime(time);
@@ -140,7 +161,7 @@ export function ExportScreen({
       setCompletedExport(completedExport);
       downloadExport(completedExport);
       setProgress(1);
-      setRenderedTime(analysis.duration + EXPORT_END_CARD_DURATION);
+      setRenderedTime(analysis.duration + cardDuration);
       setState('completed');
     } catch (reason) {
       if (reason instanceof DOMException && reason.name === 'AbortError') {
@@ -181,6 +202,10 @@ export function ExportScreen({
             }))}
             proLabel={t('proTag')}
             proTitle={t('creatorProOnly')}
+            onSelect={(id) => {
+              const resolution = id as (typeof EXPORT_RESOLUTIONS)[number];
+              onSettingsChange?.(settingsForOutput(settings, resolution, settings.aspectRatio));
+            }}
           />
           <OutputOptions
             label={t('outputAspectRatio')}
@@ -192,6 +217,11 @@ export function ExportScreen({
             }))}
             proLabel={t('proTag')}
             proTitle={t('creatorProOnly')}
+            onSelect={(id) => {
+              const aspectRatio = id as ExportSettings['aspectRatio'];
+              const resolution = resolutionOf(settings) ?? '720p';
+              onSettingsChange?.(settingsForOutput(settings, resolution, aspectRatio));
+            }}
           />
           <OutputOptions
             label={t('outputEndCard')}
@@ -203,6 +233,7 @@ export function ExportScreen({
             }))}
             proLabel={t('proTag')}
             proTitle={t('creatorProOnly')}
+            onSelect={(id) => onSettingsChange?.({ endCardMode: id as ProjectEndCardMode })}
           />
           <p className="muted">{t('currentOutput')} {frameLabel(settings)} · {settings.aspectRatio} · {endCardLabels[settings.endCardMode]}</p>
         </GlassPanel>
@@ -264,11 +295,13 @@ function OutputOptions({
   options,
   proLabel,
   proTitle,
+  onSelect,
 }: {
   label: string;
   options: OutputOption[];
   proLabel: string;
   proTitle: string;
+  onSelect: (id: string) => void;
 }) {
   return (
     <div className="output-options" role="group" aria-label={label}>
@@ -279,6 +312,7 @@ function OutputOptions({
             aria-pressed={option.selected}
             className={option.selected ? 'selected' : ''}
             disabled={!option.allowed}
+            onClick={() => onSelect(option.id)}
             key={option.id}
             title={option.allowed ? option.label : proTitle}
           >

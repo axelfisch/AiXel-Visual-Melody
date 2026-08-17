@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AudioAnalysis } from '../audio';
 import { CosmicWavesEngine } from '../engines/cosmic-waves/CosmicWavesEngine';
+import { EntitlementProvider, entitlementSnapshotFor } from '../entitlements';
 import { LocaleProvider } from '../i18n/LocaleContext';
 import { DEFAULT_EXPORT_SETTINGS } from '../project/project.defaults';
 import { ExportScreen } from './ExportScreen';
@@ -10,6 +11,7 @@ import { ExportScreen } from './ExportScreen';
 const mocks = vi.hoisted(() => ({
   getSupportedMp4MimeType: vi.fn(),
   renderMp4: vi.fn(),
+  preflightExport: vi.fn(),
 }));
 
 vi.mock('../export/mediaRecorderSupport', () => ({
@@ -18,6 +20,11 @@ vi.mock('../export/mediaRecorderSupport', () => ({
 
 vi.mock('../export/renderMp4', () => ({
   renderMp4: mocks.renderMp4,
+}));
+
+vi.mock('../export/preflight', () => ({
+  browserExportEnvironment: vi.fn(() => ({})),
+  preflightExport: mocks.preflightExport,
 }));
 
 const analysis = {
@@ -40,6 +47,8 @@ beforeEach(() => {
   localStorage.setItem('aixel-visual-melody-locale', 'fr');
   mocks.getSupportedMp4MimeType.mockReset();
   mocks.renderMp4.mockReset();
+  mocks.preflightExport.mockReset();
+  mocks.preflightExport.mockReturnValue({ ok: true, estimatedWorkingBytes: 1 });
   mocks.getSupportedMp4MimeType.mockReturnValue('video/mp4');
   Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: vi.fn(() => 'blob:export') });
   Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: vi.fn() });
@@ -114,6 +123,11 @@ describe('ExportScreen', () => {
   it('reports unsupported and failed renders without changing the layout', async () => {
     const user = userEvent.setup();
     mocks.getSupportedMp4MimeType.mockReturnValueOnce(null);
+    mocks.preflightExport.mockReturnValueOnce({
+      ok: false,
+      code: 'unsupported_codec',
+      message: 'Unsupported codec',
+    });
     const view = renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
 
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
@@ -125,5 +139,30 @@ describe('ExportScreen', () => {
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
 
     await waitFor(() => expect(screen.getByText('Échec simulé.')).toBeInTheDocument());
+  });
+
+  it('applies real dimensions and encoding profile when a verified Pro user selects 1080p', async () => {
+    const onSettingsChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <EntitlementProvider snapshot={entitlementSnapshotFor('pro_active')}>
+          <ExportScreen
+            analysis={analysis}
+            onSettingsChange={onSettingsChange}
+            previewBackground="#05060b"
+            settings={DEFAULT_EXPORT_SETTINGS}
+          />
+        </EntitlementProvider>
+      </LocaleProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: '1080p' }));
+    expect(onSettingsChange).toHaveBeenCalledWith(expect.objectContaining({
+      width: 1920,
+      height: 1080,
+      frameRate: 30,
+      videoBitRate: 12_000_000,
+    }));
   });
 });

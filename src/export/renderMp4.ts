@@ -3,7 +3,7 @@ import type { VisualEngine } from '../engines/engine.types';
 import type { ExportSettings } from '../project/project.types';
 import {
   DEFAULT_END_CARD_CREDITS,
-  EXPORT_END_CARD_DURATION,
+  endCardDuration,
   renderEndCard,
   type EndCardCredits,
 } from './endCard';
@@ -54,7 +54,8 @@ export async function renderMp4({
   if (!context) throw new Error("Le canevas d’export n’est pas disponible.");
 
   const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
-  const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
+  const cardDuration = endCardDuration(settings.endCardMode);
+  const totalDuration = analysis.duration + cardDuration;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
   const renderInitialFrame = () => engine.render(
     { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
@@ -146,13 +147,14 @@ export async function renderMp4({
               },
               config,
             );
-          } else {
+          } else if (cardDuration > 0) {
             renderEndCard({
               context,
               width: canvas.width,
               height: canvas.height,
               elapsed: renderedTime - analysis.duration,
-              duration: EXPORT_END_CARD_DURATION,
+              duration: cardDuration,
+              mode: settings.endCardMode === 'artist' ? 'artist' : 'aixel',
               ...credits,
             });
           }

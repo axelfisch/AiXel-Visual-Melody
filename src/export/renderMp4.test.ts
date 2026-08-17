@@ -136,7 +136,7 @@ describe('renderMp4', () => {
     expect(canvas.height).toBe(720);
     expect(engine.render).toHaveBeenCalledTimes(3);
     expect(context.fillText).toHaveBeenCalledWith('AiXel Visual Melody', 640, expect.any(Number));
-    expect(context.fillText).toHaveBeenCalledWith('Music by Axel Fisch', 640, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('Music by Independent Artist', 640, expect.any(Number));
     expect(onProgress).toHaveBeenLastCalledWith(expect.objectContaining({
       progress: 1,
       renderedTime: 4,
@@ -144,6 +144,56 @@ describe('renderMp4', () => {
       canvas,
     }));
     expect(FakeAudioContext.latest?.close).toHaveBeenCalledOnce();
+  });
+
+  it('omits every end-card frame for clean exports', async () => {
+    vi.stubGlobal('AudioContext', FakeAudioContext);
+    vi.stubGlobal('MediaStream', FakeMediaStream);
+    vi.stubGlobal('MediaRecorder', FakeMediaRecorder);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      if (!FakeAudioContext.latest) throw new Error('AudioContext was not created.');
+      FakeAudioContext.latest.currentTime += 1;
+      callback(0);
+      return 1;
+    });
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const context = fakeContext();
+
+    await renderMp4({
+      analysis,
+      engine,
+      settings: { ...DEFAULT_EXPORT_SETTINGS, endCardMode: 'clean' },
+      mimeType: 'video/mp4',
+      canvas: fakeCanvas(undefined, context),
+    });
+
+    expect(context.fillText).not.toHaveBeenCalledWith('AiXel Visual Melody', expect.any(Number), expect.any(Number));
+  });
+
+  it('renders artist identity and track title for configured artist branding', async () => {
+    vi.stubGlobal('AudioContext', FakeAudioContext);
+    vi.stubGlobal('MediaStream', FakeMediaStream);
+    vi.stubGlobal('MediaRecorder', FakeMediaRecorder);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      if (!FakeAudioContext.latest) throw new Error('AudioContext was not created.');
+      FakeAudioContext.latest.currentTime += 1;
+      callback(0);
+      return 1;
+    });
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const context = fakeContext();
+
+    await renderMp4({
+      analysis,
+      engine,
+      settings: { ...DEFAULT_EXPORT_SETTINGS, endCardMode: 'artist' },
+      endCardCredits: { artistName: 'Naomi', trackName: 'New Light' },
+      mimeType: 'video/mp4',
+      canvas: fakeCanvas(undefined, context),
+    });
+
+    expect(context.fillText).toHaveBeenCalledWith('Naomi', 640, expect.any(Number));
+    expect(context.fillText).toHaveBeenCalledWith('New Light', 640, expect.any(Number));
   });
 
   it('rejects an already-cancelled render before allocating browser resources', async () => {
