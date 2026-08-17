@@ -115,3 +115,7 @@ export function useSession(): SessionContextValue {
   if (!context) throw new Error('useSession must be used inside SessionProvider.');
   return context;
 }
+
+export function useOptionalSession(): Pick<SessionContextValue, 'status' | 'user' | 'available'> {
+  return useContext(SessionContext) ?? { status: 'anonymous', user: null, available: false };
+}
