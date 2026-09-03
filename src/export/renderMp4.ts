@@ -7,6 +7,7 @@ import {
   renderEndCard,
   type EndCardCredits,
 } from './endCard';
+import { drawWatermark } from './watermark';
 
 export type RenderMp4Progress = {
   progress: number;
@@ -56,25 +57,27 @@ export async function renderMp4({
   const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
-  const renderInitialFrame = () => engine.render(
-    { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-    {
-      time: 0,
-      duration: analysis.duration,
-      progress: 0,
-      energy: energyAt(analysis, 0),
-      bpm: analysis.bpm,
-      title: analysis.name,
-    },
-    config,
-  );
+  const stampWatermark = () => {
+    if (settings.watermark) drawWatermark(context, canvas.width, canvas.height);
+  };
+  const renderInitialFrame = () => {
+    engine.render(
+      { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
+      {
+        time: 0,
+        duration: analysis.duration,
+        progress: 0,
+        energy: energyAt(analysis, 0),
+        bpm: analysis.bpm,
+        title: analysis.name,
+      },
+      config,
+    );
+    stampWatermark();
+  };
   renderInitialFrame();
   onProgress?.({ progress: 0, renderedTime: 0, duration: totalDuration, canvas });
 
-  // Seed the canvas before captureStream/MediaRecorder initialization. On a fresh
-  // HTTPS deployment, some browsers otherwise produce a first MP4 with audio but
-  // no recognized video track; a second export works only because the canvas then
-  // already contains its last rendered frame.
   const audioContext = new AudioContext();
   const destination = audioContext.createMediaStreamDestination();
   const source = audioContext.createBufferSource();
@@ -108,9 +111,6 @@ export async function renderMp4({
 
   try {
     recorder.start(1000);
-    // Paint and explicitly request the first encoded frame after MediaRecorder is
-    // active. This protects a fresh HTTPS session where the pre-capture seed may
-    // not be emitted until a later canvas change, producing an audio-only MP4.
     renderInitialFrame();
     videoTrack?.requestFrame?.();
     source.start();
@@ -146,6 +146,7 @@ export async function renderMp4({
               },
               config,
             );
+            stampWatermark();
           } else {
             renderEndCard({
               context,
