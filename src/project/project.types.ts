@@ -1,4 +1,5 @@
 import type { DirectorMood, DirectorState } from '../director/director.types';
+import type { ExportPresetId } from '../export/formats';
 
 export type ProjectId = string;
 export type ProjectSchemaVersion = 1;
@@ -34,10 +35,12 @@ export type EngineSelection = {
 
 export type ExportSettings = {
   format: 'mp4';
+  presetId: ExportPresetId;
   width: number;
   height: number;
   frameRate: number;
   videoBitRate: number;
+  watermark: boolean;
 };
 
 export type VisualMelodyProject = {

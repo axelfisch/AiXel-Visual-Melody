@@ -1,16 +1,11 @@
 import { DEFAULT_ENGINE_ID } from '../engines/engine.defaults';
 import { directorDefaultState } from '../director/director.profiles';
+import { exportSettingsFromPreset } from '../export/formats';
 import type { ExportSettings, VisualMelodyProject } from './project.types';
 
 export const PROJECT_SCHEMA_VERSION = 1 as const;
 
-export const DEFAULT_EXPORT_SETTINGS: ExportSettings = {
-  format: 'mp4',
-  width: 1280,
-  height: 720,
-  frameRate: 30,
-  videoBitRate: 6_000_000,
-};
+export const DEFAULT_EXPORT_SETTINGS: ExportSettings = exportSettingsFromPreset('720p-widescreen', true);
 
 const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto

@@ -1,5 +1,6 @@
-import { PROJECT_SCHEMA_VERSION } from './project.defaults';
+import { DEFAULT_EXPORT_SETTINGS, PROJECT_SCHEMA_VERSION } from './project.defaults';
 import { directorDefaultState, directorMoodProfiles, validateDirectorState } from '../director/director.profiles';
+import { exportSettingsFromPreset, getExportPreset } from '../export/formats';
 import type { DirectorMood } from '../director/director.types';
 import type { VisualMelodyProject } from './project.types';
 
@@ -9,6 +10,25 @@ export function isSupportedProjectVersion(value: unknown): value is typeof PROJE
 
 export function serializeProject(project: VisualMelodyProject) {
   return JSON.stringify({ ...project, audio: project.audio ? { ...project.audio, objectUrl: null } : null });
+}
+
+function migrateExportSettings(value: VisualMelodyProject['export'] | undefined) {
+  if (!value) return { ...DEFAULT_EXPORT_SETTINGS };
+  const presetId = value.presetId
+    ?? (value.width === 1920 && value.height === 1080
+      ? '1080p-widescreen'
+      : value.width === 1080 && value.height === 1920
+        ? '1080p-vertical'
+        : '720p-widescreen');
+  const preset = getExportPreset(presetId);
+  return {
+    ...exportSettingsFromPreset(preset.id, value.watermark !== false),
+    ...value,
+    presetId: preset.id,
+    width: preset.width,
+    height: preset.height,
+    watermark: value.watermark !== false,
+  };
 }
 
 export function parseProject(serialized: string): VisualMelodyProject {
@@ -34,5 +54,6 @@ export function parseProject(serialized: string): VisualMelodyProject {
         values: validateDirectorState(existingDirector?.values ?? directorMoodProfiles[legacyMood] ?? directorDefaultState),
       },
     },
+    export: migrateExportSettings(project.export),
   };
 }
