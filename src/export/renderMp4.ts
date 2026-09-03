@@ -58,7 +58,7 @@ export async function renderMp4({
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
   const stampWatermark = () => {
-    if (settings.watermark) drawWatermark(context, canvas.width, canvas.height);
+    if (settings.watermark !== false) drawWatermark(context, canvas.width, canvas.height);
   };
   const renderInitialFrame = () => {
     engine.render(
