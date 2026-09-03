@@ -6,6 +6,7 @@ import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
 import { EXPORT_END_CARD_DURATION } from '../export/endCard';
+import { EXPORT_PRESETS, exportSettingsFromPreset, type ExportPresetId } from '../export/formats';
 import { useLocale } from '../i18n/LocaleContext';
 import { renderMp4 } from '../export/renderMp4';
 import type { ExportSettings } from '../project/project.types';
@@ -24,18 +25,26 @@ function downloadExport({ filename, url }: CompletedExport) {
   link.click();
 }
 
+const PRESET_LABELS: Record<ExportPresetId, 'format720' | 'format1080' | 'formatVertical'> = {
+  '720p-widescreen': 'format720',
+  '1080p-widescreen': 'format1080',
+  '1080p-vertical': 'formatVertical',
+};
+
 export function ExportScreen({
   analysis,
   engine = MinimalAlbumArtEngine,
   engineConfig,
   previewBackground,
   settings,
+  onSettingsChange,
 }: {
   analysis: AudioAnalysis | null;
   engine?: VisualEngine;
   engineConfig?: unknown;
   previewBackground: string;
   settings: ExportSettings;
+  onSettingsChange?: (settings: ExportSettings) => void;
 }) {
   const { t } = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,6 +56,7 @@ export function ExportScreen({
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
+  const presetId = settings.presetId ?? '720p-widescreen';
 
   useEffect(() => () => {
     if (completedExport) URL.revokeObjectURL(completedExport.url);
@@ -69,6 +79,11 @@ export function ExportScreen({
         return `${formatTime(analysis.duration)} + ${t('aixelCredits')} ${EXPORT_END_CARD_DURATION} s`;
     }
   })();
+
+  const selectPreset = (id: ExportPresetId) => {
+    if (rendering) return;
+    onSettingsChange?.(exportSettingsFromPreset(id, settings.watermark !== false));
+  };
 
   const exportMp4 = async () => {
     if (!analysis || rendering) return;
@@ -109,8 +124,9 @@ export function ExportScreen({
         },
       });
       const url = URL.createObjectURL(blob);
+      const preset = EXPORT_PRESETS.find((item) => item.id === presetId);
       const completedExport = {
-        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}.mp4`,
+        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}-${preset?.suffix ?? '720p'}.mp4`,
         url,
       };
       setCompletedExport(completedExport);
@@ -143,15 +159,26 @@ export function ExportScreen({
         <GlassPanel className="span-2">
           <div className="panel-heading"><Film size={18} /><h2>{t('formatGrid')}</h2></div>
           <div className="format-grid">
-            <button className="selected">MP4 · 1280 × 720</button>
+            {EXPORT_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                className={presetId === preset.id ? 'selected' : undefined}
+                disabled={rendering}
+                onClick={() => selectPreset(preset.id)}
+                type="button"
+              >
+                {t(PRESET_LABELS[preset.id])}
+              </button>
+            ))}
           </div>
+          <p className="muted watermark-note">{t('watermarkNote')}</p>
         </GlassPanel>
         <GlassPanel>
           <div className="panel-heading"><Gauge size={18} /><h2>{t('renderProgress')}</h2></div>
           <p className="export-focus-notice" role="note"><AlertTriangle size={17} />{t('keepTabActive')}</p>
           <canvas
             aria-label={t('renderedFrame')}
-            className="render-preview"
+            className={`render-preview${presetId === '1080p-vertical' ? ' render-preview-vertical' : ''}`}
             ref={canvasRef}
             width={settings.width}
             height={settings.height}
