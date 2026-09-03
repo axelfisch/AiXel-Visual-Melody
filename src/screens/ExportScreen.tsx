@@ -25,10 +25,10 @@ function downloadExport({ filename, url }: CompletedExport) {
   link.click();
 }
 
-const PRESET_LABELS: Record<ExportPresetId, 'format720' | 'format1080' | 'formatVertical'> = {
-  '720p-widescreen': 'format720',
-  '1080p-widescreen': 'format1080',
-  '1080p-vertical': 'formatVertical',
+const PRESET_LABELS: Record<ExportPresetId, string> = {
+  '720p-widescreen': 'MP4 · 720p 16:9',
+  '1080p-widescreen': 'MP4 · 1080p 16:9',
+  '1080p-vertical': 'MP4 · 1080p 9:16',
 };
 
 export function ExportScreen({
@@ -49,6 +49,7 @@ export function ExportScreen({
   const { t } = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [localSettings, setLocalSettings] = useState<ExportSettings>(settings);
   const [completedExport, setCompletedExport] = useState<CompletedExport | null>(null);
   const [progress, setProgress] = useState(0);
   const [renderedTime, setRenderedTime] = useState(0);
@@ -56,7 +57,12 @@ export function ExportScreen({
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
-  const presetId = settings.presetId ?? '720p-widescreen';
+  const activeSettings = onSettingsChange ? settings : localSettings;
+  const presetId = activeSettings.presetId ?? '720p-widescreen';
+
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
 
   useEffect(() => () => {
     if (completedExport) URL.revokeObjectURL(completedExport.url);
@@ -82,7 +88,9 @@ export function ExportScreen({
 
   const selectPreset = (id: ExportPresetId) => {
     if (rendering) return;
-    onSettingsChange?.(exportSettingsFromPreset(id, settings.watermark !== false));
+    const next = exportSettingsFromPreset(id, activeSettings.watermark !== false);
+    setLocalSettings(next);
+    onSettingsChange?.(next);
   };
 
   const exportMp4 = async () => {
@@ -113,7 +121,7 @@ export function ExportScreen({
         analysis,
         engine,
         engineConfig,
-        settings,
+        settings: activeSettings,
         mimeType,
         canvas,
         signal: controller.signal,
@@ -167,11 +175,11 @@ export function ExportScreen({
                 onClick={() => selectPreset(preset.id)}
                 type="button"
               >
-                {t(PRESET_LABELS[preset.id])}
+                {PRESET_LABELS[preset.id]}
               </button>
             ))}
           </div>
-          <p className="muted watermark-note">{t('watermarkNote')}</p>
+          <p className="muted watermark-note">Filigrane AiXel sur l’export gratuit. L’export propre arrive ensuite.</p>
         </GlassPanel>
         <GlassPanel>
           <div className="panel-heading"><Gauge size={18} /><h2>{t('renderProgress')}</h2></div>
@@ -180,8 +188,8 @@ export function ExportScreen({
             aria-label={t('renderedFrame')}
             className={`render-preview${presetId === '1080p-vertical' ? ' render-preview-vertical' : ''}`}
             ref={canvasRef}
-            width={settings.width}
-            height={settings.height}
+            width={activeSettings.width}
+            height={activeSettings.height}
             style={{ background: previewBackground }}
           />
           <div
