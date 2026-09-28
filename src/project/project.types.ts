@@ -1,5 +1,6 @@
 import type { DirectorMood, DirectorState } from '../director/director.types';
 import type { ExportPresetId } from '../export/formats';
+import type { ProjectToolId } from '../tools/tool.types';
 
 export type ProjectId = string;
 export type ProjectSchemaVersion = 1;
@@ -33,6 +34,12 @@ export type EngineSelection = {
   };
 };
 
+/** AiXel Creator palette colors shared across tools (primary + accent). */
+export type ProjectCreator = {
+  primaryColor: string;
+  accentColor: string;
+};
+
 export type ExportSettings = {
   format: 'mp4';
   presetId: ExportPresetId;
@@ -51,7 +58,10 @@ export type VisualMelodyProject = {
   updatedAt: string;
   audio: ProjectAudio | null;
   analysis: ProjectAnalysis | null;
+  /** Active creative tool. Defaults to classic visual engines. */
+  tool: ProjectToolId;
   engine: EngineSelection;
+  creator: ProjectCreator;
   export: ExportSettings;
 };
 

@@ -39,6 +39,12 @@ const copy: Record<Locale, Record<string, string>> = {
     emotion: 'Emotion', space: 'Space', fluidity: 'Fluidity', light: 'Light', dynamics: 'Dynamics', particles: 'Particles', colorEnergy: 'Color Energy', motionComplexity: 'Motion Complexity',
     colorPalette: 'Color Palette', colorPaletteHelp: 'Apply a five-color palette across the active engine’s accents.',
     paletteAuroraViolet: 'Aurora Violet', paletteSolarGold: 'Solar Gold', paletteEmeraldTide: 'Emerald Tide', paletteCrimsonVelvet: 'Crimson Velvet', paletteGlacierMono: 'Glacier Mono',
+    proTools: 'AiXel Creator Tools', proToolsHelp: 'Choose a classic visual engine or a Pro Tool. Particle Sphere is ready; others arrive next.',
+    visualEnginesTool: 'Visual Engines', particleSphere: 'Particle Sphere', danceAvatars: 'Dance Avatars', imagePulse: 'Image Pulse', lyricCanvas: 'Lyric Canvas',
+    comingSoon: 'Soon', comingSoonNote: 'This Pro Tool is coming soon. Particle Sphere is available now.',
+    comingSoonBanner: 'This tool is stubbed for Pro Tools V1. Select Particle Sphere or a classic engine to continue Preview and Export.',
+    creatorColors: 'Creator colors', primaryColor: 'Primary', accentColor: 'Accent',
+    sphereCharacter: 'Luminous particle sphere with orbit ribbons.', sphereMood: 'A sphere of light orbits in the dark, ribbons breathing with the beat.',
   },
   fr: {
     home: 'Accueil', analyze: 'Analyser', create: 'Créer', preview: 'Aperçu', export: 'Exporter', settings: 'Réglages',
@@ -76,6 +82,12 @@ const copy: Record<Locale, Record<string, string>> = {
     emotion: 'Émotion', space: 'Espace', fluidity: 'Fluidité', light: 'Lumière', dynamics: 'Dynamique', particles: 'Particules', colorEnergy: 'Énergie des couleurs', motionComplexity: 'Complexité du mouvement',
     colorPalette: 'Palette de couleurs', colorPaletteHelp: 'Appliquez une palette de cinq couleurs aux accents du moteur actif.',
     paletteAuroraViolet: 'Violet Aurore', paletteSolarGold: 'Or Solaire', paletteEmeraldTide: 'Marée Émeraude', paletteCrimsonVelvet: 'Velours Cramoisi', paletteGlacierMono: 'Glacier Monochrome',
+    proTools: 'Outils AiXel Creator', proToolsHelp: 'Choisissez un moteur classique ou un outil Pro. Particle Sphere est prêt ; les autres arrivent ensuite.',
+    visualEnginesTool: 'Moteurs visuels', particleSphere: 'Sphère de particules', danceAvatars: 'Avatars danse', imagePulse: 'Image Pulse', lyricCanvas: 'Toile de paroles',
+    comingSoon: 'Bientôt', comingSoonNote: 'Cet outil Pro arrive bientôt. Particle Sphere est déjà disponible.',
+    comingSoonBanner: 'Cet outil est un stub pour Pro Tools V1. Sélectionnez Particle Sphere ou un moteur classique pour continuer vers Aperçu et Export.',
+    creatorColors: 'Couleurs Creator', primaryColor: 'Primaire', accentColor: 'Accent',
+    sphereCharacter: 'Sphère de particules lumineuse avec rubans orbitaux.', sphereMood: 'Une sphère de lumière orbite dans le noir, les rubans respirent avec le beat.',
   },
 };
 

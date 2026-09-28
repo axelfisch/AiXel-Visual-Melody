@@ -10,6 +10,7 @@ const engines = [
   'liquid-colors',
   'frequency-city',
   'neon-velvet',
+  'particle-sphere',
 ];
 
 const allDimensions = [
@@ -79,3 +80,15 @@ describe('AiXel Director V1 mapping contract', () => {
     });
   });
 });
+
+  it('maps Color Energy and Light honestly for Particle Sphere', () => {
+    const low = mapDirectorToEngine('particle-sphere', {
+      emotion: 50, space: 50, fluidity: 50, light: 0, dynamics: 50, particles: 50, colorEnergy: 0, motionComplexity: 50,
+    });
+    const high = mapDirectorToEngine('particle-sphere', {
+      emotion: 50, space: 50, fluidity: 50, light: 100, dynamics: 50, particles: 50, colorEnergy: 100, motionComplexity: 50,
+    });
+    expect(high.parameters.colorSaturation).toBeGreaterThan(low.parameters.colorSaturation as number);
+    expect(high.parameters.glowIntensity).toBeGreaterThan(low.parameters.glowIntensity as number);
+    expect(high.parameters.orbitSpeed).toEqual(low.parameters.orbitSpeed);
+  });
