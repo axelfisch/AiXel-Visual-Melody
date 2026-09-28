@@ -63,3 +63,27 @@ describe('projectReducer', () => {
     expect(project.engine.parameters.accentColor).toBeUndefined();
   });
 });
+
+  it('selects a Pro Tool and can bind its engine', () => {
+    const project = createProject();
+    const next = projectReducer(project, {
+      type: 'SELECT_TOOL',
+      tool: 'particle-sphere',
+      engineId: 'particle-sphere',
+      parameters: { primaryColor: '#9eeaff' },
+    });
+    expect(next.tool).toBe('particle-sphere');
+    expect(next.engine.engineId).toBe('particle-sphere');
+    expect(next.engine.parameters.primaryColor).toBe('#9eeaff');
+  });
+
+  it('updates AiXel Creator primary and accent colors', () => {
+    const project = createProject();
+    const next = projectReducer(project, {
+      type: 'UPDATE_CREATOR',
+      creator: { primaryColor: '#3ddc97', accentColor: '#28a99e' },
+    });
+    expect(next.creator.primaryColor).toBe('#3ddc97');
+    expect(next.creator.accentColor).toBe('#28a99e');
+    expect(project.creator.primaryColor).not.toBe('#3ddc97');
+  });

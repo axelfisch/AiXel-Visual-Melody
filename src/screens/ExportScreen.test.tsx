@@ -81,7 +81,7 @@ describe('ExportScreen', () => {
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
     const exportAgain = screen.getByRole('link', { name: 'Télécharger de nouveau' });
     expect(exportAgain).toHaveAttribute('href', 'blob:export');
-    expect(exportAgain).toHaveAttribute('download', 'In-the-Spirit-of-Naomi.mp4');
+    expect(exportAgain).toHaveAttribute('download', 'In-the-Spirit-of-Naomi-720p.mp4');
     expect(URL.revokeObjectURL).not.toHaveBeenCalled();
   });
 

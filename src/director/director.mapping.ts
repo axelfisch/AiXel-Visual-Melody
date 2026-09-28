@@ -18,6 +18,7 @@ const adapters: Record<string, Adapter> = {
   'liquid-colors': { speedParameter: 'flowSpeed', structureParameter: 'inkDensity' },
   'frequency-city': { speedParameter: 'pulseSpeed', structureParameter: 'buildingCount' },
   'neon-velvet': { speedParameter: 'trailSpeed', structureParameter: 'trailCount' },
+  'particle-sphere': { speedParameter: 'orbitSpeed', structureParameter: 'particleDensity' },
 };
 
 /**

@@ -1,10 +1,12 @@
 import { createProject } from './project.defaults';
 import type { DirectorMood, DirectorState } from '../director/director.types';
+import type { ProjectToolId } from '../tools/tool.types';
 import type {
   EngineParameterValue,
   ExportSettings,
   ProjectAnalysis,
   ProjectAudio,
+  ProjectCreator,
   VisualMelodyProject,
 } from './project.types';
 
@@ -15,6 +17,7 @@ export type ProjectAction =
   | { type: 'ANALYSIS_STARTED' }
   | { type: 'ANALYSIS_COMPLETED'; analysis: ProjectAnalysis }
   | { type: 'ANALYSIS_FAILED' }
+  | { type: 'SELECT_TOOL'; tool: ProjectToolId; engineId?: string; parameters?: Record<string, EngineParameterValue> }
   | { type: 'SELECT_ENGINE'; engineId: string; parameters?: Record<string, EngineParameterValue> }
   | { type: 'SELECT_PRESET'; presetId: string | null }
   | {
@@ -23,6 +26,7 @@ export type ProjectAction =
       values: DirectorState;
       parameters: Record<string, EngineParameterValue>;
     }
+  | { type: 'UPDATE_CREATOR'; creator: Partial<ProjectCreator> }
   | { type: 'UPDATE_ENGINE_PARAMETER'; parameterId: string; value: EngineParameterValue }
   | { type: 'UPDATE_ENGINE_PARAMETERS'; parameters: Record<string, EngineParameterValue> }
   | { type: 'UPDATE_EXPORT_SETTINGS'; settings: Partial<ExportSettings> }
@@ -43,9 +47,23 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
       return project;
     case 'ANALYSIS_COMPLETED':
       return touched({ ...project, analysis: action.analysis });
+    case 'SELECT_TOOL':
+      return touched({
+        ...project,
+        tool: action.tool,
+        engine: action.engineId
+          ? {
+              ...project.engine,
+              engineId: action.engineId,
+              presetId: null,
+              parameters: action.parameters ? { ...action.parameters } : project.engine.parameters,
+            }
+          : project.engine,
+      });
     case 'SELECT_ENGINE':
       return touched({
         ...project,
+        tool: 'engine',
         engine: {
           ...project.engine,
           engineId: action.engineId,
@@ -66,6 +84,11 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
             values: { ...action.values },
           },
         },
+      });
+    case 'UPDATE_CREATOR':
+      return touched({
+        ...project,
+        creator: { ...project.creator, ...action.creator },
       });
     case 'UPDATE_ENGINE_PARAMETER':
       return touched({
