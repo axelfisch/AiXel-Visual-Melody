@@ -31,6 +31,7 @@ import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { getEngineOrDefault } from '../engines/engine.registry';
 import { useLocale } from '../i18n/LocaleContext';
+import { getTool, listProTools, type ProjectToolId } from '../tools';
 import {
   directorCapabilities,
   directorMoodProfiles,
@@ -47,7 +48,7 @@ import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { screens, useHashNavigation, type Screen } from './navigation';
 
-type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon';
+type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'sphere';
 
 type Engine = {
   id: string;
@@ -149,6 +150,20 @@ const engines: Engine[] = [
     radius: 22,
     mood: 'Lights turn to velvet, synthwave trails in the dark.',
   },
+  {
+    id: 'particle-sphere',
+    key: 'sphere',
+    number: '07',
+    name: 'Particle Sphere',
+    character: 'Luminous particle sphere with orbit ribbons.',
+    motion: 'Orbital pulse driven by audio energy.',
+    accentFrom: '#9eeaff',
+    accentTo: '#8a6bff',
+    preview: 'radial-gradient(circle at 50% 48%, #1a2a66 0%, #0a1028 48%, #05060b 100%)',
+    thumbnail: cosmicWavesThumbnail,
+    radius: 24,
+    mood: 'A sphere of light orbits in the dark, ribbons breathing with the beat.',
+  },
 ];
 
 const waveform = Array.from({ length: 72 }, (_, i) => 18 + Math.abs(Math.sin(i * 0.38)) * 54 + (i % 7) * 3);
@@ -174,22 +189,61 @@ export function App() {
     () => directorCapabilities(project.engine.engineId),
     [project.engine.engineId],
   );
+  const classicEngines = useMemo(() => engines.filter((item) => item.key !== 'sphere'), []);
   const selectEngine = (key: EngineKey) => {
     const selected = engines.find((item) => item.key === key);
     if (selected) {
-      const mapped = mapDirectorToEngine(selected.id, directorValues);
+      const mapped = mapDirectorToEngine(selected.id, directorValues, {
+        ...project.engine.parameters,
+        ...(selected.id === 'particle-sphere'
+          ? { primaryColor: project.creator.primaryColor, accentColor: project.creator.accentColor }
+          : {}),
+      });
       dispatch({ type: 'SELECT_ENGINE', engineId: selected.id, parameters: mapped.parameters });
     }
   };
+  const selectTool = (toolId: ProjectToolId) => {
+    const tool = getTool(toolId);
+    if (tool.availability === 'coming-soon') {
+      dispatch({ type: 'SELECT_TOOL', tool: toolId });
+      return;
+    }
+    if (toolId === 'particle-sphere' && tool.engineId) {
+      const mapped = mapDirectorToEngine(tool.engineId, directorValues, {
+        ...project.engine.parameters,
+        primaryColor: project.creator.primaryColor,
+        accentColor: project.creator.accentColor,
+      });
+      dispatch({
+        type: 'SELECT_TOOL',
+        tool: toolId,
+        engineId: tool.engineId,
+        parameters: mapped.parameters,
+      });
+      return;
+    }
+    const engineId = project.engine.engineId === 'particle-sphere' ? 'minimal-album-art' : project.engine.engineId;
+    const mapped = mapDirectorToEngine(engineId, directorValues, project.engine.parameters);
+    dispatch({ type: 'SELECT_TOOL', tool: 'engine', engineId, parameters: mapped.parameters });
+  };
   const applyDirector = (values: DirectorState, mood: DirectorMood | null) => {
-    const mapped = mapDirectorToEngine(project.engine.engineId, values, project.engine.parameters);
+    const mapped = mapDirectorToEngine(project.engine.engineId, values, {
+      ...project.engine.parameters,
+      primaryColor: project.creator.primaryColor,
+      accentColor: project.creator.accentColor,
+    });
     dispatch({ type: 'APPLY_DIRECTOR', mood, values, parameters: mapped.parameters });
   };
   const applyPalette = (palette: DirectorPalette) => {
+    const primaryColor = palette.colors[0];
+    const accentColor = palette.colors[1];
+    dispatch({ type: 'UPDATE_CREATOR', creator: { primaryColor, accentColor } });
     const colorParameterIds = renderEngine.parameters.filter((item) => item.type === 'color').map((item) => item.id);
     const parameters: Record<string, EngineParameterValue> = {};
     colorParameterIds.forEach((id, index) => {
-      parameters[id] = palette.colors[index % palette.colors.length];
+      if (id === 'primaryColor') parameters[id] = primaryColor;
+      else if (id === 'accentColor') parameters[id] = accentColor;
+      else parameters[id] = palette.colors[index % palette.colors.length];
     });
     dispatch({ type: 'UPDATE_ENGINE_PARAMETERS', parameters });
   };
@@ -261,12 +315,16 @@ export function App() {
           <CreateScreen
             activeEngine={activeEngine}
             activePreset={activePreset}
+            activeTool={project.tool}
             selectedMood={selectedMood}
             directorValues={directorValues}
             supportedDirectorDimensions={supportedDirectorDimensions}
             engine={engine}
+            classicEngines={classicEngines}
+            creator={project.creator}
             projectName={project.name}
             onEngine={selectEngine}
+            onTool={selectTool}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
             onMood={(mood) => applyDirector(directorMoodProfiles[mood], mood)}
             onDirectorChange={(dimension, value) => applyDirector({ ...directorValues, [dimension]: value }, null)}
@@ -409,7 +467,7 @@ function HomeScreen({
 
       <SectionHeader label={t('sixEngines')} note={t('enginesNote')} />
       <div className="engine-grid">
-        {engines.map((engine) => (
+        {engines.filter((item) => item.key !== 'sphere').map((engine) => (
           <EngineCard
             engine={engine}
             key={engine.key}
@@ -540,12 +598,16 @@ function AnalyzeScreen({
 function CreateScreen({
   activeEngine,
   activePreset,
+  activeTool,
   selectedMood,
   directorValues,
   supportedDirectorDimensions,
   engine,
+  classicEngines,
+  creator,
   projectName,
   onEngine,
+  onTool,
   onPreset,
   onMood,
   onDirectorChange,
@@ -554,12 +616,16 @@ function CreateScreen({
 }: {
   activeEngine: EngineKey;
   activePreset: string;
+  activeTool: ProjectToolId;
   selectedMood: DirectorMood | null;
   directorValues: DirectorState;
   supportedDirectorDimensions: DirectorDimension[];
   engine: Engine;
+  classicEngines: Engine[];
+  creator: { primaryColor: string; accentColor: string };
   projectName: string;
   onEngine: (engine: EngineKey) => void;
+  onTool: (tool: ProjectToolId) => void;
   onPreset: (preset: string) => void;
   onMood: (mood: DirectorMood) => void;
   onDirectorChange: (dimension: DirectorDimension, value: number) => void;
@@ -570,6 +636,9 @@ function CreateScreen({
   const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
   const presets = ['Naomi', 'Dream', 'Universe', 'Rain', 'Blue', 'Neon', 'Galaxy', 'Jazz Club', 'Deep Space', 'Ocean'];
   const moods: DirectorMood[] = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
+  const proTools = listProTools();
+  const activeToolDef = getTool(activeTool === 'engine' ? 'engine' : activeTool);
+  const toolComingSoon = activeToolDef.availability === 'coming-soon';
   const paletteLabels: Record<string, string> = {
     auroraViolet: t('paletteAuroraViolet'),
     solarGold: t('paletteSolarGold'),
@@ -595,12 +664,58 @@ function CreateScreen({
     'More Organic': t('moreOrganic'),
     'More Minimal': t('moreMinimal'),
   };
+  const studioNote = toolComingSoon
+    ? t('comingSoonNote')
+    : activeTool === 'particle-sphere'
+      ? t('sphereMood')
+      : t(`${engine.key}Mood`);
 
   return (
     <section className="screen create-layout">
-      <ScreenTitle eyebrow={t('creativeStudio')} title={projectName} note={t(`${engine.key}Mood`)} />
+      <ScreenTitle eyebrow={t('creativeStudio')} title={projectName} note={studioNote} />
+      <GlassPanel className="tool-picker">
+        <PanelHeading icon={<WandSparkles size={18} />} label={t('proTools')} />
+        <p className="muted">{t('proToolsHelp')}</p>
+        <div className="chips wrap tool-chips">
+          <button
+            className={activeTool === 'engine' ? 'selected' : ''}
+            onClick={() => onTool('engine')}
+          >
+            {t('visualEnginesTool')}
+          </button>
+          {proTools.map((tool) => (
+            <button
+              className={activeTool === tool.id ? 'selected' : ''}
+              key={tool.id}
+              onClick={() => onTool(tool.id)}
+            >
+              {tool.id === 'particle-sphere' ? t('particleSphere')
+                : tool.id === 'dance-avatar' ? t('danceAvatars')
+                  : tool.id === 'image-pulse' ? t('imagePulse')
+                    : t('lyricCanvas')}
+              {tool.availability === 'coming-soon' ? <em className="soon-badge">{t('comingSoon')}</em> : null}
+            </button>
+          ))}
+        </div>
+        <div className="creator-colors" aria-label={t('creatorColors')}>
+          <span className="creator-swatch" title={t('primaryColor')}>
+            <i style={{ background: creator.primaryColor }} />
+            {t('primaryColor')}
+          </span>
+          <span className="creator-swatch" title={t('accentColor')}>
+            <i style={{ background: creator.accentColor }} />
+            {t('accentColor')}
+          </span>
+        </div>
+      </GlassPanel>
+      {toolComingSoon && (
+        <GlassPanel className="coming-soon-banner">
+          <p>{t('comingSoonBanner')}</p>
+        </GlassPanel>
+      )}
+      {activeTool === 'engine' && (
       <div className="engine-tabs">
-        {engines.map((item) => (
+        {classicEngines.map((item) => (
           <button
             className={activeEngine === item.key ? 'active' : ''}
             key={item.key}
@@ -610,6 +725,7 @@ function CreateScreen({
           </button>
         ))}
       </div>
+      )}
       <div className="studio-grid">
         <div className="studio-main">
           <PreviewCanvas engine={engine} />
@@ -766,6 +882,7 @@ function PreviewCanvas({ engine, full = false }: { engine: Engine; full?: boolea
       {engine.key === 'city' && <CityVisual />}
       {engine.key === 'album' && <AlbumVisual />}
       {engine.key === 'neon' && <NeonVisual />}
+      {engine.key === 'sphere' && <SphereVisual />}
       <span className="live-badge">{engine.name}</span>
       <Waveform bars={waveform.slice(0, 40)} compact />
     </div>
@@ -822,6 +939,20 @@ function NeonVisual() {
       <path d="M20,150 C90,20 160,160 280,40" />
       <path d="M20,120 C80,40 170,130 280,30" />
     </svg>
+  );
+}
+
+function SphereVisual() {
+  return (
+    <div className="sphere-visual" aria-hidden="true">
+      <span className="sphere-core" />
+      <span className="sphere-ring ring-a" />
+      <span className="sphere-ring ring-b" />
+      <span className="sphere-ring ring-c" />
+      {Array.from({ length: 18 }, (_, i) => (
+        <i className="sphere-dot" key={i} style={{ '--i': i } as React.CSSProperties} />
+      ))}
+    </div>
   );
 }
 
