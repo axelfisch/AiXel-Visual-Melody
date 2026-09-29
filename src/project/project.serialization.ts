@@ -3,7 +3,7 @@ import { directorDefaultState, directorMoodProfiles, validateDirectorState } fro
 import { exportSettingsFromPreset, getExportPreset } from '../export/formats';
 import type { DirectorMood } from '../director/director.types';
 import { isProjectToolId } from '../tools/tool.registry';
-import type { ProjectCreator, ProjectImage, VisualMelodyProject } from './project.types';
+import type { ProjectCreator, ProjectImage, ProjectLyrics, VisualMelodyProject } from './project.types';
 
 export function isSupportedProjectVersion(value: unknown): value is typeof PROJECT_SCHEMA_VERSION {
   return value === PROJECT_SCHEMA_VERSION;
@@ -34,6 +34,15 @@ function migrateImage(value: unknown): ProjectImage | null {
     width: positive(image.width),
     height: positive(image.height),
     objectUrl: typeof image.objectUrl === 'string' ? image.objectUrl : null,
+  };
+}
+
+function migrateLyrics(value: unknown): ProjectLyrics {
+  if (!value || typeof value !== 'object') return { text: '', offset: 0 };
+  const lyrics = value as Partial<ProjectLyrics>;
+  return {
+    text: typeof lyrics.text === 'string' ? lyrics.text.slice(0, 20_000) : '',
+    offset: typeof lyrics.offset === 'number' && Number.isFinite(lyrics.offset) ? Math.min(30, Math.max(-30, lyrics.offset)) : 0,
   };
 }
 
@@ -84,6 +93,7 @@ export function parseProject(serialized: string): VisualMelodyProject {
     tool: isProjectToolId(project.tool) ? project.tool : 'engine',
     creator: migrateCreator(project.creator),
     image: migrateImage((project as { image?: unknown }).image),
+    lyrics: migrateLyrics((project as { lyrics?: unknown }).lyrics),
     engine: {
       ...project.engine,
       parameters: engineParameters,

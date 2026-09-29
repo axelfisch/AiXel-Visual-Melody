@@ -30,7 +30,7 @@ export function PreviewScreen({
     autoPlay,
     onAutoPlayHandled,
   });
-  const poeticLine = engine.id === 'image-pulse' ? t('pulsePoetic') : locale === 'fr' ? (engine.id === 'cosmic-waves'
+  const poeticLine = engine.id === 'image-pulse' ? t('pulsePoetic') : engine.id === 'lyric-canvas' ? t('lyricsPoetic') : locale === 'fr' ? (engine.id === 'cosmic-waves'
     ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
     : engine.id === 'jazz-geometry'
       ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
@@ -84,6 +84,9 @@ export function PreviewScreen({
             <p className="poetic">{poeticLine}</p>
             {engine.id === 'image-pulse' && !project.image?.objectUrl ? (
               <p className="tiny-label pulse-preview-hint">{t('pulsePreviewHint')}</p>
+            ) : null}
+            {engine.id === 'lyric-canvas' && !project.lyrics?.text.trim() ? (
+              <p className="tiny-label pulse-preview-hint">{t('lyricsPreviewHint')}</p>
             ) : null}
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>

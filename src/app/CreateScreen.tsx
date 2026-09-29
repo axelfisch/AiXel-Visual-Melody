@@ -17,8 +17,9 @@ import {
   type DirectorPalette,
   type DirectorState,
 } from '../director';
-import type { EngineParameterValue, ProjectImage } from '../project/project.types';
+import type { EngineParameterValue, ProjectImage, ProjectLyrics } from '../project/project.types';
 import { ImagePulsePanel } from './ImagePulsePanel';
+import { LyricCanvasPanel } from './LyricCanvasPanel';
 import type { Engine, EngineKey } from './engines.catalog';
 import { ScreenTitle, PanelHeading, PreviewCanvas } from './appVisuals';
 import type { Screen } from './navigation';
@@ -38,6 +39,10 @@ export function CreateScreen({
   image = null,
   onImageFile = async () => undefined,
   onClearImage = () => undefined,
+  lyrics = { text: '', offset: 0 },
+  onLyrics = () => undefined,
+  trackDuration = null,
+  trackBpm = null,
   onEngine,
   onTool,
   onPreset,
@@ -61,6 +66,10 @@ export function CreateScreen({
   image?: ProjectImage | null;
   onImageFile?: (file: File) => Promise<void>;
   onClearImage?: () => void;
+  lyrics?: ProjectLyrics;
+  onLyrics?: (lyrics: Partial<ProjectLyrics>) => void;
+  trackDuration?: number | null;
+  trackBpm?: number | null;
   onEngine: (engine: EngineKey) => void;
   onTool: (tool: ProjectToolId) => void;
   onPreset: (preset: string) => void;
@@ -110,7 +119,9 @@ export function CreateScreen({
         ? t('avatarMood')
         : activeTool === 'image-pulse'
           ? t('pulseMood')
-          : t(`${engine.key}Mood`);
+          : activeTool === 'lyric-canvas'
+            ? t('lyricsMood')
+            : t(`${engine.key}Mood`);
   const avatarGender = (engineParameters.gender === 'male' || engineParameters.gender === 'female'
     ? engineParameters.gender
     : 'female') as DanceAvatarGender;
@@ -224,9 +235,26 @@ export function CreateScreen({
           onEngineParameter={onEngineParameter}
         />
       )}
+      {activeTool === 'lyric-canvas' && (
+        <LyricCanvasPanel
+          lyrics={lyrics}
+          engineParameters={engineParameters}
+          image={image}
+          trackDuration={trackDuration}
+          bpm={trackBpm}
+          onLyrics={onLyrics}
+          onEngineParameter={onEngineParameter}
+          onImageFile={onImageFile}
+          onClearImage={onClearImage}
+        />
+      )}
       <div className="studio-grid">
         <div className="studio-main">
-          <PreviewCanvas engine={engine} imageUrl={activeTool === 'image-pulse' ? image?.objectUrl ?? null : null} />
+          <PreviewCanvas
+            engine={engine}
+            imageUrl={activeTool === 'image-pulse' ? image?.objectUrl ?? null : null}
+            lyricsText={activeTool === 'lyric-canvas' ? lyrics.text : ''}
+          />
           <GlassPanel>
             <PanelHeading icon={<Palette size={18} />} label={t('visualPresets')} />
             <div className="chips wrap">

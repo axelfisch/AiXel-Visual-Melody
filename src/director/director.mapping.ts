@@ -21,6 +21,7 @@ const adapters: Record<string, Adapter> = {
   'particle-sphere': { speedParameter: 'orbitSpeed', structureParameter: 'particleDensity' },
   'dance-avatars': { speedParameter: 'danceSpeed', structureParameter: 'limbExpressiveness' },
   'image-pulse': { speedParameter: 'pulseSpeed', structureParameter: 'effectComplexity' },
+  'lyric-canvas': { speedParameter: 'motionSpeed', structureParameter: 'textMotion' },
 };
 
 /**

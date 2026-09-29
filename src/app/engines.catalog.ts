@@ -5,10 +5,10 @@ import liquidColorsThumbnail from '../assets/engine-thumbnails/liquid-colors.jpg
 import minimalAlbumArtThumbnail from '../assets/engine-thumbnails/minimal-album-art.jpg';
 import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
 
-export type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'sphere' | 'avatar' | 'pulse';
+export type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'sphere' | 'avatar' | 'pulse' | 'lyrics';
 
 /** Pro Tool engines never appear in the classic engine tabs / home grid. */
-export const PRO_ENGINE_KEYS: EngineKey[] = ['sphere', 'avatar', 'pulse'];
+export const PRO_ENGINE_KEYS: EngineKey[] = ['sphere', 'avatar', 'pulse', 'lyrics'];
 
 export type Engine = {
   id: string;
@@ -151,6 +151,20 @@ export const engines: Engine[] = [
     thumbnail: liquidColorsThumbnail,
     radius: 20,
     mood: 'Your image breathes with the track, pulsing in your Creator colors.',
+  },
+  {
+    id: 'lyric-canvas',
+    key: 'lyrics',
+    number: '10',
+    name: 'Lyric Canvas',
+    character: 'Your lyrics as cinematic, beat-synced typography.',
+    motion: 'Karaoke sweep, kinetic pops, neon, typewriter and cinematic fades.',
+    accentFrom: '#9eeaff',
+    accentTo: '#b18aff',
+    preview: 'radial-gradient(circle at 50% 110%, #3b2466 0%, #12101f 55%, #05060b 100%)',
+    thumbnail: neonVelvetThumbnail,
+    radius: 18,
+    mood: 'Your words light up with the music, in your Creator colors.',
   },
 ];
 

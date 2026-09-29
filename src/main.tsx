@@ -5,6 +5,7 @@ import { ProjectProvider } from './project/project.context';
 import './styles.css';
 import './styles.dance-avatars.css';
 import './styles.image-pulse.css';
+import './styles.lyric-canvas.css';
 
 createRoot(document.getElementById('root')!).render(
   <LocaleProvider>

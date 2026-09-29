@@ -23,6 +23,14 @@ export type ProjectImage = {
   objectUrl: string | null;
 };
 
+/** Lyrics pasted for Lyric Canvas (kept at project level so they survive tool switches). */
+export type ProjectLyrics = {
+  /** Plain lines (blank line = section break) or LRC `[mm:ss.xx]` timestamps. */
+  text: string;
+  /** Global timing nudge in seconds (positive = later). */
+  offset: number;
+};
+
 export type ProjectAnalysis = {
   sampleRate: number;
   bpm: number;
@@ -70,6 +78,8 @@ export type VisualMelodyProject = {
   analysis: ProjectAnalysis | null;
   /** Image uploaded for Image Pulse; `null` renders the procedural placeholder. */
   image: ProjectImage | null;
+  /** Lyrics used by Lyric Canvas; empty text renders the placeholder title card. */
+  lyrics: ProjectLyrics;
   /** Active creative tool. Defaults to classic visual engines. */
   tool: ProjectToolId;
   engine: EngineSelection;

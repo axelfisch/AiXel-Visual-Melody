@@ -13,6 +13,7 @@ const engines = [
   'particle-sphere',
   'dance-avatars',
   'image-pulse',
+  'lyric-canvas',
 ];
 
 const allDimensions = [
@@ -142,5 +143,37 @@ describe('AiXel Director V1 mapping contract', () => {
       imageSrc: 'blob:cover', style: 'kaleido', framing: 'card', primaryColor: '#112233',
     });
     expect(result.parameters).toMatchObject({ imageSrc: 'blob:cover', style: 'kaleido', framing: 'card', primaryColor: '#112233' });
+  });
+
+  it('maps every Director fader to its own Lyric Canvas renderer parameter', () => {
+    const neutral = { emotion: 50, space: 50, fluidity: 50, light: 50, dynamics: 50, particles: 50, colorEnergy: 50, motionComplexity: 50 };
+    const expected: Record<string, string> = {
+      fluidity: 'motionSpeed',
+      dynamics: 'energyResponse',
+      motionComplexity: 'textMotion',
+      light: 'glowIntensity',
+      space: 'spaceScale',
+      colorEnergy: 'colorSaturation',
+      particles: 'sparkleDensity',
+      emotion: 'warmth',
+    };
+    const base = mapDirectorToEngine('lyric-canvas', neutral).parameters;
+    for (const [dimension, parameter] of Object.entries(expected)) {
+      const low = mapDirectorToEngine('lyric-canvas', { ...neutral, [dimension]: 0 }).parameters;
+      const high = mapDirectorToEngine('lyric-canvas', { ...neutral, [dimension]: 100 }).parameters;
+      expect(high[parameter]).toBeGreaterThan(low[parameter] as number);
+      for (const other of Object.values(expected).filter((id) => id !== parameter)) {
+        expect(high[other]).toEqual(base[other]);
+      }
+    }
+  });
+
+  it('keeps the lyrics, offset, preset and Creator colors when remapping Lyric Canvas', () => {
+    const result = mapDirectorToEngine('lyric-canvas', { dynamics: 90 }, {
+      lyrics: '[00:01.00]Été ✨', lyricsOffset: -1.5, preset: 'neon', background: 'particles', primaryColor: '#112233',
+    });
+    expect(result.parameters).toMatchObject({
+      lyrics: '[00:01.00]Été ✨', lyricsOffset: -1.5, preset: 'neon', background: 'particles', primaryColor: '#112233',
+    });
   });
 });

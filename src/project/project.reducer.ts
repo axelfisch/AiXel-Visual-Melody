@@ -8,6 +8,7 @@ import type {
   ProjectAudio,
   ProjectCreator,
   ProjectImage,
+  ProjectLyrics,
   VisualMelodyProject,
 } from './project.types';
 
@@ -30,6 +31,7 @@ export type ProjectAction =
   | { type: 'UPDATE_CREATOR'; creator: Partial<ProjectCreator> }
   | { type: 'SET_IMAGE_SOURCE'; image: ProjectImage }
   | { type: 'CLEAR_IMAGE_SOURCE' }
+  | { type: 'SET_LYRICS'; lyrics: Partial<ProjectLyrics> }
   | { type: 'UPDATE_ENGINE_PARAMETER'; parameterId: string; value: EngineParameterValue }
   | { type: 'UPDATE_ENGINE_PARAMETERS'; parameters: Record<string, EngineParameterValue> }
   | { type: 'UPDATE_EXPORT_SETTINGS'; settings: Partial<ExportSettings> }
@@ -37,10 +39,28 @@ export type ProjectAction =
 
 const touched = (project: VisualMelodyProject) => ({ ...project, updatedAt: new Date().toISOString() });
 
-/** Keeps the Image Pulse renderer parameter in sync with the project image (Preview and Export read the same value). */
+const IMAGE_ENGINES = new Set(['image-pulse', 'lyric-canvas']);
+
+/** Keeps the image renderer parameter in sync with the project image (Preview and Export read the same value). */
 function withImageParameter(project: VisualMelodyProject, image: ProjectImage | null): VisualMelodyProject['engine'] {
-  if (project.engine.engineId !== 'image-pulse') return project.engine;
+  if (!IMAGE_ENGINES.has(project.engine.engineId)) return project.engine;
   return { ...project.engine, parameters: { ...project.engine.parameters, imageSrc: image?.objectUrl ?? '' } };
+}
+
+/** Keeps the Lyric Canvas renderer parameters in sync with the project lyrics. */
+function withLyricsParameters(project: VisualMelodyProject, lyrics: ProjectLyrics): VisualMelodyProject['engine'] {
+  if (project.engine.engineId !== 'lyric-canvas') return project.engine;
+  return { ...project.engine, parameters: { ...project.engine.parameters, lyrics: lyrics.text, lyricsOffset: lyrics.offset } };
+}
+
+const LYRICS_OFFSET_LIMIT = 30;
+
+function nextLyrics(current: ProjectLyrics, patch: Partial<ProjectLyrics>): ProjectLyrics {
+  const text = typeof patch.text === 'string' ? patch.text.replace(/\r\n?/g, '\n').slice(0, 20_000) : current.text;
+  const offset = typeof patch.offset === 'number' && Number.isFinite(patch.offset)
+    ? Math.round(Math.min(LYRICS_OFFSET_LIMIT, Math.max(-LYRICS_OFFSET_LIMIT, patch.offset)) * 100) / 100
+    : current.offset;
+  return { text, offset };
 }
 
 export function projectReducer(project: VisualMelodyProject, action: ProjectAction): VisualMelodyProject {
@@ -103,6 +123,10 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
       return touched({ ...project, image: { ...action.image }, engine: withImageParameter(project, action.image) });
     case 'CLEAR_IMAGE_SOURCE':
       return touched({ ...project, image: null, engine: withImageParameter(project, null) });
+    case 'SET_LYRICS': {
+      const lyrics = nextLyrics(project.lyrics ?? { text: '', offset: 0 }, action.lyrics);
+      return touched({ ...project, lyrics, engine: withLyricsParameters(project, lyrics) });
+    }
     case 'UPDATE_ENGINE_PARAMETER':
       return touched({
         ...project,

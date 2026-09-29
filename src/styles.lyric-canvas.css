@@ -1,0 +1,142 @@
+/* Lyric Canvas Create chrome */
+.lyrics-options {
+  margin-bottom: 18px;
+}
+
+.lyrics-field {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.lyrics-field textarea {
+  width: 100%;
+  min-height: 190px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(5, 6, 11, 0.55);
+  color: inherit;
+  font: 500 0.95rem/1.55 Manrope, system-ui, sans-serif;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.lyrics-field textarea:focus {
+  border-color: var(--accent-from, #9eeaff);
+  box-shadow: 0 0 0 3px rgba(158, 234, 255, 0.12);
+}
+
+.lyrics-help,
+.lyrics-note {
+  font-size: 0.84rem;
+  margin: 8px 0 0;
+}
+
+.lyrics-status {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+  color: var(--accent-from, #9eeaff);
+}
+
+.lyrics-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.lyrics-actions button,
+.lyrics-image-row button,
+.lyrics-offset button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lyrics-subhead {
+  margin: 16px 0 8px;
+}
+
+.lyrics-background {
+  margin-top: 10px;
+}
+
+.lyrics-image-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.lyrics-image-row p {
+  margin: 0;
+  flex: 1 1 220px;
+  font-size: 0.84rem;
+}
+
+.lyrics-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.lyrics-offset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.lyrics-offset label {
+  flex: 1 1 260px;
+  display: grid;
+  gap: 6px;
+}
+
+.lyrics-offset label span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.86rem;
+}
+
+.lyrics-offset label em {
+  font-style: normal;
+  opacity: 0.8;
+}
+
+/* Create mock visual */
+.lyrics-visual {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  padding: 0 10%;
+  text-align: center;
+  pointer-events: none;
+}
+
+.lyrics-visual .lyrics-line {
+  font: 800 clamp(1.1rem, 2.6vw, 2rem)/1.2 Manrope, system-ui, sans-serif;
+  color: rgba(236, 240, 255, 0.45);
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+}
+
+.lyrics-visual .lyrics-line.sung {
+  background: linear-gradient(90deg, var(--accent-from, #9eeaff), var(--accent-to, #b18aff));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(158, 234, 255, 0.45));
+}
+
+.lyrics-visual .lyrics-line.next {
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  opacity: 0.8;
+}
