@@ -3,14 +3,38 @@ import { directorDefaultState, directorMoodProfiles, validateDirectorState } fro
 import { exportSettingsFromPreset, getExportPreset } from '../export/formats';
 import type { DirectorMood } from '../director/director.types';
 import { isProjectToolId } from '../tools/tool.registry';
-import type { ProjectCreator, VisualMelodyProject } from './project.types';
+import type { ProjectCreator, ProjectImage, VisualMelodyProject } from './project.types';
 
 export function isSupportedProjectVersion(value: unknown): value is typeof PROJECT_SCHEMA_VERSION {
   return value === PROJECT_SCHEMA_VERSION;
 }
 
 export function serializeProject(project: VisualMelodyProject) {
-  return JSON.stringify({ ...project, audio: project.audio ? { ...project.audio, objectUrl: null } : null });
+  // Object URLs only live for the current session: strip them like the audio source.
+  const parameters = typeof project.engine.parameters.imageSrc === 'string'
+    ? { ...project.engine.parameters, imageSrc: '' }
+    : project.engine.parameters;
+  return JSON.stringify({
+    ...project,
+    audio: project.audio ? { ...project.audio, objectUrl: null } : null,
+    image: project.image ? { ...project.image, objectUrl: null } : null,
+    engine: { ...project.engine, parameters },
+  });
+}
+
+function migrateImage(value: unknown): ProjectImage | null {
+  if (!value || typeof value !== 'object') return null;
+  const image = value as Partial<ProjectImage>;
+  const positive = (candidate: unknown) => typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0 ? candidate : 0;
+  if (typeof image.fileName !== 'string') return null;
+  return {
+    fileName: image.fileName,
+    mimeType: typeof image.mimeType === 'string' ? image.mimeType : '',
+    size: positive(image.size),
+    width: positive(image.width),
+    height: positive(image.height),
+    objectUrl: typeof image.objectUrl === 'string' ? image.objectUrl : null,
+  };
 }
 
 function migrateExportSettings(value: VisualMelodyProject['export'] | undefined) {
@@ -59,6 +83,7 @@ export function parseProject(serialized: string): VisualMelodyProject {
     ...project,
     tool: isProjectToolId(project.tool) ? project.tool : 'engine',
     creator: migrateCreator(project.creator),
+    image: migrateImage((project as { image?: unknown }).image),
     engine: {
       ...project.engine,
       parameters: engineParameters,
