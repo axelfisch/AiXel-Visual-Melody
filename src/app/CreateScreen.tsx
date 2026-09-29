@@ -17,7 +17,7 @@ import {
   type DirectorPalette,
   type DirectorState,
 } from '../director';
-import type { EngineParameterValue, ProjectImage, ProjectLyrics } from '../project/project.types';
+import type { EngineParameterValue, ProjectAnalysis, ProjectImage, ProjectLyrics } from '../project/project.types';
 import { ImagePulsePanel } from './ImagePulsePanel';
 import { LyricCanvasPanel } from './LyricCanvasPanel';
 import type { Engine, EngineKey } from './engines.catalog';
@@ -43,6 +43,7 @@ export function CreateScreen({
   onLyrics = () => undefined,
   trackDuration = null,
   trackBpm = null,
+  analysis = null,
   onEngine,
   onTool,
   onPreset,
@@ -70,6 +71,8 @@ export function CreateScreen({
   onLyrics?: (lyrics: Partial<ProjectLyrics>) => void;
   trackDuration?: number | null;
   trackBpm?: number | null;
+  /** Analysed track (drives the live Pro Tool preview; a synthetic 118 BPM clock is used without it). */
+  analysis?: ProjectAnalysis | null;
   onEngine: (engine: EngineKey) => void;
   onTool: (tool: ProjectToolId) => void;
   onPreset: (preset: string) => void;
@@ -252,8 +255,11 @@ export function CreateScreen({
         <div className="studio-main">
           <PreviewCanvas
             engine={engine}
-            imageUrl={activeTool === 'image-pulse' ? image?.objectUrl ?? null : null}
-            lyricsText={activeTool === 'lyric-canvas' ? lyrics.text : ''}
+            config={engineParameters}
+            analysis={analysis}
+            duration={trackDuration}
+            syntheticDuration={activeTool === 'lyric-canvas' ? syntheticLyricsLoop(lyrics.text) : undefined}
+            title={projectName}
           />
           <GlassPanel>
             <PanelHeading icon={<Palette size={18} />} label={t('visualPresets')} />
@@ -337,4 +343,10 @@ export function CreateScreen({
       </div>
     </section>
   );
+}
+
+/** Without audio, loop the synthetic clock over the whole auto-timed lyric sheet (~4 s per line). */
+function syntheticLyricsLoop(text: string): number {
+  const lines = text.split('\n').filter((line) => line.replace(/\[[^\]]*\]/g, '').trim()).length;
+  return Math.max(30, lines * 4) + 3;
 }
