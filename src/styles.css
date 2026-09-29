@@ -799,6 +799,15 @@ blockquote {
   transition: border-radius 0.5s ease, background 0.6s ease, border-color 0.5s ease;
 }
 
+/* Pro Tools: the real engine renderer fills the Create preview. */
+.preview-canvas.live .live-engine-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .preview-canvas.full {
   min-height: min(72vh, 720px);
   border-radius: 22px;
@@ -1459,72 +1468,4 @@ input[type="range"]::-webkit-slider-thumb {
 .coming-soon-banner p {
   margin: 0;
   color: rgba(231, 201, 119, 0.92);
-}
-
-.sphere-visual {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.sphere-core {
-  width: 38%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(158, 234, 255, 0.55), rgba(138, 107, 255, 0.18) 48%, transparent 72%);
-  box-shadow: 0 0 40px rgba(127, 224, 255, 0.28);
-  animation: sphere-breathe 4.5s ease-in-out infinite;
-}
-
-.sphere-ring {
-  position: absolute;
-  width: 46%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid rgba(158, 234, 255, 0.28);
-  animation: sphere-orbit 9s linear infinite;
-}
-
-.sphere-ring.ring-b {
-  width: 54%;
-  border-color: rgba(138, 107, 255, 0.3);
-  animation-duration: 12s;
-  animation-direction: reverse;
-  transform: rotateX(62deg);
-}
-
-.sphere-ring.ring-c {
-  width: 60%;
-  border-color: rgba(95, 208, 255, 0.22);
-  animation-duration: 16s;
-}
-
-.sphere-dot {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #9eeaff;
-  opacity: 0.55;
-  left: calc(32% + (var(--i) * 2.1%));
-  top: calc(28% + ((var(--i) * 37) % 40) * 1%);
-  animation: sphere-twinkle 2.8s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.08s);
-}
-
-@keyframes sphere-breathe {
-  0%, 100% { transform: scale(0.96); opacity: 0.85; }
-  50% { transform: scale(1.04); opacity: 1; }
-}
-
-@keyframes sphere-orbit {
-  from { transform: rotate(0deg) rotateX(58deg); }
-  to { transform: rotate(360deg) rotateX(58deg); }
-}
-
-@keyframes sphere-twinkle {
-  0%, 100% { opacity: 0.25; transform: scale(0.8); }
-  50% { opacity: 0.9; transform: scale(1.2); }
 }
