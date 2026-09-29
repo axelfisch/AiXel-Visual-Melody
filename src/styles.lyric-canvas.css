@@ -109,34 +109,3 @@
   font-style: normal;
   opacity: 0.8;
 }
-
-/* Create mock visual */
-.lyrics-visual {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  gap: 10px;
-  padding: 0 10%;
-  text-align: center;
-  pointer-events: none;
-}
-
-.lyrics-visual .lyrics-line {
-  font: 800 clamp(1.1rem, 2.6vw, 2rem)/1.2 Manrope, system-ui, sans-serif;
-  color: rgba(236, 240, 255, 0.45);
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-}
-
-.lyrics-visual .lyrics-line.sung {
-  background: linear-gradient(90deg, var(--accent-from, #9eeaff), var(--accent-to, #b18aff));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 14px rgba(158, 234, 255, 0.45));
-}
-
-.lyrics-visual .lyrics-line.next {
-  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
-  opacity: 0.8;
-}
