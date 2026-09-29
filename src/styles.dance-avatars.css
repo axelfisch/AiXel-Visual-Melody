@@ -1,0 +1,69 @@
+/* Dance Avatars Create chrome */
+.avatar-options {
+  margin-bottom: 18px;
+}
+
+.avatar-style-help {
+  margin-top: 14px;
+}
+
+.avatar-visual {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.avatar-glow {
+  position: absolute;
+  width: 42%;
+  height: 58%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(158, 234, 255, 0.28) 0%, rgba(138, 107, 255, 0.12) 45%, transparent 70%);
+  filter: blur(8px);
+  animation: avatar-pulse 2.8s ease-in-out infinite;
+}
+
+.avatar-figure {
+  width: 54px;
+  height: 120px;
+  position: relative;
+  transform-origin: center bottom;
+  animation: avatar-sway 1.6s ease-in-out infinite;
+}
+
+.avatar-figure::before,
+.avatar-figure::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #9eeaff, #8a6bff);
+  box-shadow: 0 0 16px rgba(158, 234, 255, 0.55);
+}
+
+.avatar-figure::before {
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.avatar-figure::after {
+  top: 26px;
+  width: 18px;
+  height: 88px;
+  border-radius: 12px;
+  clip-path: polygon(20% 0, 80% 0, 100% 38%, 78% 100%, 22% 100%, 0 38%);
+}
+
+@keyframes avatar-sway {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-6px); }
+}
+
+@keyframes avatar-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
