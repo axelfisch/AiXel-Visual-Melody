@@ -1,4 +1,5 @@
 import { DEFAULT_ENGINE_ID } from '../engines/engine.defaults';
+import { DEFAULT_LAYER_MIX } from '../engines/layer-mix/layerMix.defaults';
 import { directorDefaultState } from '../director/director.profiles';
 import { exportSettingsFromPreset } from '../export/formats';
 import type { ExportSettings, ProjectCreator, VisualMelodyProject } from './project.types';
@@ -36,6 +37,7 @@ export function createProject(name = 'Untitled Visual Melody'): VisualMelodyProj
       parameters: {},
       director: { mood: 'More Emotional', values: { ...directorDefaultState } },
     },
+    mix: { ...DEFAULT_LAYER_MIX },
     creator: { ...DEFAULT_CREATOR },
     export: { ...DEFAULT_EXPORT_SETTINGS },
   };

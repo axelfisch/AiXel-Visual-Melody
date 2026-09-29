@@ -16,6 +16,12 @@ export type RenderSurface = {
   width: number;
   height: number;
   pixelRatio: number;
+  /**
+   * Set when the engine renders as layer 2 of a two-layer mix: the surface
+   * starts cleared and the engine should skip its opaque backdrop (and any
+   * full-frame veil) so the layer below shows through. Absent = opaque, as before.
+   */
+  transparent?: boolean;
 };
 
 export type EngineParameterDefinition = {
