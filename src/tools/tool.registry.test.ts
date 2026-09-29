@@ -22,7 +22,9 @@ describe('tool registry', () => {
     expect(getTool('image-pulse').engineId).toBe('image-pulse');
   });
 
-  it('keeps Lyric Canvas as coming soon', () => {
-    expect(getTool('lyric-canvas').availability).toBe('coming-soon');
+  it('marks Lyric Canvas as implemented (all four Pro Tools ready)', () => {
+    expect(getTool('lyric-canvas').availability).toBe('implemented');
+    expect(getTool('lyric-canvas').engineId).toBe('lyric-canvas');
+    expect(listProTools().every((tool) => tool.availability === 'implemented')).toBe(true);
   });
 });

@@ -2,6 +2,7 @@ import type { VisualEngine } from './engine.types';
 import { CosmicWavesEngine } from './cosmic-waves/CosmicWavesEngine';
 import { DanceAvatarsEngine } from './dance-avatars/DanceAvatarsEngine';
 import { ImagePulseEngine } from './image-pulse/ImagePulseEngine';
+import { LyricCanvasEngine } from './lyric-canvas/LyricCanvasEngine';
 import { FrequencyCityEngine } from './frequency-city/FrequencyCityEngine';
 import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { LiquidColorsEngine } from './liquid-colors/LiquidColorsEngine';
@@ -9,7 +10,7 @@ import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine
 import { NeonVelvetEngine } from './neon-velvet/NeonVelvetEngine';
 import { ParticleSphereEngine } from './particle-sphere/ParticleSphereEngine';
 
-const PRO_ENGINE_IDS = new Set(['particle-sphere', 'dance-avatars', 'image-pulse']);
+const PRO_ENGINE_IDS = new Set(['particle-sphere', 'dance-avatars', 'image-pulse', 'lyric-canvas']);
 
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
@@ -21,6 +22,7 @@ const engines = new Map<string, VisualEngine>([
   [ParticleSphereEngine.id, ParticleSphereEngine as VisualEngine],
   [DanceAvatarsEngine.id, DanceAvatarsEngine as VisualEngine],
   [ImagePulseEngine.id, ImagePulseEngine as VisualEngine],
+  [LyricCanvasEngine.id, LyricCanvasEngine as VisualEngine],
 ]);
 
 export function getEngine(id: string): VisualEngine {

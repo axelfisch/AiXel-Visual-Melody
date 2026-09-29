@@ -31,8 +31,9 @@ const tools: VisualTool[] = [
   {
     id: 'lyric-canvas',
     name: 'Lyric Canvas',
-    description: 'Cinematic synchronized lyrics.',
-    availability: 'coming-soon',
+    description: 'Cinematic synchronized lyrics with kinetic typography.',
+    availability: 'implemented',
+    engineId: 'lyric-canvas',
   },
 ];
 
