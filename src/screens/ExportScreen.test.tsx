@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AudioAnalysis } from '../audio';
 import { CosmicWavesEngine } from '../engines/cosmic-waves/CosmicWavesEngine';
+import { setDevPlan } from '../entitlements';
 import { LocaleProvider } from '../i18n/LocaleContext';
 import { DEFAULT_EXPORT_SETTINGS } from '../project/project.defaults';
 import { ExportScreen } from './ExportScreen';
@@ -49,6 +50,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  setDevPlan(null);
 });
 
 describe('ExportScreen', () => {
@@ -125,5 +127,78 @@ describe('ExportScreen', () => {
     await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
 
     await waitFor(() => expect(screen.getByText('Échec simulé.')).toBeInTheDocument());
+  });
+
+  describe('Creator Pro gates', () => {
+    it('Free: 1080p presets are locked with a Pro badge and the watermark cannot be removed', async () => {
+      mocks.renderMp4.mockResolvedValue(new Blob(['mp4'], { type: 'video/mp4' }));
+      const user = userEvent.setup();
+      renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+
+      expect(screen.getByTestId('plan-chip')).toHaveTextContent('Gratuite');
+      const locked = screen.getByRole('button', { name: /1080p 16:9/ });
+      expect(locked).toHaveAttribute('aria-disabled', 'true');
+      expect(locked).toHaveTextContent('Pro');
+      await user.click(locked);
+      expect(locked).toHaveAttribute('aria-pressed', 'false');
+      expect(screen.getByRole('button', { name: /720p 16:9/ })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getAllByText('Le 1080p est une fonction Creator Pro.').length).toBeGreaterThan(0);
+
+      const watermark = screen.getByRole('checkbox', { name: /Filigrane AiXel/ });
+      expect(watermark).toBeChecked();
+      expect(watermark).toBeDisabled();
+
+      await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
+      await screen.findByText('MP4 terminé et téléchargé.');
+      expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({
+        settings: expect.objectContaining({ width: 1280, height: 720, watermark: true }),
+      }));
+    });
+
+    it('Free: a project saved with 1080p settings is shown and exported at 720p', () => {
+      renderExport(
+        <ExportScreen
+          analysis={analysis}
+          previewBackground="#05060b"
+          settings={{ ...DEFAULT_EXPORT_SETTINGS, presetId: '1080p-vertical', width: 1080, height: 1920, watermark: false }}
+        />,
+      );
+      expect(screen.getByRole('button', { name: /720p 9:16/ })).toHaveAttribute('aria-pressed', 'true');
+      const canvas = screen.getByLabelText('Image vidéo actuellement rendue');
+      expect(canvas).toHaveAttribute('width', '720');
+      expect(canvas).toHaveAttribute('height', '1280');
+      expect(screen.getByRole('checkbox', { name: /Filigrane AiXel/ })).toBeChecked();
+    });
+
+    it('Creator Pro: picks 1080p 9:16, turns the watermark off and exports that', async () => {
+      setDevPlan('creator_pro');
+      mocks.renderMp4.mockResolvedValue(new Blob(['mp4'], { type: 'video/mp4' }));
+      const user = userEvent.setup();
+      renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+
+      expect(screen.getByTestId('plan-chip')).toHaveTextContent('Creator Pro');
+      expect(screen.getByTestId('plan-chip')).toHaveTextContent('mode dev');
+      await user.click(screen.getByRole('button', { name: /1080p 9:16/ }));
+      const watermark = screen.getByRole('checkbox', { name: /Filigrane AiXel/ });
+      expect(watermark).toBeEnabled();
+      await user.click(watermark);
+      expect(watermark).not.toBeChecked();
+
+      await user.click(screen.getByRole('button', { name: 'Exporter le MP4' }));
+      await screen.findByText('MP4 terminé et téléchargé.');
+      expect(mocks.renderMp4).toHaveBeenCalledWith(expect.objectContaining({
+        settings: expect.objectContaining({ presetId: '1080p-vertical', width: 1080, height: 1920, watermark: false }),
+      }));
+      expect(screen.getByRole('link', { name: 'Télécharger de nouveau' })).toHaveAttribute('download', 'In-the-Spirit-of-Naomi-1080p-9x16.mp4');
+    });
+
+    it('turning the dev override off returns to Free', async () => {
+      setDevPlan('creator_pro');
+      const user = userEvent.setup();
+      renderExport(<ExportScreen analysis={analysis} previewBackground="#05060b" settings={DEFAULT_EXPORT_SETTINGS} />);
+      await user.click(screen.getByRole('button', { name: 'Désactiver' }));
+      expect(screen.getByTestId('plan-chip')).toHaveTextContent('Gratuite');
+      expect(screen.getByRole('checkbox', { name: /Filigrane AiXel/ })).toBeDisabled();
+    });
   });
 });

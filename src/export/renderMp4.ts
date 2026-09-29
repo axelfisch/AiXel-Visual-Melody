@@ -1,4 +1,5 @@
 import { energyAt, onsetAt, type AudioAnalysis } from '../audio';
+import { getEntitlements } from '../entitlements/entitlements.source';
 import type { VisualEngine } from '../engines/engine.types';
 import type { ExportSettings } from '../project/project.types';
 import {
@@ -7,6 +8,7 @@ import {
   renderEndCard,
   type EndCardCredits,
 } from './endCard';
+import { enforceExportEntitlements } from './exportGates';
 import { drawWatermark } from './watermark';
 
 export type RenderMp4Progress = {
@@ -27,6 +29,42 @@ export type RenderMp4Options = {
   endCardCredits?: Partial<EndCardCredits>;
   onProgress?: (progress: RenderMp4Progress) => void;
 };
+
+/**
+ * Settings the pipeline will really render with, for the current plan. Free is
+ * capped at 720p and always watermarked; Creator Pro unlocks 1080p and a clean
+ * export. Read from the single entitlement source, never from the caller.
+ */
+export function resolveExportSettings(settings: ExportSettings): ExportSettings {
+  return enforceExportEntitlements(settings, getEntitlements().capabilities).settings;
+}
+
+type FrameSurface = { context: CanvasRenderingContext2D; width: number; height: number };
+
+/** One exported video frame: engine render at `time`, then the watermark when the plan requires it. */
+export function drawExportFrame<TConfig extends object>(
+  { context, width, height }: FrameSurface,
+  engine: VisualEngine<TConfig>,
+  config: TConfig,
+  analysis: AudioAnalysis,
+  time: number,
+  watermark: boolean,
+) {
+  engine.render(
+    { context, width, height, pixelRatio: 1 },
+    {
+      time,
+      duration: analysis.duration,
+      progress: analysis.duration > 0 ? Math.min(1, time / analysis.duration) : 1,
+      energy: energyAt(analysis, time),
+      onset: onsetAt(analysis, time),
+      bpm: analysis.bpm,
+      title: analysis.name,
+    },
+    config,
+  );
+  if (watermark) drawWatermark(context, width, height);
+}
 
 function abortError() {
   return new DOMException('Le rendu MP4 a été annulé.', 'AbortError');
@@ -49,8 +87,10 @@ export async function renderMp4({
 }: RenderMp4Options): Promise<Blob> {
   throwIfAborted(signal);
 
-  canvas.width = settings.width;
-  canvas.height = settings.height;
+  // Entitlements are enforced here, inside the export pipeline, whatever the UI sent.
+  const effective = resolveExportSettings(settings);
+  canvas.width = effective.width;
+  canvas.height = effective.height;
   const context = canvas.getContext('2d');
   if (!context) throw new Error("Le canevas d’export n’est pas disponible.");
 
@@ -62,25 +102,8 @@ export async function renderMp4({
     await engine.prepare(config);
     throwIfAborted(signal);
   }
-  const stampWatermark = () => {
-    if (settings.watermark !== false) drawWatermark(context, canvas.width, canvas.height);
-  };
-  const renderInitialFrame = () => {
-    engine.render(
-      { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-      {
-        time: 0,
-        duration: analysis.duration,
-        progress: 0,
-        energy: energyAt(analysis, 0),
-        onset: onsetAt(analysis, 0),
-        bpm: analysis.bpm,
-        title: analysis.name,
-      },
-      config,
-    );
-    stampWatermark();
-  };
+  const surface = { context, width: canvas.width, height: canvas.height };
+  const renderInitialFrame = () => drawExportFrame(surface, engine, config, analysis, 0, effective.watermark);
   renderInitialFrame();
   onProgress?.({ progress: 0, renderedTime: 0, duration: totalDuration, canvas });
 
@@ -90,7 +113,7 @@ export async function renderMp4({
   source.buffer = analysis.buffer;
   source.connect(destination);
 
-  const canvasStream = canvas.captureStream(settings.frameRate);
+  const canvasStream = canvas.captureStream(effective.frameRate);
   const videoTrack = canvasStream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack | undefined;
   const stream = new MediaStream([
     ...canvasStream.getVideoTracks(),
@@ -98,7 +121,7 @@ export async function renderMp4({
   ]);
   const recorder = new MediaRecorder(stream, {
     mimeType,
-    videoBitsPerSecond: settings.videoBitRate,
+    videoBitsPerSecond: effective.videoBitRate,
   });
   const chunks: Blob[] = [];
   let animationFrame = 0;
@@ -139,21 +162,7 @@ export async function renderMp4({
           const renderedTime = Math.min(totalDuration, audioContext.currentTime - startedAt);
           const progress = totalDuration > 0 ? renderedTime / totalDuration : 1;
           if (renderedTime < analysis.duration) {
-            const trackProgress = analysis.duration > 0 ? renderedTime / analysis.duration : 1;
-            engine.render(
-              { context, width: canvas.width, height: canvas.height, pixelRatio: 1 },
-              {
-                time: renderedTime,
-                duration: analysis.duration,
-                progress: trackProgress,
-                energy: energyAt(analysis, renderedTime),
-                onset: onsetAt(analysis, renderedTime),
-                bpm: analysis.bpm,
-                title: analysis.name,
-              },
-              config,
-            );
-            stampWatermark();
+            drawExportFrame(surface, engine, config, analysis, renderedTime, effective.watermark);
           } else {
             renderEndCard({
               context,

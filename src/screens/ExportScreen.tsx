@@ -1,12 +1,15 @@
-import { AlertTriangle, Download, Film, Gauge, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { AlertTriangle, Crown, Download, Film, Gauge, Lock, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatTime, type AudioAnalysis } from '../audio';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import type { VisualEngine } from '../engines/engine.types';
 import { MinimalAlbumArtEngine } from '../engines/minimal-album-art/MinimalAlbumArtEngine';
 import { getSupportedMp4MimeType } from '../export/mediaRecorderSupport';
 import { EXPORT_END_CARD_DURATION } from '../export/endCard';
-import { EXPORT_PRESETS, exportSettingsFromPreset, type ExportPresetId } from '../export/formats';
+import { enforceExportEntitlements, isProPreset } from '../export/exportGates';
+import { exportGateCopy } from '../export/exportGates.i18n';
+import { EXPORT_PRESETS, exportSettingsFromPreset, getExportPreset, type ExportPreset, type ExportPresetId } from '../export/formats';
+import { devPlanForcedByBuild, setDevPlan, useEntitlements } from '../entitlements';
 import { useLocale } from '../i18n/LocaleContext';
 import { renderMp4 } from '../export/renderMp4';
 import type { ExportSettings } from '../project/project.types';
@@ -27,6 +30,7 @@ function downloadExport({ filename, url }: CompletedExport) {
 
 const PRESET_LABELS: Record<ExportPresetId, string> = {
   '720p-widescreen': 'MP4 · 720p 16:9',
+  '720p-vertical': 'MP4 · 720p 9:16',
   '1080p-widescreen': 'MP4 · 1080p 16:9',
   '1080p-vertical': 'MP4 · 1080p 9:16',
 };
@@ -46,7 +50,12 @@ export function ExportScreen({
   settings: ExportSettings;
   onSettingsChange?: (settings: ExportSettings) => void;
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const copy = exportGateCopy[locale] ?? exportGateCopy.en;
+  const entitlements = useEntitlements();
+  const { capabilities } = entitlements;
+  const isPro = entitlements.plan === 'creator_pro';
+  const [upsellHighlighted, setUpsellHighlighted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [localSettings, setLocalSettings] = useState<ExportSettings>(settings);
@@ -57,8 +66,13 @@ export function ExportScreen({
   const [state, setState] = useState<ExportState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const rendering = state === 'rendering';
-  const activeSettings = onSettingsChange ? settings : localSettings;
+  const requestedSettings = onSettingsChange ? settings : localSettings;
+  // Same gate as the export pipeline, so what is shown is what gets rendered.
+  const gate = useMemo(() => enforceExportEntitlements(requestedSettings, capabilities), [requestedSettings, capabilities]);
+  const activeSettings = gate.settings;
   const presetId = activeSettings.presetId ?? '720p-widescreen';
+  const activePreset = getExportPreset(presetId);
+  const watermarkOn = activeSettings.watermark !== false;
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -86,11 +100,30 @@ export function ExportScreen({
     }
   })();
 
-  const selectPreset = (id: ExportPresetId) => {
-    if (rendering) return;
-    const next = exportSettingsFromPreset(id, activeSettings.watermark !== false);
+  const updateSettings = (next: ExportSettings) => {
     setLocalSettings(next);
     onSettingsChange?.(next);
+  };
+
+  const presetLocked = (preset: ExportPreset) => isProPreset(preset) && !capabilities.export1080p;
+
+  const selectPreset = (preset: ExportPreset) => {
+    if (rendering) return;
+    if (presetLocked(preset)) {
+      setUpsellHighlighted(true);
+      return;
+    }
+    setUpsellHighlighted(false);
+    updateSettings(exportSettingsFromPreset(preset.id as ExportPresetId, watermarkOn));
+  };
+
+  const toggleWatermark = (checked: boolean) => {
+    if (rendering) return;
+    if (!capabilities.removeWatermark) {
+      setUpsellHighlighted(true);
+      return;
+    }
+    updateSettings({ ...activeSettings, watermark: checked });
   };
 
   const exportMp4 = async () => {
@@ -132,9 +165,8 @@ export function ExportScreen({
         },
       });
       const url = URL.createObjectURL(blob);
-      const preset = EXPORT_PRESETS.find((item) => item.id === presetId);
       const completedExport = {
-        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}-${preset?.suffix ?? '720p'}.mp4`,
+        filename: `${analysis.name.replace(/[^a-z0-9_-]+/gi, '-') || 'visual-melody'}-${activePreset.suffix}.mp4`,
         url,
       };
       setCompletedExport(completedExport);
@@ -161,32 +193,72 @@ export function ExportScreen({
       <div className="screen-title">
         <p className="eyebrow">Export</p>
         <h1>{t('exportTitle')}</h1>
-        <p>{t('exportNote')}</p>
+        <p>{copy.exportNote.replace('{resolution}', `${activeSettings.width}×${activeSettings.height}`)}</p>
       </div>
       <div className="export-grid">
         <GlassPanel className="span-2">
           <div className="panel-heading"><Film size={18} /><h2>{t('formatGrid')}</h2></div>
-          <div className="format-grid">
-            {EXPORT_PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                className={presetId === preset.id ? 'selected' : undefined}
-                disabled={rendering}
-                onClick={() => selectPreset(preset.id)}
-                type="button"
-              >
-                {PRESET_LABELS[preset.id]}
-              </button>
-            ))}
+          <div className="plan-row">
+            <span className="muted">{copy.planLabel}</span>
+            <span className={`plan-chip${isPro ? ' pro' : ''}`} data-testid="plan-chip">
+              {isPro ? <Crown size={14} /> : null}
+              {isPro ? copy.planPro : copy.planFree}
+              {entitlements.source === 'dev-override' ? <em>· {copy.devOverride}</em> : null}
+            </span>
+            {entitlements.source === 'dev-override' && !devPlanForcedByBuild() ? (
+              <button onClick={() => setDevPlan(null)} type="button">{copy.disableDevOverride}</button>
+            ) : null}
           </div>
-          <p className="muted watermark-note">Filigrane AiXel sur l’export gratuit. L’export propre arrive ensuite.</p>
+          <div className="format-grid">
+            {EXPORT_PRESETS.map((preset) => {
+              const locked = presetLocked(preset);
+              const classes = [presetId === preset.id ? 'selected' : '', locked ? 'locked' : ''].filter(Boolean).join(' ');
+              return (
+                <button
+                  key={preset.id}
+                  aria-disabled={locked || undefined}
+                  aria-pressed={presetId === preset.id}
+                  className={classes || undefined}
+                  disabled={rendering}
+                  onClick={() => selectPreset(preset)}
+                  title={locked ? copy.lockedPreset : undefined}
+                  type="button"
+                >
+                  {PRESET_LABELS[preset.id]}
+                  {isProPreset(preset) ? (
+                    <span className="pro-badge">{locked ? <Lock size={10} /> : null}{copy.proBadge}</span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          <label className="watermark-toggle">
+            <input
+              checked={watermarkOn}
+              disabled={rendering || !capabilities.removeWatermark}
+              onChange={(event) => toggleWatermark(event.target.checked)}
+              type="checkbox"
+            />
+            <span>{copy.watermarkLabel}</span>
+            {!capabilities.removeWatermark ? <span className="pro-badge"><Lock size={10} />{copy.proBadge}</span> : null}
+          </label>
+          <p className="muted watermark-note">{capabilities.removeWatermark ? copy.watermarkPro : copy.watermarkFree}</p>
+          {gate.downgraded ? <p className="muted" role="note">{copy.downgraded}</p> : null}
+          {!isPro ? (
+            <div className={`pro-upsell${upsellHighlighted ? ' highlight' : ''}`} role="status">
+              <strong><Crown size={16} /> {copy.upsellTitle}</strong>
+              {upsellHighlighted ? <p>{copy.lockedPreset}</p> : null}
+              <p>{copy.upsellBody}</p>
+              <p className="muted">{copy.upsellSoon}</p>
+            </div>
+          ) : null}
         </GlassPanel>
         <GlassPanel>
           <div className="panel-heading"><Gauge size={18} /><h2>{t('renderProgress')}</h2></div>
           <p className="export-focus-notice" role="note"><AlertTriangle size={17} />{t('keepTabActive')}</p>
           <canvas
             aria-label={t('renderedFrame')}
-            className={`render-preview${presetId === '1080p-vertical' ? ' render-preview-vertical' : ''}`}
+            className={`render-preview${activeSettings.height > activeSettings.width ? ' render-preview-vertical' : ''}`}
             ref={canvasRef}
             width={activeSettings.width}
             height={activeSettings.height}
