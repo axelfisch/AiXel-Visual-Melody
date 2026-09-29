@@ -1,31 +1,63 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Waveform } from '../components/audio/Waveform';
+import { LiveEngineCanvas } from '../engines/LiveEngineCanvas';
+import { getEngineOrDefault } from '../engines/engine.registry';
 import { useLocale } from '../i18n/LocaleContext';
-import type { Engine } from './engines.catalog';
+import type { EngineParameterValue, ProjectAnalysis } from '../project/project.types';
+import type { Engine, EngineKey } from './engines.catalog';
 
 const waveform = Array.from({ length: 72 }, (_, i) => 18 + Math.abs(Math.sin(i * 0.38)) * 54 + (i % 7) * 3);
 const spectrum = Array.from({ length: 44 }, (_, i) => 16 + Math.abs(Math.sin(i * 0.55)) * 68 + (i % 5) * 4);
 
+/** Pro Tools render through their real engine on the Create screen (same renderer as Preview/Export). */
+const LIVE_ENGINE_KEYS: EngineKey[] = ['sphere', 'avatar', 'pulse', 'lyrics'];
+
 export function PreviewCanvas({
   engine,
   full = false,
-  imageUrl = null,
-  lyricsText = '',
-}: { engine: Engine; full?: boolean; imageUrl?: string | null; lyricsText?: string }) {
+  config,
+  analysis = null,
+  duration = null,
+  syntheticDuration,
+  title = '',
+}: {
+  engine: Engine;
+  full?: boolean;
+  /** Current engine parameters (gender/style, Creator colors, Director-mapped faders, image, lyrics). */
+  config?: Record<string, EngineParameterValue>;
+  analysis?: ProjectAnalysis | null;
+  duration?: number | null;
+  syntheticDuration?: number;
+  title?: string;
+}) {
+  const live = LIVE_ENGINE_KEYS.includes(engine.key);
+  const renderEngine = useMemo(() => (live ? getEngineOrDefault(engine.id) : null), [engine.id, live]);
   return (
-    <div className={`preview-canvas ${full ? 'full' : ''}`} style={{ background: engine.preview, borderRadius: `var(--preview-radius)` }}>
-      {engine.key === 'cosmic' && <CosmicVisual />}
-      {engine.key === 'geometry' && <GeometryVisual />}
-      {engine.key === 'liquid' && <LiquidVisual />}
-      {engine.key === 'city' && <CityVisual />}
-      {engine.key === 'album' && <AlbumVisual />}
-      {engine.key === 'neon' && <NeonVisual />}
-      {engine.key === 'sphere' && <SphereVisual />}
-      {engine.key === 'avatar' && <AvatarVisual />}
-      {engine.key === 'pulse' && <PulseVisual imageUrl={imageUrl} />}
-      {engine.key === 'lyrics' && <LyricsVisual text={lyricsText} />}
+    <div
+      className={`preview-canvas ${full ? 'full' : ''}${live ? ' live' : ''}`}
+      style={{ background: engine.preview, borderRadius: `var(--preview-radius)` }}
+    >
+      {renderEngine ? (
+        <LiveEngineCanvas
+          engine={renderEngine}
+          config={config}
+          analysis={analysis}
+          duration={duration}
+          syntheticDuration={syntheticDuration}
+          title={title}
+        />
+      ) : (
+        <>
+          {engine.key === 'cosmic' && <CosmicVisual />}
+          {engine.key === 'geometry' && <GeometryVisual />}
+          {engine.key === 'liquid' && <LiquidVisual />}
+          {engine.key === 'city' && <CityVisual />}
+          {engine.key === 'album' && <AlbumVisual />}
+          {engine.key === 'neon' && <NeonVisual />}
+        </>
+      )}
       <span className="live-badge">{engine.name}</span>
-      <Waveform bars={waveform.slice(0, 40)} compact />
+      {!live && <Waveform bars={waveform.slice(0, 40)} compact />}
     </div>
   );
 }
@@ -80,53 +112,6 @@ export function NeonVisual() {
       <path d="M20,150 C90,20 160,160 280,40" />
       <path d="M20,120 C80,40 170,130 280,30" />
     </svg>
-  );
-}
-
-export function SphereVisual() {
-  return (
-    <div className="sphere-visual" aria-hidden="true">
-      <span className="sphere-core" />
-      <span className="sphere-ring ring-a" />
-      <span className="sphere-ring ring-b" />
-      <span className="sphere-ring ring-c" />
-      {Array.from({ length: 18 }, (_, i) => (
-        <i className="sphere-dot" key={i} style={{ '--i': i } as React.CSSProperties} />
-      ))}
-    </div>
-  );
-}
-
-export function AvatarVisual() {
-  return (
-    <div className="avatar-visual" aria-hidden="true">
-      <span className="avatar-glow" />
-      <span className="avatar-figure" />
-    </div>
-  );
-}
-
-export function PulseVisual({ imageUrl }: { imageUrl: string | null }) {
-  return (
-    <div className={`pulse-visual${imageUrl ? ' has-image' : ''}`} aria-hidden="true">
-      <span className="pulse-glow" />
-      {imageUrl ? <img src={imageUrl} alt="" /> : <span className="pulse-placeholder" />}
-    </div>
-  );
-}
-
-export function LyricsVisual({ text }: { text: string }) {
-  const { t } = useLocale();
-  const lines = text
-    .split('\n')
-    .map((line) => line.replace(/\[[^\]]*\]/g, '').trim())
-    .filter(Boolean)
-    .slice(0, 2);
-  return (
-    <div className="lyrics-visual" aria-hidden="true">
-      <span className="lyrics-line sung">{lines[0] ?? t('lyricCanvas')}</span>
-      <span className="lyrics-line next">{lines[1] ?? '♪ ♪ ♪'}</span>
-    </div>
   );
 }
 
