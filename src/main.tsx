@@ -3,6 +3,7 @@ import { App } from './app/App';
 import { LocaleProvider } from './i18n/LocaleContext';
 import { ProjectProvider } from './project/project.context';
 import './styles.css';
+import './styles.dance-avatars.css';
 
 createRoot(document.getElementById('root')!).render(
   <LocaleProvider>

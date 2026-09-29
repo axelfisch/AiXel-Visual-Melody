@@ -19,6 +19,7 @@ const adapters: Record<string, Adapter> = {
   'frequency-city': { speedParameter: 'pulseSpeed', structureParameter: 'buildingCount' },
   'neon-velvet': { speedParameter: 'trailSpeed', structureParameter: 'trailCount' },
   'particle-sphere': { speedParameter: 'orbitSpeed', structureParameter: 'particleDensity' },
+  'dance-avatars': { speedParameter: 'danceSpeed', structureParameter: 'limbExpressiveness' },
 };
 
 /**
