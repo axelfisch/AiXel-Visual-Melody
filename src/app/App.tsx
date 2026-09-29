@@ -15,7 +15,7 @@ import type { EngineParameterValue } from '../project/project.types';
 import { ExportScreen } from '../screens/ExportScreen';
 import { PreviewScreen } from '../screens/PreviewScreen';
 import { useHashNavigation } from './navigation';
-import { engines, type EngineKey } from './engines.catalog';
+import { engines, PRO_ENGINE_KEYS, type EngineKey } from './engines.catalog';
 import { CreateScreen } from './CreateScreen';
 import {
   AnalyzeScreen,
@@ -28,7 +28,7 @@ import {
 
 export function App() {
   const { screen, navigate } = useHashNavigation();
-  const { project, runtime, dispatch, setAnalyzedAudio } = useProject();
+  const { project, runtime, dispatch, setAnalyzedAudio, setImageFile, clearImage } = useProject();
   const [goldenBusy, setGoldenBusy] = useState(false);
   const [goldenError, setGoldenError] = useState('');
   const [autoPlayPreview, setAutoPlayPreview] = useState(false);
@@ -46,7 +46,7 @@ export function App() {
     () => directorCapabilities(project.engine.engineId),
     [project.engine.engineId],
   );
-  const classicEngines = useMemo(() => engines.filter((item) => item.key !== 'sphere' && item.key !== 'avatar'), []);
+  const classicEngines = useMemo(() => engines.filter((item) => !PRO_ENGINE_KEYS.includes(item.key)), []);
   const selectEngine = (key: EngineKey) => {
     const selected = engines.find((item) => item.key === key);
     if (selected) {
@@ -70,6 +70,7 @@ export function App() {
         ...project.engine.parameters,
         primaryColor: project.creator.primaryColor,
         accentColor: project.creator.accentColor,
+        ...(tool.engineId === 'image-pulse' ? { imageSrc: project.image?.objectUrl ?? '' } : {}),
       });
       dispatch({
         type: 'SELECT_TOOL',
@@ -181,6 +182,9 @@ export function App() {
             creator={project.creator}
             engineParameters={project.engine.parameters}
             projectName={project.name}
+            image={project.image}
+            onImageFile={setImageFile}
+            onClearImage={clearImage}
             onEngine={selectEngine}
             onTool={selectTool}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
