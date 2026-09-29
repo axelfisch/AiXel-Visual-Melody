@@ -27,6 +27,7 @@ export function createProject(name = 'Untitled Visual Melody'): VisualMelodyProj
     updatedAt: now,
     audio: null,
     analysis: null,
+    image: null,
     tool: 'engine',
     engine: {
       engineId: DEFAULT_ENGINE_ID,

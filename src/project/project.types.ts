@@ -13,6 +13,16 @@ export type ProjectAudio = {
   objectUrl: string | null;
 };
 
+/** Uploaded still image used by Image Pulse (kept at project level so it survives tool switches). */
+export type ProjectImage = {
+  fileName: string;
+  mimeType: string;
+  size: number;
+  width: number;
+  height: number;
+  objectUrl: string | null;
+};
+
 export type ProjectAnalysis = {
   sampleRate: number;
   bpm: number;
@@ -58,6 +68,8 @@ export type VisualMelodyProject = {
   updatedAt: string;
   audio: ProjectAudio | null;
   analysis: ProjectAnalysis | null;
+  /** Image uploaded for Image Pulse; `null` renders the procedural placeholder. */
+  image: ProjectImage | null;
   /** Active creative tool. Defaults to classic visual engines. */
   tool: ProjectToolId;
   engine: EngineSelection;
