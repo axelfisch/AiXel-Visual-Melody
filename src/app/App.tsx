@@ -70,7 +70,8 @@ export function App() {
         ...project.engine.parameters,
         primaryColor: project.creator.primaryColor,
         accentColor: project.creator.accentColor,
-        ...(tool.engineId === 'image-pulse' ? { imageSrc: project.image?.objectUrl ?? '' } : {}),
+        ...(tool.engineId === 'image-pulse' || tool.engineId === 'lyric-canvas' ? { imageSrc: project.image?.objectUrl ?? '' } : {}),
+        ...(tool.engineId === 'lyric-canvas' ? { lyrics: project.lyrics.text, lyricsOffset: project.lyrics.offset } : {}),
       });
       dispatch({
         type: 'SELECT_TOOL',
@@ -185,6 +186,10 @@ export function App() {
             image={project.image}
             onImageFile={setImageFile}
             onClearImage={clearImage}
+            lyrics={project.lyrics}
+            onLyrics={(lyrics) => dispatch({ type: 'SET_LYRICS', lyrics })}
+            trackDuration={project.audio?.duration ?? null}
+            trackBpm={project.analysis?.bpm ?? null}
             onEngine={selectEngine}
             onTool={selectTool}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
