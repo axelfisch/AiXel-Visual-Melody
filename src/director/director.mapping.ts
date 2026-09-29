@@ -20,6 +20,7 @@ const adapters: Record<string, Adapter> = {
   'neon-velvet': { speedParameter: 'trailSpeed', structureParameter: 'trailCount' },
   'particle-sphere': { speedParameter: 'orbitSpeed', structureParameter: 'particleDensity' },
   'dance-avatars': { speedParameter: 'danceSpeed', structureParameter: 'limbExpressiveness' },
+  'image-pulse': { speedParameter: 'pulseSpeed', structureParameter: 'effectComplexity' },
 };
 
 /**

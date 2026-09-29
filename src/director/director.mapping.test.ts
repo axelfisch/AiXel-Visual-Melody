@@ -12,6 +12,7 @@ const engines = [
   'neon-velvet',
   'particle-sphere',
   'dance-avatars',
+  'image-pulse',
 ];
 
 const allDimensions = [
@@ -111,5 +112,35 @@ describe('AiXel Director V1 mapping contract', () => {
     const high = mapDirectorToEngine('dance-avatars', { fluidity: 100, motionComplexity: 100 });
     expect(high.parameters.danceSpeed).toBeGreaterThan(low.parameters.danceSpeed as number);
     expect(high.parameters.limbExpressiveness).toBeGreaterThan(low.parameters.limbExpressiveness as number);
+  });
+
+  it('maps every Director fader to its own Image Pulse renderer parameter', () => {
+    const neutral = { emotion: 50, space: 50, fluidity: 50, light: 50, dynamics: 50, particles: 50, colorEnergy: 50, motionComplexity: 50 };
+    const expected: Record<string, string> = {
+      fluidity: 'pulseSpeed',
+      dynamics: 'energyResponse',
+      motionComplexity: 'effectComplexity',
+      light: 'glowIntensity',
+      space: 'spaceScale',
+      colorEnergy: 'colorSaturation',
+      particles: 'sparkleDensity',
+      emotion: 'warmth',
+    };
+    const base = mapDirectorToEngine('image-pulse', neutral).parameters;
+    for (const [dimension, parameter] of Object.entries(expected)) {
+      const low = mapDirectorToEngine('image-pulse', { ...neutral, [dimension]: 0 }).parameters;
+      const high = mapDirectorToEngine('image-pulse', { ...neutral, [dimension]: 100 }).parameters;
+      expect(high[parameter]).toBeGreaterThan(low[parameter] as number);
+      for (const other of Object.values(expected).filter((id) => id !== parameter)) {
+        expect(high[other]).toEqual(base[other]);
+      }
+    }
+  });
+
+  it('keeps the uploaded image, style and Creator colors when remapping Image Pulse', () => {
+    const result = mapDirectorToEngine('image-pulse', { fluidity: 90 }, {
+      imageSrc: 'blob:cover', style: 'kaleido', framing: 'card', primaryColor: '#112233',
+    });
+    expect(result.parameters).toMatchObject({ imageSrc: 'blob:cover', style: 'kaleido', framing: 'card', primaryColor: '#112233' });
   });
 });
