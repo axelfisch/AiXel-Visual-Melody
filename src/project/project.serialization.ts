@@ -3,6 +3,7 @@ import { directorDefaultState, directorMoodProfiles, validateDirectorState } fro
 import { exportSettingsFromPreset, getExportPreset } from '../export/formats';
 import type { DirectorMood } from '../director/director.types';
 import { isProjectToolId } from '../tools/tool.registry';
+import { validateLayerMix } from '../engines/layer-mix/layerMix.config';
 import type { ProjectCreator, ProjectImage, ProjectLyrics, VisualMelodyProject } from './project.types';
 
 export function isSupportedProjectVersion(value: unknown): value is typeof PROJECT_SCHEMA_VERSION {
@@ -19,6 +20,9 @@ export function serializeProject(project: VisualMelodyProject) {
     audio: project.audio ? { ...project.audio, objectUrl: null } : null,
     image: project.image ? { ...project.image, objectUrl: null } : null,
     engine: { ...project.engine, parameters },
+    mix: project.mix?.overlay && typeof project.mix.overlay.parameters.imageSrc === 'string'
+      ? { ...project.mix, overlay: { ...project.mix.overlay, parameters: { ...project.mix.overlay.parameters, imageSrc: '' } } }
+      : project.mix,
   });
 }
 
@@ -104,6 +108,8 @@ export function parseProject(serialized: string): VisualMelodyProject {
         values: validateDirectorState(existingDirector?.values ?? directorMoodProfiles[legacyMood] ?? directorDefaultState),
       },
     },
+    // Projects saved before two-layer mixes have no `mix`: single engine, as before.
+    mix: validateLayerMix((project as { mix?: unknown }).mix, project.engine?.engineId),
     export: migrateExportSettings(project.export),
   };
 }
