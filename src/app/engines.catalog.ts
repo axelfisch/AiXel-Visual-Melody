@@ -5,7 +5,10 @@ import liquidColorsThumbnail from '../assets/engine-thumbnails/liquid-colors.jpg
 import minimalAlbumArtThumbnail from '../assets/engine-thumbnails/minimal-album-art.jpg';
 import neonVelvetThumbnail from '../assets/engine-thumbnails/neon-velvet.jpg';
 
-export type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'sphere' | 'avatar';
+export type EngineKey = 'cosmic' | 'geometry' | 'liquid' | 'city' | 'album' | 'neon' | 'sphere' | 'avatar' | 'pulse';
+
+/** Pro Tool engines never appear in the classic engine tabs / home grid. */
+export const PRO_ENGINE_KEYS: EngineKey[] = ['sphere', 'avatar', 'pulse'];
 
 export type Engine = {
   id: string;
@@ -134,6 +137,20 @@ export const engines: Engine[] = [
     thumbnail: neonVelvetThumbnail,
     radius: 22,
     mood: 'A luminous dancer moves with the beat — silhouette, neon, hologram.',
+  },
+  {
+    id: 'image-pulse',
+    key: 'pulse',
+    number: '09',
+    name: 'Image Pulse',
+    character: 'Your image or cover art, pulsing to the beat.',
+    motion: 'Beat zoom, transient glow, ripple, glitch and kaleido.',
+    accentFrom: '#ffb86b',
+    accentTo: '#8a6bff',
+    preview: 'radial-gradient(circle at 50% 45%, #3a1f4f 0%, #120c24 52%, #05060b 100%)',
+    thumbnail: liquidColorsThumbnail,
+    radius: 20,
+    mood: 'Your image breathes with the track, pulsing in your Creator colors.',
   },
 ];
 

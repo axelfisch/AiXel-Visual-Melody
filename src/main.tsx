@@ -4,6 +4,7 @@ import { LocaleProvider } from './i18n/LocaleContext';
 import { ProjectProvider } from './project/project.context';
 import './styles.css';
 import './styles.dance-avatars.css';
+import './styles.image-pulse.css';
 
 createRoot(document.getElementById('root')!).render(
   <LocaleProvider>

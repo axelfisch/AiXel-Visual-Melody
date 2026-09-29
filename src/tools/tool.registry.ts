@@ -24,8 +24,9 @@ const tools: VisualTool[] = [
   {
     id: 'image-pulse',
     name: 'Image Pulse',
-    description: 'Uploaded cover art animated to the rhythm.',
-    availability: 'coming-soon',
+    description: 'Uploaded image or cover art animated to the rhythm.',
+    availability: 'implemented',
+    engineId: 'image-pulse',
   },
   {
     id: 'lyric-canvas',

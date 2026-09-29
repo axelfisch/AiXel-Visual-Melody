@@ -7,6 +7,7 @@ import type {
   ProjectAnalysis,
   ProjectAudio,
   ProjectCreator,
+  ProjectImage,
   VisualMelodyProject,
 } from './project.types';
 
@@ -27,12 +28,20 @@ export type ProjectAction =
       parameters: Record<string, EngineParameterValue>;
     }
   | { type: 'UPDATE_CREATOR'; creator: Partial<ProjectCreator> }
+  | { type: 'SET_IMAGE_SOURCE'; image: ProjectImage }
+  | { type: 'CLEAR_IMAGE_SOURCE' }
   | { type: 'UPDATE_ENGINE_PARAMETER'; parameterId: string; value: EngineParameterValue }
   | { type: 'UPDATE_ENGINE_PARAMETERS'; parameters: Record<string, EngineParameterValue> }
   | { type: 'UPDATE_EXPORT_SETTINGS'; settings: Partial<ExportSettings> }
   | { type: 'RESET_PROJECT' };
 
 const touched = (project: VisualMelodyProject) => ({ ...project, updatedAt: new Date().toISOString() });
+
+/** Keeps the Image Pulse renderer parameter in sync with the project image (Preview and Export read the same value). */
+function withImageParameter(project: VisualMelodyProject, image: ProjectImage | null): VisualMelodyProject['engine'] {
+  if (project.engine.engineId !== 'image-pulse') return project.engine;
+  return { ...project.engine, parameters: { ...project.engine.parameters, imageSrc: image?.objectUrl ?? '' } };
+}
 
 export function projectReducer(project: VisualMelodyProject, action: ProjectAction): VisualMelodyProject {
   switch (action.type) {
@@ -90,6 +99,10 @@ export function projectReducer(project: VisualMelodyProject, action: ProjectActi
         ...project,
         creator: { ...project.creator, ...action.creator },
       });
+    case 'SET_IMAGE_SOURCE':
+      return touched({ ...project, image: { ...action.image }, engine: withImageParameter(project, action.image) });
+    case 'CLEAR_IMAGE_SOURCE':
+      return touched({ ...project, image: null, engine: withImageParameter(project, null) });
     case 'UPDATE_ENGINE_PARAMETER':
       return touched({
         ...project,

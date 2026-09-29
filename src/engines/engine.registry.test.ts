@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getEngine, getEngineOrDefault, isProEngineId, listClassicEngines, listEngines } from './engine.registry';
 
 describe('engine registry', () => {
-  it('exposes all six classic engines plus Particle Sphere and Dance Avatars', () => {
+  it('exposes all six classic engines plus Particle Sphere, Dance Avatars and Image Pulse', () => {
     expect(getEngine('minimal-album-art').availability).toBe('implemented');
     expect(getEngine('cosmic-waves').availability).toBe('implemented');
     expect(getEngine('jazz-geometry').availability).toBe('implemented');
@@ -11,9 +11,11 @@ describe('engine registry', () => {
     expect(getEngine('neon-velvet').availability).toBe('implemented');
     expect(getEngine('particle-sphere').availability).toBe('implemented');
     expect(getEngine('dance-avatars').availability).toBe('implemented');
+    expect(getEngine('image-pulse').availability).toBe('implemented');
     expect(listClassicEngines()).toHaveLength(6);
-    expect(listEngines()).toHaveLength(8);
+    expect(listEngines()).toHaveLength(9);
     expect(isProEngineId('dance-avatars')).toBe(true);
+    expect(isProEngineId('image-pulse')).toBe(true);
     expect(isProEngineId('minimal-album-art')).toBe(false);
   });
 

@@ -87,3 +87,26 @@ describe('projectReducer', () => {
     expect(next.creator.accentColor).toBe('#28a99e');
     expect(project.creator.primaryColor).not.toBe('#3ddc97');
   });
+
+describe('projectReducer · Image Pulse media', () => {
+  const image = { fileName: 'cover.png', mimeType: 'image/png', size: 2048, width: 1200, height: 1200, objectUrl: 'blob:cover' };
+
+  it('stores the uploaded image and binds it to the Image Pulse renderer parameter', () => {
+    const selected = projectReducer(createProject(), {
+      type: 'SELECT_TOOL', tool: 'image-pulse', engineId: 'image-pulse', parameters: { style: 'glow', imageSrc: '' },
+    });
+    const next = projectReducer(selected, { type: 'SET_IMAGE_SOURCE', image });
+    expect(next.image).toEqual(image);
+    expect(next.engine.parameters.imageSrc).toBe('blob:cover');
+    expect(next.engine.parameters.style).toBe('glow');
+    const cleared = projectReducer(next, { type: 'CLEAR_IMAGE_SOURCE' });
+    expect(cleared.image).toBeNull();
+    expect(cleared.engine.parameters.imageSrc).toBe('');
+  });
+
+  it('keeps the image at project level without touching other engines parameters', () => {
+    const next = projectReducer(createProject(), { type: 'SET_IMAGE_SOURCE', image });
+    expect(next.image?.fileName).toBe('cover.png');
+    expect(next.engine.parameters.imageSrc).toBeUndefined();
+  });
+});

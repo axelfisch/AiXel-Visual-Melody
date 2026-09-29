@@ -24,7 +24,7 @@ import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { useLocale } from '../i18n/LocaleContext';
 import { screens, type Screen } from './navigation';
-import { engines, type Engine, type EngineKey } from './engines.catalog';
+import { engines, PRO_ENGINE_KEYS, type Engine, type EngineKey } from './engines.catalog';
 import {
   EngineCard,
   Metric,
@@ -150,7 +150,7 @@ export function HomeScreen({
 
       <SectionHeader label={t('sixEngines')} note={t('enginesNote')} />
       <div className="engine-grid">
-        {engines.filter((item) => item.key !== 'sphere' && item.key !== 'avatar').map((engine) => (
+        {engines.filter((item) => !PRO_ENGINE_KEYS.includes(item.key)).map((engine) => (
           <EngineCard
             engine={engine}
             key={engine.key}

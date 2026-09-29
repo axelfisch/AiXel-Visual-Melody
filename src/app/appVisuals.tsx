@@ -6,7 +6,7 @@ import type { Engine } from './engines.catalog';
 const waveform = Array.from({ length: 72 }, (_, i) => 18 + Math.abs(Math.sin(i * 0.38)) * 54 + (i % 7) * 3);
 const spectrum = Array.from({ length: 44 }, (_, i) => 16 + Math.abs(Math.sin(i * 0.55)) * 68 + (i % 5) * 4);
 
-export function PreviewCanvas({ engine, full = false }: { engine: Engine; full?: boolean }) {
+export function PreviewCanvas({ engine, full = false, imageUrl = null }: { engine: Engine; full?: boolean; imageUrl?: string | null }) {
   return (
     <div className={`preview-canvas ${full ? 'full' : ''}`} style={{ background: engine.preview, borderRadius: `var(--preview-radius)` }}>
       {engine.key === 'cosmic' && <CosmicVisual />}
@@ -17,6 +17,7 @@ export function PreviewCanvas({ engine, full = false }: { engine: Engine; full?:
       {engine.key === 'neon' && <NeonVisual />}
       {engine.key === 'sphere' && <SphereVisual />}
       {engine.key === 'avatar' && <AvatarVisual />}
+      {engine.key === 'pulse' && <PulseVisual imageUrl={imageUrl} />}
       <span className="live-badge">{engine.name}</span>
       <Waveform bars={waveform.slice(0, 40)} compact />
     </div>
@@ -95,6 +96,15 @@ export function AvatarVisual() {
     <div className="avatar-visual" aria-hidden="true">
       <span className="avatar-glow" />
       <span className="avatar-figure" />
+    </div>
+  );
+}
+
+export function PulseVisual({ imageUrl }: { imageUrl: string | null }) {
+  return (
+    <div className={`pulse-visual${imageUrl ? ' has-image' : ''}`} aria-hidden="true">
+      <span className="pulse-glow" />
+      {imageUrl ? <img src={imageUrl} alt="" /> : <span className="pulse-placeholder" />}
     </div>
   );
 }

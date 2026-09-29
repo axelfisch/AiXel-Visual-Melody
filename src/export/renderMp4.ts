@@ -1,4 +1,4 @@
-import { energyAt, type AudioAnalysis } from '../audio';
+import { energyAt, onsetAt, type AudioAnalysis } from '../audio';
 import type { VisualEngine } from '../engines/engine.types';
 import type { ExportSettings } from '../project/project.types';
 import {
@@ -57,6 +57,11 @@ export async function renderMp4({
   const credits = { ...DEFAULT_END_CARD_CREDITS, ...endCardCredits };
   const totalDuration = analysis.duration + EXPORT_END_CARD_DURATION;
   const config = engine.validateConfig(engineConfig ?? engine.defaultConfig);
+  // Engines with external media (Image Pulse) decode it before the first frame.
+  if (engine.prepare) {
+    await engine.prepare(config);
+    throwIfAborted(signal);
+  }
   const stampWatermark = () => {
     if (settings.watermark !== false) drawWatermark(context, canvas.width, canvas.height);
   };
@@ -68,6 +73,7 @@ export async function renderMp4({
         duration: analysis.duration,
         progress: 0,
         energy: energyAt(analysis, 0),
+        onset: onsetAt(analysis, 0),
         bpm: analysis.bpm,
         title: analysis.name,
       },
@@ -141,6 +147,7 @@ export async function renderMp4({
                 duration: analysis.duration,
                 progress: trackProgress,
                 energy: energyAt(analysis, renderedTime),
+                onset: onsetAt(analysis, renderedTime),
                 bpm: analysis.bpm,
                 title: analysis.name,
               },

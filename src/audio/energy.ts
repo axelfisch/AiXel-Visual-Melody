@@ -23,6 +23,32 @@ export function buildEnergyTimeline(
   return values.map((value) => clamp(value / maximum));
 }
 
+/**
+ * Transient (onset) strength at `time`: how far the current energy jumps above
+ * the recent average, held with a short exponential release so a hit stays
+ * visible for a few frames. Pure function of the analysis → Preview ≡ Export.
+ */
+export function onsetAt(analysis: Pick<ProjectAnalysis, 'energy'>, time: number): number {
+  const values = analysis.energy;
+  if (!values.length) return 0;
+  const index = Math.min(values.length - 1, Math.max(0, Math.floor(time * ENERGY_FRAMES_PER_SECOND)));
+  const raw = (at: number) => {
+    if (at < 1) return 0;
+    let sum = 0;
+    let count = 0;
+    for (let back = Math.max(0, at - 8); back < at; back += 1) {
+      sum += values[back];
+      count += 1;
+    }
+    return clamp((values[at] - sum / Math.max(1, count)) * 3.2);
+  };
+  let onset = 0;
+  for (let hold = 0; hold <= 5 && index - hold >= 0; hold += 1) {
+    onset = Math.max(onset, raw(index - hold) * 0.72 ** hold);
+  }
+  return onset;
+}
+
 export function energyAt(analysis: Pick<ProjectAnalysis, 'energy'>, time: number): number {
   const index = Math.min(
     analysis.energy.length - 1,

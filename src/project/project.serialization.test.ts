@@ -49,3 +49,22 @@ describe('project serialization', () => {
     expect(parsed.engine.engineId).toBe('particle-sphere');
     expect(parsed.creator.primaryColor).toBe('#ff5c8a');
   });
+
+describe('project serialization · Image Pulse', () => {
+  it('keeps image metadata but strips session-only object URLs', () => {
+    const project = createProject();
+    project.tool = 'image-pulse';
+    project.engine.engineId = 'image-pulse';
+    project.engine.parameters = { style: 'ripple', imageSrc: 'blob:cover' };
+    project.image = { fileName: 'cover.jpg', mimeType: 'image/jpeg', size: 10, width: 800, height: 600, objectUrl: 'blob:cover' };
+    const parsed = parseProject(serializeProject(project));
+    expect(parsed.tool).toBe('image-pulse');
+    expect(parsed.image).toMatchObject({ fileName: 'cover.jpg', width: 800, height: 600, objectUrl: null });
+    expect(parsed.engine.parameters).toMatchObject({ style: 'ripple', imageSrc: '' });
+  });
+
+  it('migrates projects saved before Image Pulse existed', () => {
+    const { image: _image, ...legacy } = createProject();
+    expect(parseProject(JSON.stringify(legacy)).image).toBeNull();
+  });
+});
