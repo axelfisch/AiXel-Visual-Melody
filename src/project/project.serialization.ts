@@ -53,7 +53,9 @@ function migrateExportSettings(value: VisualMelodyProject['export'] | undefined)
       ? '1080p-widescreen'
       : value.width === 1080 && value.height === 1920
         ? '1080p-vertical'
-        : '720p-widescreen');
+        : value.width === 720 && value.height === 1280
+          ? '720p-vertical'
+          : '720p-widescreen');
   const preset = getExportPreset(presetId);
   return {
     ...exportSettingsFromPreset(preset.id, value.watermark !== false),
