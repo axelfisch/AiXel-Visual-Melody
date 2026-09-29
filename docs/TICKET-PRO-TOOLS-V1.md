@@ -50,3 +50,18 @@ PRs Creator Pro billing (#19→#25) : merger dans l’ordre avant achat réel. N
 ## Prochaine action code
 
 Branch `feat/pro-tools-creator-sphere` — Epic 0 puis Epic 1.
+
+---
+
+## Extension — Mixage deux couches (2026-09-29)
+
+Demande Axel : pouvoir sélectionner deux moteurs (ex. 1. Jazz Geometry + 2. Avatars danse) et aussi mixer deux moteurs classiques.
+
+- **Create → Mixage de couches** : interrupteur *Mixer deux moteurs*, *Couche 1 (fond)*, *Couche 2 (premier plan)* (*Aucune* = moteur unique, défaut inchangé), *Inverser les couches*.
+- N’importe quel moteur (6 classiques + 4 outils Pro) sur l’une ou l’autre couche ; le même moteur sur les deux couches est refusé.
+- Couche 2 : *Opacité* 0–100 %, *Mode de fusion* Normal / Écran / Lumière / Addition / Superposition, *Assombrir le fond* 0–60 %.
+- Défauts auto : outil Pro au-dessus → Normal 85 % (+ fond assombri 15–30 %) ; Image Pulse au-dessus → Écran 70 % ; classique au-dessus → Écran 50 %.
+- Rendu : un seul moteur composite (`src/engines/layer-mix/`) consommé par Create, Preview et Export (`resolveProjectRender`) → WYSIWYG ; même frame audio (temps / énergie / onset / BPM) pour les deux couches ; watermark dessiné une fois par-dessus le composite ; gates 720p/1080p inchangés.
+- Outils Pro en mode transparent quand ils sont en couche 2 (`RenderSurface.transparent`).
+- Faders Director + couleurs Creator partagés par les deux couches ; le titre appartient à la couche 1.
+- Persisté dans `project.mix` (rétrocompatible : absent = moteur unique).
