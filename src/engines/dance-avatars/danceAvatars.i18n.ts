@@ -1,6 +1,6 @@
 export const danceAvatarCopy: Record<'en' | 'fr', Record<string, string>> = {
   en: {
-    avatarMood: 'A luminous dancer moves with the beat — silhouette, neon, hologram.',
+    avatarMood: 'A full-body dancer (woman or man) grooves on the beat — shadow, particles, neon, mannequin or hologram.',
     avatarOptions: 'Avatar options',
     avatarGender: 'Gender',
     avatarGenderHelp: 'Choose homme / femme silhouette proportions.',
@@ -18,7 +18,7 @@ export const danceAvatarCopy: Record<'en' | 'fr', Record<string, string>> = {
     comingSoonBanner: 'This tool is stubbed for Pro Tools V1. Select Particle Sphere, Dance Avatars, or a classic engine to continue Preview and Export.',
   },
   fr: {
-    avatarMood: 'Un danseur lumineux bouge avec le beat — ombre, néon, hologramme.',
+    avatarMood: 'Une silhouette complète (femme ou homme) danse sur le beat — ombre, particules, néon, mannequin ou hologramme.',
     avatarOptions: 'Options avatar',
     avatarGender: 'Genre',
     avatarGenderHelp: 'Choisissez les proportions homme / femme.',

@@ -6,7 +6,7 @@ import type { DanceAvatarsConfig } from './danceAvatars.types';
 export const DanceAvatarsEngine: VisualEngine<DanceAvatarsConfig> = {
   id: 'dance-avatars',
   name: 'Dance Avatars',
-  description: 'Five styled dance avatars with gender toggle and audio-reactive motion.',
+  description: 'Full-body woman/man dancer silhouettes in five styles with beat-synced, complexity-driven choreography.',
   availability: 'implemented',
   defaultConfig: danceAvatarsDefaultConfig,
   parameters: danceAvatarsParameters,
