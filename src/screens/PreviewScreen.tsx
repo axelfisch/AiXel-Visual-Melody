@@ -3,7 +3,7 @@ import { formatTime } from '../audio';
 import { Waveform } from '../components/audio/Waveform';
 import { GlassPanel } from '../components/layout/GlassPanel';
 import { EngineCanvas } from '../engines/EngineCanvas';
-import { getEngineOrDefault } from '../engines/engine.registry';
+import { useProjectRender } from '../project/project.render';
 import { useLocale } from '../i18n/LocaleContext';
 import { useSynchronizedPlayback } from '../preview/useSynchronizedPlayback';
 import { useProject } from '../project/project.context';
@@ -21,7 +21,10 @@ export function PreviewScreen({
 }) {
   const { locale, t } = useLocale();
   const { project } = useProject();
-  const engine = getEngineOrDefault(project.engine.engineId);
+  // Same resolved engine/config as Create and Export (a two-layer mix renders as one composite engine).
+  const projectRender = useProjectRender(project);
+  const engine = projectRender.baseEngine;
+  const usesEngine = (id: string) => engine.id === id || projectRender.overlayEngine?.id === id;
   const audioUrl = project.audio?.objectUrl ?? null;
   const duration = project.audio?.duration ?? 0;
   const playback = useSynchronizedPlayback({
@@ -71,21 +74,21 @@ export function PreviewScreen({
       <div className="cinema">
         <EngineCanvas
           analysis={project.analysis}
-          config={project.engine.parameters}
+          config={projectRender.config}
           duration={duration}
-          engine={engine}
+          engine={projectRender.engine}
           time={playback.currentTime}
           title={project.name}
         />
         <div className="cinema-overlay">
           <div>
-            <p className="tiny-label">{engine.name} · {t('livePreview')}</p>
+            <p className="tiny-label">{projectRender.engine.name} · {t('livePreview')}</p>
             <h1>{project.name}</h1>
             <p className="poetic">{poeticLine}</p>
-            {engine.id === 'image-pulse' && !project.image?.objectUrl ? (
+            {usesEngine('image-pulse') && !project.image?.objectUrl ? (
               <p className="tiny-label pulse-preview-hint">{t('pulsePreviewHint')}</p>
             ) : null}
-            {engine.id === 'lyric-canvas' && !project.lyrics?.text.trim() ? (
+            {usesEngine('lyric-canvas') && !project.lyrics?.text.trim() ? (
               <p className="tiny-label pulse-preview-hint">{t('lyricsPreviewHint')}</p>
             ) : null}
           </div>

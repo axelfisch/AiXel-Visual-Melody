@@ -728,19 +728,24 @@ function drawVignette(ctx: Ctx2D, W: number, H: number, config: ImagePulseConfig
 
 // ------------------------------------------------------------ main entry
 export function renderImagePulse(surface: RenderSurface, frame: EngineFrame, config: ImagePulseConfig) {
-  const { context: ctx, width: W, height: H } = surface;
+  const { context: ctx, width: W, height: H, transparent = false } = surface;
   const s = imagePulseSignals(frame, config);
   const primary = adjustSaturation(config.primaryColor, config.colorSaturation);
   const accent = adjustSaturation(config.accentColor, config.colorSaturation);
   const light = styleLight[config.style];
   const image = getPulseImage(config.imageSrc) ?? placeholderImage(config.primaryColor, config.accentColor);
   const card = config.framing === 'card';
+  // As layer 2 of a mix: no backdrop. A full-frame image still covers the frame (the
+  // mix's opacity/blend does the work); a card floats over layer 1 without its blurred cover.
+  const floating = transparent && card;
 
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
-  ctx.fillStyle = '#05060b';
-  ctx.fillRect(0, 0, W, H);
+  if (!transparent) {
+    ctx.fillStyle = '#05060b';
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // Camera: Space sets framing distance, Fluidity the drift, Complexity the path harmonics,
   // Dynamics the beat/transient zoom punch.
@@ -769,17 +774,19 @@ export function renderImagePulse(surface: RenderSurface, frame: EngineFrame, con
     drawFallbackArt(ctx, rect, camera, primary, accent);
   } else {
     if (card) {
-      // Blurred cover of the image fills the frame behind the card.
-      const blur = blurOf(image);
-      const backdrop = blur ?? image;
-      drawImageLayer(ctx, backdrop, { x: 0, y: 0, w: W, h: H }, {
-        zoom: 1.15 * (1 + 0.02 * s.hit),
-        rot: 0,
-        panX: Math.sin(s.drift * 0.2) * W * 0.02,
-        panY: Math.cos(s.drift * 0.17) * H * 0.02,
-      });
-      ctx.fillStyle = 'rgba(5, 6, 11, 0.5)';
-      ctx.fillRect(0, 0, W, H);
+      if (!floating) {
+        // Blurred cover of the image fills the frame behind the card.
+        const blur = blurOf(image);
+        const backdrop = blur ?? image;
+        drawImageLayer(ctx, backdrop, { x: 0, y: 0, w: W, h: H }, {
+          zoom: 1.15 * (1 + 0.02 * s.hit),
+          rot: 0,
+          panX: Math.sin(s.drift * 0.2) * W * 0.02,
+          panY: Math.cos(s.drift * 0.17) * H * 0.02,
+        });
+        ctx.fillStyle = 'rgba(5, 6, 11, 0.5)';
+        ctx.fillRect(0, 0, W, H);
+      }
       drawLightLeaks(ctx, W, H, config, primary, accent, s, light.leaks * 0.8);
       // Halo behind the card.
       const halo = ctx.createRadialGradient(W / 2, rect.y + rect.h / 2, Math.min(rect.w, rect.h) * 0.3, W / 2, rect.y + rect.h / 2, Math.max(rect.w, rect.h) * 0.9);
@@ -817,7 +824,16 @@ export function renderImagePulse(surface: RenderSurface, frame: EngineFrame, con
     }
   }
 
-  drawColorGrade(ctx, W, H, config, primary, accent, s, light.tint);
+  if (!floating) {
+    drawColorGrade(ctx, W, H, config, primary, accent, s, light.tint);
+  } else if (image) {
+    // Floating card: grade the card only, never the transparent frame around it.
+    ctx.save();
+    roundedRect(ctx, rect, Math.min(rect.w, rect.h) * 0.03);
+    ctx.clip();
+    drawColorGrade(ctx, W, H, config, primary, accent, s, light.tint);
+    ctx.restore();
+  }
   if (!card) drawLightLeaks(ctx, W, H, config, primary, accent, s, light.leaks);
 
   // Transient flash.
@@ -834,8 +850,10 @@ export function renderImagePulse(surface: RenderSurface, frame: EngineFrame, con
   }
 
   drawParticles(ctx, W, H, config, primary, accent, s);
-  drawVignette(ctx, W, H, config, s);
-  applyWarmthOverlay(ctx, W, H, config.warmth);
+  if (!floating) {
+    drawVignette(ctx, W, H, config, s);
+    applyWarmthOverlay(ctx, W, H, config.warmth);
+  }
 
   if (config.showTitle && frame.title) {
     const fontSize = Math.round(Math.min(W, H) * 0.042);

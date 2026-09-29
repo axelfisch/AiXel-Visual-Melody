@@ -451,14 +451,17 @@ function drawFallback(scene: Scene) {
   ctx.restore();
 }
 
-function drawBackground(ctx: Ctx2D, width: number, height: number, style: DanceAvatarStyle, primary: string, accent: string, energy: number, cx: number, cy: number) {
-  const bg = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.max(width, height) * 0.75);
-  bg.addColorStop(0, `hsl(250 38% ${9 + energy * 6}%)`);
-  bg.addColorStop(0.55, '#070914');
-  bg.addColorStop(1, '#03050b');
+function drawBackground(ctx: Ctx2D, width: number, height: number, style: DanceAvatarStyle, primary: string, accent: string, energy: number, cx: number, cy: number, transparent = false) {
   ctx.globalAlpha = 1;
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
+  // As layer 2 of a mix the dark stage is skipped so the dancer floats over layer 1.
+  if (!transparent) {
+    const bg = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.max(width, height) * 0.75);
+    bg.addColorStop(0, `hsl(250 38% ${9 + energy * 6}%)`);
+    bg.addColorStop(0.55, '#070914');
+    bg.addColorStop(1, '#03050b');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, width, height);
+  }
   if (style === 'shadow') {
     // Lit backdrop so the dark silhouette reads like a shadow-theatre figure.
     const r = Math.min(width, height) * 0.62;
@@ -472,7 +475,7 @@ function drawBackground(ctx: Ctx2D, width: number, height: number, style: DanceA
 }
 
 export function renderDanceAvatars(surface: RenderSurface, frame: EngineFrame, config: DanceAvatarsConfig) {
-  const { context, width, height } = surface;
+  const { context, width, height, transparent = false } = surface;
   const energy = clamp01(frame.energy * config.energyResponse);
   const primary = adjustSaturation(config.primaryColor, config.colorSaturation);
   const accent = adjustSaturation(config.accentColor, config.colorSaturation);
@@ -496,7 +499,7 @@ export function renderDanceAvatars(surface: RenderSurface, frame: EngineFrame, c
   const floorY = Math.min(height * 0.86, height * 0.5 + bodyH * 0.6);
   const prims = buildBody(sk, { cx, floorY, scale });
 
-  drawBackground(context, width, height, config.style, primary, accent, energy, cx, floorY - bodyH * 0.55);
+  drawBackground(context, width, height, config.style, primary, accent, energy, cx, floorY - bodyH * 0.55, transparent);
   drawFloor({ ctx: context, cx, floorY, bodyH, sk } as Scene, config.style === 'shadow' ? '#000000' : accent, config.style === 'shadow' ? 0.5 : 0.25 + energy * 0.2);
 
   const b = bodyBounds(prims);
@@ -532,7 +535,7 @@ export function renderDanceAvatars(surface: RenderSurface, frame: EngineFrame, c
   reset(context);
 
   drawAmbientSparkles(context, width, height, frame.time, config.sparkleDensity * 0.85, accent);
-  applyWarmthOverlay(context, width, height, config.warmth);
+  if (!transparent) applyWarmthOverlay(context, width, height, config.warmth);
   if (config.showTitle && frame.title) {
     context.globalAlpha = 1;
     context.fillStyle = '#eef1fb';

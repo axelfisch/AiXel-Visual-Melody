@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { analyzeAudioFile, type AudioAnalysis } from '../audio';
-import { getEngineOrDefault, isProEngineId } from '../engines/engine.registry';
+import { getEngine, getEngineOrDefault, isProEngineId } from '../engines/engine.registry';
+import { useProjectRender } from '../project/project.render';
+import { toolIdForEngine } from '../project/project.reducer';
 import { getTool, type ProjectToolId } from '../tools';
 import {
   directorCapabilities,
@@ -38,6 +40,9 @@ export function App() {
     [project.engine.engineId],
   );
   const renderEngine = useMemo(() => getEngineOrDefault(project.engine.engineId), [project.engine.engineId]);
+  // Single source of truth for what Create (mix), Preview and Export render.
+  const projectRender = useProjectRender(project);
+  const layered = projectRender.overlayEngine !== null;
   const activeEngine = engine.key;
   const activePreset = project.engine.presetId ?? 'Naomi';
   const selectedMood = project.engine.director.mood;
@@ -105,6 +110,36 @@ export function App() {
       else parameters[id] = palette.colors[index % palette.colors.length];
     });
     dispatch({ type: 'UPDATE_ENGINE_PARAMETERS', parameters });
+    // Layer 2 follows the palette too (Pro tools read the Creator colors directly).
+    const overlayId = project.mix.overlay?.engineId;
+    if (overlayId && !isProEngineId(overlayId)) {
+      const overlayColors: Record<string, EngineParameterValue> = {};
+      getEngine(overlayId).parameters.filter((item) => item.type === 'color').forEach((item, index) => {
+        overlayColors[item.id] = item.id === 'primaryColor' ? primaryColor
+          : item.id === 'accentColor' ? accentColor
+            : palette.colors[index % palette.colors.length];
+      });
+      dispatch({ type: 'UPDATE_OVERLAY_PARAMETERS', parameters: overlayColors });
+    }
+  };
+  const selectBaseEngine = (engineId: string) => {
+    if (isProEngineId(engineId)) {
+      selectTool(toolIdForEngine(engineId));
+      return;
+    }
+    const selected = engines.find((item) => item.id === engineId);
+    if (selected) selectEngine(selected.key);
+  };
+  const swapLayers = () => {
+    const overlay = project.mix.overlay;
+    if (!overlay || !projectRender.overlayParameters) return;
+    // Layer 2 keeps showTitle off; once it becomes layer 1 it gets its own title setting back.
+    const { showTitle: _hidden, ...resolved } = projectRender.overlayParameters;
+    const baseParameters = mapDirectorToEngine(overlay.engineId, directorValues, {
+      ...resolved,
+      ...(typeof overlay.parameters.showTitle === 'boolean' ? { showTitle: overlay.parameters.showTitle } : {}),
+    }).parameters;
+    dispatch({ type: 'SWAP_LAYERS', baseParameters, overlayParameters: { ...project.engine.parameters } });
   };
   const analysis = useMemo<AudioAnalysis | null>(() => {
     if (!project.analysis || !project.audio || !runtime.decodedAudio) return null;
@@ -199,6 +234,16 @@ export function App() {
             onPalette={applyPalette}
             onEngineParameter={(parameterId, value) => dispatch({ type: 'UPDATE_ENGINE_PARAMETER', parameterId, value })}
             onNavigate={navigate}
+            baseEngineId={project.engine.engineId}
+            mix={project.mix}
+            mixEngine={layered ? projectRender.engine : null}
+            mixConfig={layered ? projectRender.config : undefined}
+            overlayParameters={projectRender.overlayParameters}
+            onBaseEngine={selectBaseEngine}
+            onOverlay={(engineId) => dispatch({ type: 'SET_LAYER_OVERLAY', engineId })}
+            onBlend={(settings) => dispatch({ type: 'UPDATE_LAYER_BLEND', settings })}
+            onSwapLayers={swapLayers}
+            onOverlayParameter={(parameterId, value) => dispatch({ type: 'UPDATE_OVERLAY_PARAMETER', parameterId, value })}
           />
         )}
         {screen === 'preview' && (
@@ -211,8 +256,8 @@ export function App() {
         {screen === 'export' && (
           <ExportScreen
             analysis={analysis}
-            engine={renderEngine}
-            engineConfig={project.engine.parameters}
+            engine={projectRender.engine}
+            engineConfig={projectRender.config}
             previewBackground={engine.preview}
             settings={project.export}
           />

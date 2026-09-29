@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Waveform } from '../components/audio/Waveform';
 import { LiveEngineCanvas } from '../engines/LiveEngineCanvas';
 import { getEngineOrDefault } from '../engines/engine.registry';
+import type { VisualEngine } from '../engines/engine.types';
 import { useLocale } from '../i18n/LocaleContext';
 import type { EngineParameterValue, ProjectAnalysis } from '../project/project.types';
 import type { Engine, EngineKey } from './engines.catalog';
@@ -20,6 +21,9 @@ export function PreviewCanvas({
   duration = null,
   syntheticDuration,
   title = '',
+  liveEngine = null,
+  liveConfig,
+  label,
 }: {
   engine: Engine;
   full?: boolean;
@@ -29,9 +33,16 @@ export function PreviewCanvas({
   duration?: number | null;
   syntheticDuration?: number;
   title?: string;
+  /** Overrides the engine rendered live (two-layer mix composite); any engine then renders for real. */
+  liveEngine?: VisualEngine | null;
+  liveConfig?: unknown;
+  /** Badge text (defaults to the engine name). */
+  label?: string;
 }) {
-  const live = LIVE_ENGINE_KEYS.includes(engine.key);
-  const renderEngine = useMemo(() => (live ? getEngineOrDefault(engine.id) : null), [engine.id, live]);
+  const live = Boolean(liveEngine) || LIVE_ENGINE_KEYS.includes(engine.key);
+  const catalogEngine = useMemo(() => (LIVE_ENGINE_KEYS.includes(engine.key) ? getEngineOrDefault(engine.id) : null), [engine.id, engine.key]);
+  const renderEngine = liveEngine ?? catalogEngine;
+  const renderConfig = liveEngine ? liveConfig : config;
   return (
     <div
       className={`preview-canvas ${full ? 'full' : ''}${live ? ' live' : ''}`}
@@ -40,7 +51,7 @@ export function PreviewCanvas({
       {renderEngine ? (
         <LiveEngineCanvas
           engine={renderEngine}
-          config={config}
+          config={renderConfig}
           analysis={analysis}
           duration={duration}
           syntheticDuration={syntheticDuration}
@@ -56,7 +67,7 @@ export function PreviewCanvas({
           {engine.key === 'neon' && <NeonVisual />}
         </>
       )}
-      <span className="live-badge">{engine.name}</span>
+      <span className="live-badge">{label ?? engine.name}</span>
       {!live && <Waveform bars={waveform.slice(0, 40)} compact />}
     </div>
   );

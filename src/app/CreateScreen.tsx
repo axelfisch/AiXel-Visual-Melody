@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { ChevronRight, Palette, SlidersHorizontal, Sparkles, WandSparkles } from 'lucide-react';
+import { ChevronRight, Palette, SlidersHorizontal, WandSparkles } from 'lucide-react';
 import { GlassPanel } from '../components/layout/GlassPanel';
-import {
-  DANCE_AVATAR_GENDERS,
-  DANCE_AVATAR_STYLES,
-  type DanceAvatarGender,
-  type DanceAvatarStyle,
-} from '../engines/dance-avatars/danceAvatars.types';
+import type { VisualEngine } from '../engines/engine.types';
+import { DEFAULT_LAYER_MIX } from '../engines/layer-mix/layerMix.defaults';
+import type { LayerBlendSettings, LayerMix } from '../engines/layer-mix/layerMix.types';
 import { useLocale } from '../i18n/LocaleContext';
 import { getTool, listProTools, type ProjectToolId } from '../tools';
 import {
@@ -18,7 +15,9 @@ import {
   type DirectorState,
 } from '../director';
 import type { EngineParameterValue, ProjectAnalysis, ProjectImage, ProjectLyrics } from '../project/project.types';
+import { AvatarOptionsPanel } from './AvatarOptionsPanel';
 import { ImagePulsePanel } from './ImagePulsePanel';
+import { engineLabel, LayerMixPanel, useLayerMixText } from './LayerMixPanel';
 import { LyricCanvasPanel } from './LyricCanvasPanel';
 import type { Engine, EngineKey } from './engines.catalog';
 import { ScreenTitle, PanelHeading, PreviewCanvas } from './appVisuals';
@@ -52,6 +51,16 @@ export function CreateScreen({
   onPalette,
   onEngineParameter,
   onNavigate,
+  baseEngineId,
+  mix = DEFAULT_LAYER_MIX,
+  mixEngine = null,
+  mixConfig,
+  overlayParameters = null,
+  onBaseEngine = () => undefined,
+  onOverlay = () => undefined,
+  onBlend = () => undefined,
+  onSwapLayers = () => undefined,
+  onOverlayParameter = () => undefined,
 }: {
   activeEngine: EngineKey;
   activePreset: string;
@@ -81,8 +90,23 @@ export function CreateScreen({
   onPalette: (palette: DirectorPalette) => void;
   onEngineParameter: (parameterId: string, value: EngineParameterValue) => void;
   onNavigate: (screen: Screen) => void;
+  /** Layer 1 engine id (defaults to the catalog engine's id). */
+  baseEngineId?: string;
+  /** Two-layer mix state ('Aucune' layer 2 = single engine). */
+  mix?: LayerMix;
+  /** Composite engine rendered live on Create when a layer 2 is set (same renderer as Preview/Export). */
+  mixEngine?: VisualEngine | null;
+  mixConfig?: unknown;
+  /** Resolved layer 2 parameters (drive its option panels). */
+  overlayParameters?: Record<string, EngineParameterValue> | null;
+  onBaseEngine?: (engineId: string) => void;
+  onOverlay?: (engineId: string | null) => void;
+  onBlend?: (settings: Partial<LayerBlendSettings>) => void;
+  onSwapLayers?: () => void;
+  onOverlayParameter?: (parameterId: string, value: EngineParameterValue) => void;
 }) {
   const { t } = useLocale();
+  const tm = useLayerMixText();
   const [selectedPalette, setSelectedPalette] = useState<string | null>(null);
   const presets = ['Naomi', 'Dream', 'Universe', 'Rain', 'Blue', 'Neon', 'Galaxy', 'Jazz Club', 'Deep Space', 'Ocean'];
   const moods: DirectorMood[] = ['More Cinematic', 'More Emotional', 'More Dreamy', 'More Powerful', 'More Organic', 'More Minimal'];
@@ -125,24 +149,10 @@ export function CreateScreen({
           : activeTool === 'lyric-canvas'
             ? t('lyricsMood')
             : t(`${engine.key}Mood`);
-  const avatarGender = (engineParameters.gender === 'male' || engineParameters.gender === 'female'
-    ? engineParameters.gender
-    : 'female') as DanceAvatarGender;
-  const avatarStyle = (typeof engineParameters.style === 'string'
-    && DANCE_AVATAR_STYLES.includes(engineParameters.style as DanceAvatarStyle)
-    ? engineParameters.style
-    : 'neon') as DanceAvatarStyle;
-  const genderLabels: Record<DanceAvatarGender, string> = {
-    male: t('genderMale'),
-    female: t('genderFemale'),
-  };
-  const styleLabels: Record<DanceAvatarStyle, string> = {
-    shadow: t('styleShadow'),
-    particle: t('styleParticle'),
-    neon: t('styleNeon'),
-    humanoid: t('styleHumanoid'),
-    hologram: t('styleHologram'),
-  };
+  const layer1Id = baseEngineId ?? engine.id;
+  const overlayId = mix.overlay?.engineId ?? null;
+  const overlayOptions = overlayParameters ?? mix.overlay?.parameters ?? {};
+  const mixLabel = overlayId ? `${engineLabel(layer1Id, t)} + ${engineLabel(overlayId, t)}` : undefined;
 
   return (
     <section className="screen create-layout">
@@ -200,34 +210,16 @@ export function CreateScreen({
         ))}
       </div>
       )}
+      <LayerMixPanel
+        baseEngineId={layer1Id}
+        mix={mix}
+        onBaseEngine={onBaseEngine}
+        onOverlay={onOverlay}
+        onBlend={onBlend}
+        onSwap={onSwapLayers}
+      />
       {activeTool === 'dance-avatar' && (
-        <GlassPanel className="avatar-options">
-          <PanelHeading icon={<Sparkles size={18} />} label={t('avatarOptions')} />
-          <p className="muted">{t('avatarGenderHelp')}</p>
-          <div className="chips wrap" role="group" aria-label={t('avatarGender')}>
-            {DANCE_AVATAR_GENDERS.map((gender) => (
-              <button
-                className={avatarGender === gender ? 'selected' : ''}
-                key={gender}
-                onClick={() => onEngineParameter('gender', gender)}
-              >
-                {genderLabels[gender]}
-              </button>
-            ))}
-          </div>
-          <p className="muted avatar-style-help">{t('avatarStyleHelp')}</p>
-          <div className="chips wrap" role="group" aria-label={t('avatarStyle')}>
-            {DANCE_AVATAR_STYLES.map((style) => (
-              <button
-                className={avatarStyle === style ? 'selected' : ''}
-                key={style}
-                onClick={() => onEngineParameter('style', style)}
-              >
-                {styleLabels[style]}
-              </button>
-            ))}
-          </div>
-        </GlassPanel>
+        <AvatarOptionsPanel engineParameters={engineParameters} onEngineParameter={onEngineParameter} />
       )}
       {activeTool === 'image-pulse' && (
         <ImagePulsePanel
@@ -251,14 +243,53 @@ export function CreateScreen({
           onClearImage={onClearImage}
         />
       )}
+      {overlayId === 'dance-avatars' && (
+        <AvatarOptionsPanel
+          className="layer-overlay-options"
+          label={`${tm('layerOverlaySettings')} · ${t('avatarOptions')}`}
+          engineParameters={overlayOptions}
+          onEngineParameter={onOverlayParameter}
+        />
+      )}
+      {overlayId === 'image-pulse' && (
+        <div className="layer-overlay-options">
+          <p className="tiny-label layer-overlay-tag">{tm('layerOverlaySettings')} · {t('imagePulse')}</p>
+          <ImagePulsePanel
+            image={image}
+            engineParameters={overlayOptions}
+            onImageFile={onImageFile}
+            onClearImage={onClearImage}
+            onEngineParameter={onOverlayParameter}
+          />
+        </div>
+      )}
+      {overlayId === 'lyric-canvas' && (
+        <div className="layer-overlay-options">
+          <p className="tiny-label layer-overlay-tag">{tm('layerOverlaySettings')} · {t('lyricCanvas')}</p>
+          <LyricCanvasPanel
+            lyrics={lyrics}
+            engineParameters={overlayOptions}
+            image={image}
+            trackDuration={trackDuration}
+            bpm={trackBpm}
+            onLyrics={onLyrics}
+            onEngineParameter={onOverlayParameter}
+            onImageFile={onImageFile}
+            onClearImage={onClearImage}
+          />
+        </div>
+      )}
       <div className="studio-grid">
         <div className="studio-main">
           <PreviewCanvas
             engine={engine}
             config={engineParameters}
+            liveEngine={mixEngine}
+            liveConfig={mixConfig}
+            label={mixLabel}
             analysis={analysis}
             duration={trackDuration}
-            syntheticDuration={activeTool === 'lyric-canvas' ? syntheticLyricsLoop(lyrics.text) : undefined}
+            syntheticDuration={activeTool === 'lyric-canvas' || overlayId === 'lyric-canvas' ? syntheticLyricsLoop(lyrics.text) : undefined}
             title={projectName}
           />
           <GlassPanel>

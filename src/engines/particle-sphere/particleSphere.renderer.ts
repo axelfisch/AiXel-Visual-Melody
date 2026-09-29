@@ -78,7 +78,7 @@ function drawRibbon(
 }
 
 export function renderParticleSphere(surface: RenderSurface, frame: EngineFrame, config: ParticleSphereConfig) {
-  const { context, width, height } = surface;
+  const { context, width, height, transparent = false } = surface;
   const energy = clamp(frame.energy * config.energyResponse);
   const primary = adjustSaturation(config.primaryColor, config.colorSaturation);
   const accent = adjustSaturation(config.accentColor, config.colorSaturation);
@@ -95,8 +95,11 @@ export function renderParticleSphere(surface: RenderSurface, frame: EngineFrame,
   background.addColorStop(0.55, '#060914');
   background.addColorStop(1, '#03050b');
   context.globalAlpha = 1;
-  context.fillStyle = background;
-  context.fillRect(0, 0, width, height);
+  // As layer 2 of a mix the backdrop is skipped so the layer below shows through.
+  if (!transparent) {
+    context.fillStyle = background;
+    context.fillRect(0, 0, width, height);
+  }
 
   const halo = context.createRadialGradient(cx, cy, sphereRadius * 0.2, cx, cy, sphereRadius * 1.55);
   halo.addColorStop(0, `rgba(158, 234, 255, ${0.08 + energy * 0.1})`);
@@ -162,7 +165,7 @@ export function renderParticleSphere(surface: RenderSurface, frame: EngineFrame,
   context.stroke();
   context.globalAlpha = 1;
 
-  applyWarmthOverlay(context, width, height, config.warmth);
+  if (!transparent) applyWarmthOverlay(context, width, height, config.warmth);
   if (config.showTitle && frame.title) {
     context.fillStyle = '#eef1fb';
     context.textAlign = 'center';

@@ -1,5 +1,6 @@
 import type { DirectorMood, DirectorState } from '../director/director.types';
 import type { ExportPresetId } from '../export/formats';
+import type { LayerMix } from '../engines/layer-mix/layerMix.types';
 import type { ProjectToolId } from '../tools/tool.types';
 
 export type ProjectId = string;
@@ -82,7 +83,10 @@ export type VisualMelodyProject = {
   lyrics: ProjectLyrics;
   /** Active creative tool. Defaults to classic visual engines. */
   tool: ProjectToolId;
+  /** Layer 1 (background) — the historical single engine. */
   engine: EngineSelection;
+  /** Optional layer 2 (foreground) + blend. `mix.overlay === null` = single engine (default). */
+  mix: LayerMix;
   creator: ProjectCreator;
   export: ExportSettings;
 };

@@ -161,14 +161,17 @@ const presetScene: Record<LyricCanvasPreset, { orbs: number; horizon: number }> 
   cinematic: { orbs: 0.7, horizon: 0.9 },
 };
 
-function drawBackground(ctx: Ctx, W: number, H: number, config: LyricCanvasConfig, pal: Palette, s: LyricSignals) {
+function drawBackground(ctx: Ctx, W: number, H: number, config: LyricCanvasConfig, pal: Palette, s: LyricSignals, transparent = false) {
   const scene = presetScene[config.preset];
-  const base = ctx.createLinearGradient(0, 0, W * 0.35, H);
-  base.addColorStop(0, mix('#03040a', pal.primary, 0.1));
-  base.addColorStop(0.55, '#05060c');
-  base.addColorStop(1, mix('#03040a', pal.accent, 0.24));
-  ctx.fillStyle = base;
-  ctx.fillRect(0, 0, W, H);
+  // As layer 2 of a mix the dark gradient is skipped: glows, orbs and words float over layer 1.
+  if (!transparent) {
+    const base = ctx.createLinearGradient(0, 0, W * 0.35, H);
+    base.addColorStop(0, mix('#03040a', pal.primary, 0.1));
+    base.addColorStop(0.55, '#05060c');
+    base.addColorStop(1, mix('#03040a', pal.accent, 0.24));
+    ctx.fillStyle = base;
+    ctx.fillRect(0, 0, W, H);
+  }
   // Horizon glow in the accent color, breathing with the energy.
   const horizon = ctx.createRadialGradient(W / 2, H * 1.08, 0, W / 2, H * 1.08, Math.max(W, H) * 0.75);
   horizon.addColorStop(0, rgba(adjustSaturation(pal.accent, 1.25), scene.horizon * config.glowIntensity * (0.24 + 0.14 * s.energy)));
@@ -814,7 +817,7 @@ function drawTitleCard(ctx: Ctx, W: number, H: number, title: string, alpha: num
 
 // ------------------------------------------------------------ main entry
 export function renderLyricCanvas(surface: RenderSurface, frame: EngineFrame, config: LyricCanvasConfig) {
-  const { context: ctx, width: W, height: H } = surface;
+  const { context: ctx, width: W, height: H, transparent = false } = surface;
   const s = lyricSignals(frame, config);
   const primary = adjustSaturation(config.primaryColor, config.colorSaturation);
   const accent = adjustSaturation(config.accentColor, config.colorSaturation);
@@ -825,9 +828,11 @@ export function renderLyricCanvas(surface: RenderSurface, frame: EngineFrame, co
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
-  ctx.fillStyle = '#05060b';
-  ctx.fillRect(0, 0, W, H);
-  drawBackground(ctx, W, H, config, pal, s);
+  if (!transparent) {
+    ctx.fillStyle = '#05060b';
+    ctx.fillRect(0, 0, W, H);
+  }
+  drawBackground(ctx, W, H, config, pal, s, transparent);
   drawDust(ctx, W, H, config, pal, s);
   if (config.preset === 'cinematic') drawLetterbox(ctx, W, H);
 
@@ -860,8 +865,10 @@ export function renderLyricCanvas(surface: RenderSurface, frame: EngineFrame, co
     presetDrawers[config.preset]({ ctx, W, H, time, config, pal, s, timeline, latest, states });
   }
 
-  drawVignette(ctx, W, H, config, s);
-  applyWarmthOverlay(ctx, W, H, config.warmth);
+  if (!transparent) {
+    drawVignette(ctx, W, H, config, s);
+    applyWarmthOverlay(ctx, W, H, config.warmth);
+  }
   ctx.restore();
   ctx.shadowBlur = 0;
   ctx.globalAlpha = 1;
