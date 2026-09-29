@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { getEngine, getEngineOrDefault, listClassicEngines, listEngines } from './engine.registry';
+import { getEngine, getEngineOrDefault, isProEngineId, listClassicEngines, listEngines } from './engine.registry';
 
 describe('engine registry', () => {
-  it('exposes all six classic engines plus Particle Sphere', () => {
+  it('exposes all six classic engines plus Particle Sphere and Dance Avatars', () => {
     expect(getEngine('minimal-album-art').availability).toBe('implemented');
     expect(getEngine('cosmic-waves').availability).toBe('implemented');
     expect(getEngine('jazz-geometry').availability).toBe('implemented');
@@ -10,8 +10,11 @@ describe('engine registry', () => {
     expect(getEngine('frequency-city').availability).toBe('implemented');
     expect(getEngine('neon-velvet').availability).toBe('implemented');
     expect(getEngine('particle-sphere').availability).toBe('implemented');
+    expect(getEngine('dance-avatars').availability).toBe('implemented');
     expect(listClassicEngines()).toHaveLength(6);
-    expect(listEngines()).toHaveLength(7);
+    expect(listEngines()).toHaveLength(8);
+    expect(isProEngineId('dance-avatars')).toBe(true);
+    expect(isProEngineId('minimal-album-art')).toBe(false);
   });
 
   it('rejects unknown engine identifiers', () => {

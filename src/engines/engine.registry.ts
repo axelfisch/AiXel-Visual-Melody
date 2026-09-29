@@ -1,11 +1,14 @@
 import type { VisualEngine } from './engine.types';
 import { CosmicWavesEngine } from './cosmic-waves/CosmicWavesEngine';
+import { DanceAvatarsEngine } from './dance-avatars/DanceAvatarsEngine';
 import { FrequencyCityEngine } from './frequency-city/FrequencyCityEngine';
 import { JazzGeometryEngine } from './jazz-geometry/JazzGeometryEngine';
 import { LiquidColorsEngine } from './liquid-colors/LiquidColorsEngine';
 import { MinimalAlbumArtEngine } from './minimal-album-art/MinimalAlbumArtEngine';
 import { NeonVelvetEngine } from './neon-velvet/NeonVelvetEngine';
 import { ParticleSphereEngine } from './particle-sphere/ParticleSphereEngine';
+
+const PRO_ENGINE_IDS = new Set(['particle-sphere', 'dance-avatars']);
 
 const engines = new Map<string, VisualEngine>([
   [MinimalAlbumArtEngine.id, MinimalAlbumArtEngine as VisualEngine],
@@ -15,6 +18,7 @@ const engines = new Map<string, VisualEngine>([
   [LiquidColorsEngine.id, LiquidColorsEngine as VisualEngine],
   [NeonVelvetEngine.id, NeonVelvetEngine as VisualEngine],
   [ParticleSphereEngine.id, ParticleSphereEngine as VisualEngine],
+  [DanceAvatarsEngine.id, DanceAvatarsEngine as VisualEngine],
 ]);
 
 export function getEngine(id: string): VisualEngine {
@@ -28,7 +32,11 @@ export function listEngines(): VisualEngine[] {
 }
 
 export function listClassicEngines(): VisualEngine[] {
-  return listEngines().filter((engine) => engine.id !== 'particle-sphere');
+  return listEngines().filter((engine) => !PRO_ENGINE_IDS.has(engine.id));
+}
+
+export function isProEngineId(id: string): boolean {
+  return PRO_ENGINE_IDS.has(id);
 }
 
 export function getEngineOrDefault(id: string): VisualEngine {

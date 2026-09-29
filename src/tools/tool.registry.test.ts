@@ -13,13 +13,14 @@ describe('tool registry', () => {
     expect(listProTools()).toHaveLength(4);
   });
 
-  it('marks Particle Sphere as implemented and ready to select', () => {
+  it('marks Particle Sphere and Dance Avatars as implemented', () => {
     expect(getTool('particle-sphere').availability).toBe('implemented');
     expect(getTool('particle-sphere').engineId).toBe('particle-sphere');
+    expect(getTool('dance-avatar').availability).toBe('implemented');
+    expect(getTool('dance-avatar').engineId).toBe('dance-avatars');
   });
 
-  it('keeps Avatars, Image Pulse and Lyrics as coming soon', () => {
-    expect(getTool('dance-avatar').availability).toBe('coming-soon');
+  it('keeps Image Pulse and Lyrics as coming soon', () => {
     expect(getTool('image-pulse').availability).toBe('coming-soon');
     expect(getTool('lyric-canvas').availability).toBe('coming-soon');
   });

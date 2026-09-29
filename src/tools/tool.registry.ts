@@ -18,7 +18,8 @@ const tools: VisualTool[] = [
     id: 'dance-avatar',
     name: 'Dance Avatars',
     description: 'Five styled avatars that dance to the beat.',
-    availability: 'coming-soon',
+    availability: 'implemented',
+    engineId: 'dance-avatars',
   },
   {
     id: 'image-pulse',
