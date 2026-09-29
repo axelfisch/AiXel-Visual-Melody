@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { danceAvatarCopy } from '../engines/dance-avatars/danceAvatars.i18n';
+import { imagePulseCopy } from '../engines/image-pulse/imagePulse.i18n';
 
 export type Locale = 'en' | 'fr';
 
@@ -118,7 +119,8 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       document.documentElement.lang = next;
       setLocaleState(next);
     },
-    t: (key) => copy[locale][key] ?? danceAvatarCopy[locale][key] ?? copy.en[key] ?? danceAvatarCopy.en[key] ?? key,
+    t: (key) => imagePulseCopy[locale][key] ?? copy[locale][key] ?? danceAvatarCopy[locale][key]
+      ?? imagePulseCopy.en[key] ?? copy.en[key] ?? danceAvatarCopy.en[key] ?? key,
   }), [locale]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
