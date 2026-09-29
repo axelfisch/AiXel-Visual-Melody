@@ -30,7 +30,7 @@ export function PreviewScreen({
     autoPlay,
     onAutoPlayHandled,
   });
-  const poeticLine = locale === 'fr' ? (engine.id === 'cosmic-waves'
+  const poeticLine = engine.id === 'image-pulse' ? t('pulsePoetic') : locale === 'fr' ? (engine.id === 'cosmic-waves'
     ? 'Les vagues de lumière respirent avec l’énergie réelle du signal.'
     : engine.id === 'jazz-geometry'
       ? 'Les cercles harmoniques dessinent la géométrie vivante du morceau.'
@@ -82,6 +82,9 @@ export function PreviewScreen({
             <p className="tiny-label">{engine.name} · {t('livePreview')}</p>
             <h1>{project.name}</h1>
             <p className="poetic">{poeticLine}</p>
+            {engine.id === 'image-pulse' && !project.image?.objectUrl ? (
+              <p className="tiny-label pulse-preview-hint">{t('pulsePreviewHint')}</p>
+            ) : null}
           </div>
           <button className="primary-action" onClick={() => onNavigate('export')}>
             {t('export')}
