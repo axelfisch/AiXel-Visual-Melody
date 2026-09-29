@@ -190,6 +190,7 @@ export function App() {
             onLyrics={(lyrics) => dispatch({ type: 'SET_LYRICS', lyrics })}
             trackDuration={project.audio?.duration ?? null}
             trackBpm={project.analysis?.bpm ?? null}
+            analysis={project.analysis}
             onEngine={selectEngine}
             onTool={selectTool}
             onPreset={(presetId) => dispatch({ type: 'SELECT_PRESET', presetId })}
