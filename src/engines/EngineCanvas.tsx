@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { energyAt } from '../audio';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { energyAt, onsetAt } from '../audio';
 import type { ProjectAnalysis } from '../project/project.types';
 import type { VisualEngine } from './engine.types';
 
@@ -19,6 +19,20 @@ export function EngineCanvas({
   title: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [preparedVersion, setPreparedVersion] = useState(0);
+  const validated = useMemo(() => engine.validateConfig(config ?? engine.defaultConfig), [config, engine]);
+
+  // Engines with external media (Image Pulse) redraw once their assets are decoded.
+  useEffect(() => {
+    if (!engine.prepare) return undefined;
+    let active = true;
+    void engine.prepare(validated).then(() => {
+      if (active) setPreparedVersion((version) => version + 1);
+    }).catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [engine, validated]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,12 +46,13 @@ export function EngineCanvas({
         duration,
         progress: duration > 0 ? time / duration : 0,
         energy: energyAt(analysis, time),
+        onset: onsetAt(analysis, time),
         bpm: analysis.bpm,
         title,
       },
-      engine.validateConfig(config ?? engine.defaultConfig),
+      validated,
     );
-  }, [analysis, config, duration, engine, time, title]);
+  }, [analysis, validated, duration, engine, time, title, preparedVersion]);
 
   return <canvas className="real-preview-canvas" ref={canvasRef} width={1280} height={720} />;
 }

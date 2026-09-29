@@ -6,6 +6,8 @@ export type EngineFrame = {
   progress: number;
   energy: number;
   bpm: number;
+  /** Transient strength 0..1 derived from the energy timeline (see `onsetAt`). Optional for legacy callers. */
+  onset?: number;
   title?: string;
 };
 
@@ -36,4 +38,9 @@ export interface VisualEngine<TConfig extends object = Record<string, unknown>> 
   parameters: EngineParameterDefinition[];
   validateConfig(config: unknown): TConfig;
   render(surface: RenderSurface, frame: EngineFrame, config: TConfig): void;
+  /**
+   * Optional async preparation (e.g. decoding an uploaded image) awaited by Export
+   * before the first frame and by Preview before re-rendering, so both draw the same pixels.
+   */
+  prepare?(config: TConfig): Promise<void>;
 }
