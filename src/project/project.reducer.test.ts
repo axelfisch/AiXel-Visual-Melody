@@ -110,3 +110,30 @@ describe('projectReducer · Image Pulse media', () => {
     expect(next.engine.parameters.imageSrc).toBeUndefined();
   });
 });
+
+describe('projectReducer · Lyric Canvas lyrics', () => {
+  it('stores lyrics at project level and binds them to the Lyric Canvas renderer parameters', () => {
+    const selected = projectReducer(createProject(), {
+      type: 'SELECT_TOOL', tool: 'lyric-canvas', engineId: 'lyric-canvas', parameters: { preset: 'neon', lyrics: '' },
+    });
+    const next = projectReducer(selected, { type: 'SET_LYRICS', lyrics: { text: 'Été\r\nÉtoiles ✨' } });
+    expect(next.lyrics).toEqual({ text: 'Été\nÉtoiles ✨', offset: 0 });
+    expect(next.engine.parameters).toMatchObject({ lyrics: 'Été\nÉtoiles ✨', lyricsOffset: 0, preset: 'neon' });
+    const nudged = projectReducer(next, { type: 'SET_LYRICS', lyrics: { offset: 45 } });
+    expect(nudged.lyrics.offset).toBe(30);
+    expect(nudged.engine.parameters.lyricsOffset).toBe(30);
+    expect(nudged.lyrics.text).toBe('Été\nÉtoiles ✨');
+  });
+
+  it('keeps lyrics without touching other engines parameters, and binds the image for the image background', () => {
+    const next = projectReducer(createProject(), { type: 'SET_LYRICS', lyrics: { text: 'la la' } });
+    expect(next.lyrics.text).toBe('la la');
+    expect(next.engine.parameters.lyrics).toBeUndefined();
+    const lyric = projectReducer(next, { type: 'SELECT_TOOL', tool: 'lyric-canvas', engineId: 'lyric-canvas', parameters: {} });
+    const withImage = projectReducer(lyric, {
+      type: 'SET_IMAGE_SOURCE',
+      image: { fileName: 'bg.png', mimeType: 'image/png', size: 1, width: 10, height: 10, objectUrl: 'blob:bg' },
+    });
+    expect(withImage.engine.parameters.imageSrc).toBe('blob:bg');
+  });
+});

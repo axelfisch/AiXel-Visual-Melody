@@ -68,3 +68,20 @@ describe('project serialization · Image Pulse', () => {
     expect(parseProject(JSON.stringify(legacy)).image).toBeNull();
   });
 });
+
+describe('project serialization · Lyric Canvas', () => {
+  it('keeps lyrics text and offset', () => {
+    const project = createProject();
+    project.tool = 'lyric-canvas';
+    project.engine.engineId = 'lyric-canvas';
+    project.lyrics = { text: '[00:01.00]Cœur d’été 🌙', offset: -0.5 };
+    const parsed = parseProject(serializeProject(project));
+    expect(parsed.tool).toBe('lyric-canvas');
+    expect(parsed.lyrics).toEqual({ text: '[00:01.00]Cœur d’été 🌙', offset: -0.5 });
+  });
+
+  it('migrates projects saved before Lyric Canvas existed', () => {
+    const { lyrics: _lyrics, ...legacy } = createProject();
+    expect(parseProject(JSON.stringify(legacy)).lyrics).toEqual({ text: '', offset: 0 });
+  });
+});
