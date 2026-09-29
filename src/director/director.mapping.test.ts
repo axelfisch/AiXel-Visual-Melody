@@ -11,6 +11,7 @@ const engines = [
   'frequency-city',
   'neon-velvet',
   'particle-sphere',
+  'dance-avatars',
 ];
 
 const allDimensions = [
@@ -79,7 +80,6 @@ describe('AiXel Director V1 mapping contract', () => {
       expect(Object.keys(profile)).toHaveLength(8);
     });
   });
-});
 
   it('maps Color Energy and Light honestly for Particle Sphere', () => {
     const low = mapDirectorToEngine('particle-sphere', {
@@ -92,3 +92,24 @@ describe('AiXel Director V1 mapping contract', () => {
     expect(high.parameters.glowIntensity).toBeGreaterThan(low.parameters.glowIntensity as number);
     expect(high.parameters.orbitSpeed).toEqual(low.parameters.orbitSpeed);
   });
+
+  it('maps Color Energy and Light honestly for Dance Avatars', () => {
+    const low = mapDirectorToEngine('dance-avatars', {
+      emotion: 50, space: 50, fluidity: 50, light: 0, dynamics: 50, particles: 50, colorEnergy: 0, motionComplexity: 50,
+    });
+    const high = mapDirectorToEngine('dance-avatars', {
+      emotion: 50, space: 50, fluidity: 50, light: 100, dynamics: 50, particles: 50, colorEnergy: 100, motionComplexity: 50,
+    });
+    expect(high.parameters.colorSaturation).toBeGreaterThan(low.parameters.colorSaturation as number);
+    expect(high.parameters.glowIntensity).toBeGreaterThan(low.parameters.glowIntensity as number);
+    expect(high.parameters.danceSpeed).toEqual(low.parameters.danceSpeed);
+    expect(high.parameters.limbExpressiveness).toEqual(low.parameters.limbExpressiveness);
+  });
+
+  it('maps Fluidity and Motion Complexity to dance params', () => {
+    const low = mapDirectorToEngine('dance-avatars', { fluidity: 0, motionComplexity: 0 });
+    const high = mapDirectorToEngine('dance-avatars', { fluidity: 100, motionComplexity: 100 });
+    expect(high.parameters.danceSpeed).toBeGreaterThan(low.parameters.danceSpeed as number);
+    expect(high.parameters.limbExpressiveness).toBeGreaterThan(low.parameters.limbExpressiveness as number);
+  });
+});
